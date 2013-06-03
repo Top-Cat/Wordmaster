@@ -1,0 +1,14 @@
+
+*.prefs
+
+.project
+
+.classpath
+
+*.class
+
+target/classes/META-INF/maven/uk.co.thomasc/wordmaster/pom.xml
+
+target/classes/META-INF/maven/uk.co.thomasc/wordmaster/pom.properties
+
+target/classes/META-INF/MANIFEST.MF
