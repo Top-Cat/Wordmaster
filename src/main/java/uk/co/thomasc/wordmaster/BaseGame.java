@@ -1,6 +1,8 @@
 package uk.co.thomasc.wordmaster;
 
 import android.content.pm.ActivityInfo;
+import android.graphics.Typeface;
+
 import uk.co.thomasc.wordmaster.util.SystemUiHider;
 
 import android.annotation.TargetApi;
@@ -18,6 +20,9 @@ import android.view.View;
  * @see SystemUiHider
  */
 public class BaseGame extends Activity {
+	
+	public static Typeface russo;
+	
 	/**
 	 * Whether or not the system UI should be auto-hidden after
 	 * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -49,6 +54,8 @@ public class BaseGame extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		russo = Typeface.createFromAsset(getAssets(), "fonts/Russo_One.ttf");
 
 		setContentView(R.layout.activity_fullscreen);
 
@@ -62,7 +69,6 @@ public class BaseGame extends Activity {
 		mSystemUiHider.setup();
 		mSystemUiHider.setOnVisibilityChangeListener(new SystemUiHider.OnVisibilityChangeListener() {
 					// Cached values.
-					int mControlsHeight;
 					int mShortAnimTime;
 
 					@Override

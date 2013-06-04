@@ -73,8 +73,6 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback {
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
-				} else {
-					System.out.println("Took too long on frame");
 				}
 			}
 		}

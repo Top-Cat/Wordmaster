@@ -1,5 +1,7 @@
 <resources>
 
     <color name="black_overlay">#66000000</color>
+    <color name="header">#FF333333</color>
+    <color name="header_text">#FFFFFFFF</color>
 
 </resources>
