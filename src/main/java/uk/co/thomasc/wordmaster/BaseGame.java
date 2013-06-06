@@ -3,15 +3,17 @@ package uk.co.thomasc.wordmaster;
 import android.content.Context;
 import android.graphics.Typeface;
 
-import uk.co.thomasc.wordmaster.util.SystemUiHider;
+import uk.co.thomasc.wordmaster.util.CapsLockLimiter;
+import uk.co.thomasc.wordmaster.view.game.SwipeController;
+import uk.co.thomasc.wordmaster.view.game.SwipeListener;
 
-import android.app.Activity;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.ViewPager;
 import android.view.WindowManager.LayoutParams;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageView;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -19,7 +21,7 @@ import android.widget.EditText;
  *
  * @see SystemUiHider
  */
-public class BaseGame extends Activity {
+public class BaseGame extends FragmentActivity {
 	
 	public static Typeface russo;
 
@@ -31,35 +33,14 @@ public class BaseGame extends Activity {
 
 		setContentView(R.layout.activity_fullscreen);
 		
-		final EditText input = (EditText) findViewById(R.id.editText1);
+		SwipeController swipe = new SwipeController(getSupportFragmentManager());
+		ViewPager mPager = ((ViewPager) findViewById(R.id.pager));
+		mPager.setAdapter(swipe);
+		mPager.setOnPageChangeListener(new SwipeListener((ImageView) findViewById(R.id.indicator)));
+		
+		EditText input = (EditText) findViewById(R.id.editText1);
 		((InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE)).showSoftInput(input, InputMethodManager.SHOW_FORCED);
 		getWindow().setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
-		input.addTextChangedListener(new TextWatcher() {
-			
-			@Override
-			public void onTextChanged(CharSequence s, int start, int before, int count) {}
-			
-			@Override
-			public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-			
-			@Override
-			public void afterTextChanged(Editable s) {
-				char[] str = s.toString().toCharArray();
-				String fin = "";
-				for (char c : str) {
-					if (c >= 97 && c <= 122) {
-						c -= 32;
-					}
-					if (c >= 65 && c <= 90) {
-						fin += c;
-					}
-				}
-				if (!fin.equals(s.toString())) {
-					input.setText(fin);
-					input.setSelection(input.length());
-				}
-				System.out.println(fin);
-			}
-		});
+		input.addTextChangedListener(new CapsLockLimiter(input));
 	}
 }
