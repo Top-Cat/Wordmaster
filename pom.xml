@@ -22,6 +22,23 @@
 			<version>${platform.version}</version>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.google.android</groupId>
+			<artifactId>support-v4</artifactId>
+			<version>r6</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.android.gms</groupId>
+			<artifactId>google-play-services</artifactId>
+			<version>7</version>
+			<type>apklib</type>
+		</dependency>
+		<dependency>
+			<groupId>com.google.android.gms</groupId>
+			<artifactId>google-play-services</artifactId>
+			<version>7</version>
+			<type>jar</type>
+		</dependency>
 	</dependencies>
 	<build>
 		<finalName>${project.artifactId}</finalName>
@@ -32,10 +49,57 @@
 					<artifactId>android-maven-plugin</artifactId>
 					<version>${android.plugin.version}</version>
 					<extensions>true</extensions>
+					<executions>
+						<execution>
+							<id>alignApk</id>
+							<phase>install</phase>
+							<goals>
+								<goal>zipalign</goal>
+							</goals>
+						</execution>
+					</executions>
+					<configuration>
+						<sign>
+							<debug>false</debug>
+						</sign>
+						<zipalign>
+							<skip>false</skip>
+						</zipalign>
+					</configuration>
 				</plugin>
 			</plugins>
 		</pluginManagement>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jarsigner-plugin</artifactId>
+				<version>1.2</version>
+				<executions>
+					<execution>
+						<id>signing</id>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+						<phase>package</phase>
+						<inherited>true</inherited>
+						<configuration>
+							<archiveDirectory></archiveDirectory>
+							<includes>
+								<include>target/*.apk</include>
+							</includes>
+							<keystore>${keystore}</keystore>
+							<storepass>${keystore.store.pass}</storepass>
+							<keypass>${keystore.key.pass}</keypass>
+							<alias>${keyalias}</alias>
+							<arguments>
+								<argument>-sigalg</argument><argument>MD5withRSA</argument>
+								<argument>-digestalg</argument><argument>SHA1</argument>
+							</arguments>
+							<verbose>true</verbose>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>com.jayway.maven.plugins.android.generation2</groupId>
 				<artifactId>android-maven-plugin</artifactId>
