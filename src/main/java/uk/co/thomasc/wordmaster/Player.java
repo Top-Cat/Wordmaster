@@ -1,5 +1,12 @@
 package uk.co.thomasc.wordmaster;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import android.graphics.drawable.Drawable;
+
 public class Player {
 
 	/* Properties */
@@ -22,6 +29,17 @@ public class Player {
 	}
 	public String getAvatarURL() {
 		return avatarURL;
+	}
+	public Drawable getAvatar() {
+		try {
+			InputStream is = (InputStream) new URL(avatarURL).getContent();
+			Drawable d = Drawable.createFromStream(is, "player avatar");
+			return d;
+		} catch (MalformedURLException ex) {
+			return null;
+		} catch (IOException ex) {
+			return null;
+		}
 	}
 	
 }
