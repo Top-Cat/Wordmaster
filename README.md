@@ -7,3 +7,6 @@ To-do
     - Interaction
     - Menus
 - Engine
+	- Game state
+	- Player Info
+	- Communication with server
