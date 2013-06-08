@@ -7,14 +7,14 @@ import java.net.URL;
 
 import android.graphics.drawable.Drawable;
 
-public class Player {
+public class User {
 
 	/* Properties */
 	private String plusID; 
 	private String name;
 	private String avatarURL;
 	
-	public Player(String plusID, String name, String avatarURL) {
+	public User(String plusID, String name, String avatarURL) {
 		this.plusID = plusID;
 		this.name = name;
 		this.avatarURL = avatarURL;
