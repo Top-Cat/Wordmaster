@@ -6,18 +6,27 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
+
+import com.google.android.gms.games.Player;
 
 public class User {
 
 	/* Properties */
 	private String plusID; 
 	private String name;
-	private String avatarURL;
+	private String avatarUri;
 	
-	public User(String plusID, String name, String avatarURL) {
+	public User(String plusID, String name, Uri avatarUri) {
 		this.plusID = plusID;
 		this.name = name;
-		this.avatarURL = avatarURL;
+		this.avatarUri = avatarUri.toString();
+	}
+	
+	public User(Player player) {
+		this.plusID = player.getPlayerId();
+		this.name = player.getDisplayName();
+		this.avatarUri = player.getIconImageUri().toString();
 	}
 	
 	/* Getters */
@@ -27,12 +36,12 @@ public class User {
 	public String getName() {
 		return name;
 	}
-	public String getAvatarURL() {
-		return avatarURL;
+	public Uri getAvatarURL() {
+		return Uri.parse(avatarUri);
 	}
 	public Drawable getAvatar() {
 		try {
-			InputStream is = (InputStream) new URL(avatarURL).getContent();
+			InputStream is = (InputStream) new URL(avatarUri).getContent();
 			Drawable d = Drawable.createFromStream(is, "player avatar");
 			return d;
 		} catch (MalformedURLException ex) {
