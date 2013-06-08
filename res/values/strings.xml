@@ -10,6 +10,8 @@
 	<string name="default_score">0</string>
 	<string name="default_turn">0</string>
 	
+	<string name="whysignin">Sign in with Google to begin playing with your friends.</string>
+	
 	<string name="app_id">554831168978</string>
 
 </resources>

@@ -28,6 +28,7 @@ import android.widget.LinearLayout;
 public class BaseGame extends BaseGameActivity implements OnClickListener {
 	
 	public static Typeface russo;
+	private EditText input;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -44,11 +45,9 @@ public class BaseGame extends BaseGameActivity implements OnClickListener {
 		
 		SignInButton button = (SignInButton) findViewById(R.id.button_sign_in);
 		button.setOnClickListener(this);
-		button.setStyle(SignInButton.SIZE_WIDE, SignInButton.COLOR_LIGHT); // I commend anyone who can do this in XML
+		button.setSize(SignInButton.SIZE_WIDE); // I commend anyone who can do this in XML
 		
-		EditText input = (EditText) findViewById(R.id.editText1);
-		((InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE)).showSoftInput(input, InputMethodManager.SHOW_FORCED);
-		getWindow().setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+		input = (EditText) findViewById(R.id.editText1);
 		input.addTextChangedListener(new CapsLockLimiter(input));
 	}
 
@@ -64,10 +63,17 @@ public class BaseGame extends BaseGameActivity implements OnClickListener {
 	public void onSignInFailed() {
 		System.out.println("oh noes!");
 	}
-
+	
 	@Override
 	public void onSignInSucceeded() {
+		signOut();
+	}
+	
+	private void showGameScreen() {
 		((LinearLayout) findViewById(R.id.screen_login)).setVisibility(View.GONE);
 		((LinearLayout) findViewById(R.id.screen_game)).setVisibility(View.VISIBLE);
+		
+		((InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE)).showSoftInput(input, InputMethodManager.SHOW_FORCED);
+		getWindow().setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
 	}
 }

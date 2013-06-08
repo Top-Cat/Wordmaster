@@ -2,19 +2,65 @@
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:plus="http://schemas.android.com/apk/lib/com.google.android.gms.plus"
     android:id="@+id/root_view"
-    android:layout_width="fill_parent"
+    android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
 	<LinearLayout
 	    android:id="@+id/screen_login"
 	    android:layout_width="fill_parent"
 	    android:layout_height="match_parent"
-	    android:background="#132286"
+	    android:background="@color/mainbg"
 	    android:orientation="vertical" >
+
+		<LinearLayout
+		    android:layout_width="match_parent"
+		    android:layout_height="wrap_content"
+		    android:background="@color/menu_header" >
+
+			<ImageView
+			    android:id="@+id/logo"
+			    android:layout_width="wrap_content"
+			    android:layout_height="wrap_content"
+			    android:contentDescription="@string/game_screen"
+			    android:src="@drawable/ic_launcher" />
+
+			<View
+			    android:layout_width="0dp"
+			    android:layout_height="0dp"
+			    android:layout_weight="1" />
+
+			<ImageView
+			    android:id="@+id/refresh"
+			    android:layout_width="wrap_content"
+			    android:layout_height="wrap_content"
+			    android:layout_gravity="center"
+			    android:contentDescription="@string/game_screen"
+			    android:padding="5dp"
+			    android:src="@drawable/navigation_refresh" />
+
+			<ImageView
+			    android:id="@+id/startnew"
+			    android:layout_width="wrap_content"
+			    android:layout_height="wrap_content"
+			    android:layout_gravity="center"
+			    android:contentDescription="@string/game_screen"
+			    android:padding="5dp"
+			    android:src="@drawable/content_new" />
+
+		</LinearLayout>
 		
 		<com.google.android.gms.common.SignInButton
 			android:id="@+id/button_sign_in"
 			style="@style/SignInButton" />
+
+		<TextView
+		    android:id="@+id/whysignin"
+		    android:layout_width="200dp"
+		    android:layout_height="wrap_content"
+		    android:layout_gravity="center"
+		    android:gravity="center"
+		    android:text="@string/whysignin"
+		    android:textColor="@color/whysignin" />
 
 	</LinearLayout>
 		
@@ -22,7 +68,7 @@
 	    android:id="@+id/screen_game"
 	    android:layout_width="fill_parent"
 	    android:layout_height="match_parent"
-	    android:background="#132286"
+	    android:background="@color/mainbg"
 	    android:orientation="vertical"
 	    android:visibility="gone"
 	    tools:context=".BaseGame" >
