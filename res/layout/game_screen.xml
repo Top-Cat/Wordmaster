@@ -1,4 +1,4 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<uk.co.thomasc.wordmaster.view.game.GameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/screen_game"
     android:layout_width="fill_parent"
@@ -116,4 +116,4 @@
 	    <requestFocus />
 	</EditText>
 
-</LinearLayout>
+</uk.co.thomasc.wordmaster.view.game.GameLayout>
