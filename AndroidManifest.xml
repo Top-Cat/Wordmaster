@@ -23,6 +23,14 @@
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
+		<activity
+            android:name="uk.co.thomasc.wordmaster.PlayActivity"
+            android:label="@string/game_screen"
+            android:parentActivityName=".CircleListActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".BaseGame" />
+        </activity>
 		<meta-data android:name="com.google.android.gms.games.APP_ID" android:value="@string/app_id" />
 	</application>
 
