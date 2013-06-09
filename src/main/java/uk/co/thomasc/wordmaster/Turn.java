@@ -5,13 +5,15 @@ import java.util.Date;
 public class Turn {
 
 	/* Properties */
+	private int turnID;
 	private Date timestamp;
 	private User user;
 	private String guess;
 	private int correctLetters, displacedLetters;
 	
 	/* Constructors */
-	public Turn(Date timestamp, User user, String guess, int correctLetters, int displacedLetters) {
+	public Turn(int id, Date timestamp, User user, String guess, int correctLetters, int displacedLetters) {
+		this.turnID = id;
 		this.timestamp = timestamp;
 		this.user = user;
 		this.guess = guess;
@@ -20,6 +22,10 @@ public class Turn {
 	}
 	
 	/* Getters */
+	public int getID() {
+		return this.turnID;
+	}
+	
 	public Date getTimestamp() {
 		return this.timestamp;
 	}

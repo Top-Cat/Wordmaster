@@ -5,18 +5,24 @@ import java.util.ArrayList;
 public class Game {
 
 	/* Properties */
+	private String gameID;
 	private User player, opponent;
 	private ArrayList<Turn> turns;
 	private int playerScore = 0, opponentScore = 0, turnNumber = 1;
 	private String playerWord = "", opponentWord = "";
 	
 	/* Constructors */
-	public Game(User player, User opponent) {
+	public Game(String id, User player, User opponent) {
+		this.gameID = id;
 		this.player = player;
 		this.opponent = opponent;
 	}
 	
 	/* Getters */
+	public String getID() {
+		return this.gameID;
+	}
+	
 	public int getPlayerScore() {
 		return playerScore;
 	}
