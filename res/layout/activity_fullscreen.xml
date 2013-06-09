@@ -185,8 +185,6 @@
 			android:inputType="textCapCharacters|textNoSuggestions"
 			android:maxLength="4"
 			android:visibility="visible" >
-	
-			<requestFocus />
 		</EditText>
 	
 	</LinearLayout>
