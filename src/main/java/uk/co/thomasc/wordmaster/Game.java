@@ -10,6 +10,7 @@ public class Game {
 	private ArrayList<Turn> turns;
 	private int playerScore = 0, opponentScore = 0, turnNumber = 1;
 	private String playerWord = "", opponentWord = "";
+	private boolean needsWord = false, playersTurn = false;
 	
 	/* Constructors */
 	public Game(String id, User player, User opponent) {
@@ -47,6 +48,14 @@ public class Game {
 		return turns;
 	}
 	
+	public boolean needsWord() {
+		return this.needsWord;
+	}
+	
+	public boolean isPlayersTurn() {
+		return this.playersTurn;
+	}
+	
 	/* Setters */
 	public void setPlayerWord(String word) {
 		this.playerWord = word;
@@ -63,6 +72,14 @@ public class Game {
 	
 	public void setTurnNumber(int turnNumber) {
 		this.turnNumber = turnNumber;
+	}
+	
+	public void setNeedsWord(boolean needsWord) {
+		this.needsWord = needsWord;
+	}
+	
+	public void setPlayersTurn(boolean isPlayersTurn) {
+		this.playersTurn = isPlayersTurn;
 	}
 	
 	/* Other Methods */

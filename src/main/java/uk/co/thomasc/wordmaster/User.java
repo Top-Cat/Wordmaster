@@ -8,7 +8,10 @@ import java.net.URL;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.games.Player;
+import com.google.android.gms.plus.PlusClient.OnPersonLoadedListener;
+import com.google.android.gms.plus.model.people.Person;
 
 public class User {
 
@@ -27,6 +30,16 @@ public class User {
 		this.plusID = player.getPlayerId();
 		this.name = player.getDisplayName();
 		this.avatarUri = player.getIconImageUri().toString();
+	}
+	
+	public User(String plusID, BaseGame activityReference) {
+		this.plusID = plusID;
+		activityReference.getPlusClient().loadPerson(new OnPersonLoadedListener() {
+			@Override
+			public void onPersonLoaded(ConnectionResult arg0, Person arg1) {
+				System.out.println(arg1.getImage().getUrl());
+			}
+		}, plusID);
 	}
 	
 	/* Getters */
