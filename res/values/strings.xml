@@ -2,7 +2,7 @@
 <resources>
 
 	<string name="game_screen">Game Screen</string>
-	<string name="app_name">Word Master</string>
+	<string name="app_name">Wordmaster</string>
 	
 	<string name="action_settings">Settings</string>
 	<string name="turn">Turn</string>
