@@ -5,8 +5,10 @@
     <color name="header_text">#FFFFFFFF</color>
     <color name="footer_bar">#FFB3B3B3</color>
     <color name="footer_text">#FF000000</color>
+    
     <color name="mainbg">#FFFFFFFF</color>
-
+    <color name="maintext">#FF000000</color>
+    
     <color name="menu_header">#FFCCCCCC</color>
     <color name="whysignin">#FF666666</color>
     

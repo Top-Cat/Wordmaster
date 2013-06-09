@@ -9,6 +9,8 @@
 	<string name="game_screen">Game Screen</string>
 	<string name="default_score">0</string>
 	<string name="default_turn">0</string>
+	<string name="default_time">23h</string>
+	<string name="default_menu_text">vs Adam</string>
 	
 	<string name="whysignin">Sign in with Google to begin playing with your friends.</string>
 	

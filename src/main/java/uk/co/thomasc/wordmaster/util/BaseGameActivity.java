@@ -1,4 +1,4 @@
-package uk.co.thomasc.wordmaster;
+package uk.co.thomasc.wordmaster.util;
 
 /*
  * Copyright (C) 2013 Google Inc.
