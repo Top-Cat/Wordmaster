@@ -1,6 +1,6 @@
 package uk.co.thomasc.wordmaster;
 
-public class GameAPI {
+public class ServerAPI {
 
 	public static Object[] getMatches(String playerID) {
 		// do some server stuff
