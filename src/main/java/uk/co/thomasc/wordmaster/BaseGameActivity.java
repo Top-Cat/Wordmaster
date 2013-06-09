@@ -119,7 +119,7 @@ public abstract class BaseGameActivity extends FragmentActivity implements GameH
 		return mHelper.getAppStateClient();
 	}
 
-	protected PlusClient getPlusClient() {
+	public PlusClient getPlusClient() {
 		return mHelper.getPlusClient();
 	}
 
