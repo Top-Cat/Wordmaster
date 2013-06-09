@@ -1,9 +1,11 @@
-package uk.co.thomasc.wordmaster;
+package uk.co.thomasc.wordmaster.objects;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+
+import uk.co.thomasc.wordmaster.BaseGame;
 
 import android.graphics.drawable.Drawable;
 import android.net.Uri;

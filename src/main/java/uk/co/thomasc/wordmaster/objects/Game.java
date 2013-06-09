@@ -1,4 +1,4 @@
-package uk.co.thomasc.wordmaster;
+package uk.co.thomasc.wordmaster.objects;
 
 import java.util.ArrayList;
 

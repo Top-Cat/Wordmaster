@@ -11,6 +11,9 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import uk.co.thomasc.wordmaster.objects.Game;
+import uk.co.thomasc.wordmaster.objects.User;
+
 public class ServerAPI {
 	
 	private static final String BASE_URL = "http://thomasc.co.uk/wm/";
