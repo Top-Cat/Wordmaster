@@ -54,9 +54,18 @@ public class ServerAPI {
 		return false;
 	}
 	
-	public static Game createGame(String playerID, String opponentID) {
-		// do some server stuff
-		return null;
+	public static Game createGame(String playerID, String opponentID, BaseGame activityReference) {
+		JSONObject json = makeRequest("createGame", playerID, opponentID, null);
+		boolean success = ((Boolean) json.get("success")).booleanValue();
+		if (success) {
+			JSONArray response = (JSONArray) json.get("response");
+			JSONObject gameObject = (JSONObject) response.get(0);
+			String gameID = gameObject.get("gameid").toString();
+			Game game = new Game(gameID, new User(playerID, activityReference), new User(opponentID, activityReference));
+			return game;
+		} else {
+			return null;
+		}
 	}
 	
 	public static boolean setWord(String playerID, String gameID, String word) {
