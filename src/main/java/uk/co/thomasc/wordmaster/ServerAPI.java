@@ -170,7 +170,7 @@ public class ServerAPI {
 	 * @param playerID – the Google+ ID of the player whose word is being set
 	 * @param gameID – the game ID of the game the player is involved in
 	 * @param word – the word the player wishes to use
-	 * @return 
+	 * @return a 2-item boolean array containing the server response: [success, validword]
 	 */
 	public static boolean[] setWord(String playerID, String gameID, String word) {
 		JSONObject json = makeRequest("setWord", playerID, gameID, word);
