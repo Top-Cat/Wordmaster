@@ -29,19 +29,19 @@ public class ServerAPI {
 	 * @return an array of Game objects for each of the games the player is involved in
 	 */
 	public static Game[] getMatches(String playerID, BaseGame activityReference) {
-		JSONObject json = makeRequest("getMatches", playerID, null, null); 
+		JSONObject json = makeRequest("getMatches", playerID); 
 		boolean success = ((Boolean) json.get("success")).booleanValue();
 		if (success) {
 			JSONArray response = (JSONArray) json.get("response");
 			Game[] games = new Game[response.size()];
 			for (int i = 0; i < response.size(); i ++) {
 				JSONObject gameObject = (JSONObject) response.get(i);
-				String opponentID = gameObject.get("oppid").toString();
-				String gameID = gameObject.get("gameid").toString();
-				boolean needsWord = ((Boolean) gameObject.get("needword")).booleanValue();
-				int playerScore = ((Integer) gameObject.get("pscore")).intValue();
-				int opponentScore = ((Integer) gameObject.get("oscore")).intValue();
-				boolean playersTurn = ((Boolean) gameObject.get("turn")).booleanValue();
+				String opponentID = (String) gameObject.get("oppid");
+				String gameID = (String) gameObject.get("gameid");
+				boolean needsWord = (Boolean) gameObject.get("needword");
+				int playerScore = ((Long) gameObject.get("pscore")).intValue();
+				int opponentScore = ((Long) gameObject.get("oscore")).intValue();
+				boolean playersTurn = (Boolean) gameObject.get("turn");
 				Game game = new Game(gameID, new User(playerID, activityReference), new User(opponentID, activityReference));
 				game.setPlayersTurn(playersTurn);
 				game.setNeedsWord(needsWord);
@@ -63,26 +63,8 @@ public class ServerAPI {
 	 * @return an array containing Turn objects for all turns taken in the game
 	 */
 	public static Turn[] getTurns(String gameID, BaseGame activityReference) {
-		JSONObject json = makeRequest("getTurns", gameID, null, null);
-		boolean success = ((Boolean) json.get("success")).booleanValue();
-		if (success) {
-			JSONArray response = (JSONArray) json.get("response");
-			Turn[] turns = new Turn[response.size()];
-			for (int i = 0; i < response.size(); i ++) {
-				JSONObject turnObject = (JSONObject) response.get(i);
-				String id = turnObject.get("turnid").toString();
-				String playerID = turnObject.get("playerid").toString();
-				String guess = turnObject.get("guess").toString();
-				long when = ((Long) turnObject.get("when")).longValue();
-				int correct = ((Integer) turnObject.get("correct")).intValue();
-				int displaced = ((Integer) turnObject.get("displaced")).intValue();
-				Turn turn = new Turn(id, new Date(when), new User(playerID, activityReference), guess, correct, displaced);
-				turns[i] = turn;
-			}
-			return turns;
-		} else {
-			return null;
-		}
+		JSONObject json = makeRequest("getTurns", gameID);
+		return getTurns(json, activityReference);
 	}
 	
 	/**
@@ -96,20 +78,24 @@ public class ServerAPI {
 	 * @param activityReference – a reference to the BaseGame activity, used to get avatars from Google+
 	 * @return an array containing Turn objects for turns retrieved
 	 */
-	public static Turn[] getTurns(String gameID, String turnID, int number, BaseGame activityReference) {
-		JSONObject json = makeRequest("getTurns", gameID, turnID, Integer.toString(number));
+	public static Turn[] getTurns(String gameID, int turnID, int number, BaseGame activityReference) {
+		JSONObject json = makeRequest("getTurns", gameID, String.valueOf(turnID), Integer.toString(number));
+		return getTurns(json, activityReference);
+	}
+	
+	private static Turn[] getTurns(JSONObject json, BaseGame activityReference) {
 		boolean success = ((Boolean) json.get("success")).booleanValue();
 		if (success) {
 			JSONArray response = (JSONArray) json.get("response");
 			Turn[] turns = new Turn[response.size()];
 			for (int i = 0; i < response.size(); i ++) {
 				JSONObject turnObject = (JSONObject) response.get(i);
-				String id = turnObject.get("turnid").toString();
-				String playerID = turnObject.get("playerid").toString();
-				String guess = turnObject.get("guess").toString();
-				long when = ((Long) turnObject.get("when")).longValue();
-				int correct = ((Integer) turnObject.get("correct")).intValue();
-				int displaced = ((Integer) turnObject.get("displaced")).intValue();
+				int id = ((Long) turnObject.get("turnid")).intValue();
+				String playerID = (String) turnObject.get("playerid");
+				String guess = (String) turnObject.get("guess");
+				long when = (Long) turnObject.get("when");
+				int correct = ((Long) turnObject.get("correct")).intValue();
+				int displaced = ((Long) turnObject.get("displaced")).intValue();
 				Turn turn = new Turn(id, new Date(when), new User(playerID, activityReference), guess, correct, displaced);
 				turns[i] = turn;
 			}
@@ -133,7 +119,7 @@ public class ServerAPI {
 		JSONObject json = makeRequest("takeTurn", playerID, gameID, word);
 		boolean success = ((Boolean) json.get("success")).booleanValue();
 		JSONObject response = (JSONObject) json.get("response");
-		boolean validWord = ((Boolean) response.get("validword")).booleanValue();
+		boolean validWord = (Boolean) response.get("validword");
 		boolean[] result = {success, validWord};
 		return result;
 	}
@@ -149,12 +135,12 @@ public class ServerAPI {
 	 * @return a Game object representing the game which was created
 	 */
 	public static Game createGame(String playerID, String opponentID, BaseGame activityReference) {
-		JSONObject json = makeRequest("createGame", playerID, opponentID, null);
+		JSONObject json = makeRequest("createGame", playerID, opponentID);
 		boolean success = ((Boolean) json.get("success")).booleanValue();
 		if (success) {
 			JSONArray response = (JSONArray) json.get("response");
 			JSONObject gameObject = (JSONObject) response.get(0);
-			String gameID = gameObject.get("gameid").toString();
+			String gameID = (String) gameObject.get("gameid");
 			Game game = new Game(gameID, new User(playerID, activityReference), new User(opponentID, activityReference));
 			return game;
 		} else {
@@ -176,18 +162,24 @@ public class ServerAPI {
 		JSONObject json = makeRequest("setWord", playerID, gameID, word);
 		boolean success = ((Boolean) json.get("success")).booleanValue();
 		JSONObject response = (JSONObject) json.get("response");
-		boolean validWord = ((Boolean) response.get("validword")).booleanValue();
+		boolean validWord = (Boolean) response.get("validword");
 		boolean[] result = {success, validWord};
 		return result;
 	}
 	
 	private static JSONObject makeRequest(String iface, String param1, String param2, String param3) {
-		String url = BASE_URL + iface + "/" + param1;
-		if (param2 != null && param2.length() > 0)
-			url += "/" + param2;
-		if (param3 != null && param3.length() > 0)
-			url += "/" + param3;
-		
+		return makeRequest(BASE_URL + iface + "/" + param1 + "/" + param2 + "/" + param3);
+	}
+	
+	private static JSONObject makeRequest(String iface, String param1, String param2) {
+		return makeRequest(BASE_URL + iface + "/" + param1 + "/" + param2);
+	}
+	
+	private static JSONObject makeRequest(String iface, String param1) {
+		return makeRequest(BASE_URL + iface + "/" + param1);
+	}
+	
+	private static JSONObject makeRequest(String url) {
 		String jsonText = "";
 		
 		try {
