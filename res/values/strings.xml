@@ -8,12 +8,16 @@
 	<string name="turn">Turn</string>
 	<string name="guess">Guess</string>
 	<string name="game_screen">Game Screen</string>
+	
 	<string name="default_score">0</string>
 	<string name="default_turn">0</string>
 	<string name="default_time">23h</string>
+	<string name="default_word">CATS</string>
 	<string name="default_menu_text">vs Adam</string>
+	<string name="default_opp_guess">Adam guessed DUCT</string>
 	
 	<string name="whysignin">Sign in with Google to begin playing with your friends.</string>
+	<string name="itembg">List Item Background</string>
 	
 	<string name="app_id">554831168978</string>
 

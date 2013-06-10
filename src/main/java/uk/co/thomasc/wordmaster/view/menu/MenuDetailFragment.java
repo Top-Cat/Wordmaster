@@ -21,6 +21,7 @@ public class MenuDetailFragment extends Fragment {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (getArguments().containsKey(ARG_ITEM_ID)) {
+			String gameid = getArguments().getString(ARG_ITEM_ID);
 			// TODO: Get game from id
 			//game = ??
 		}

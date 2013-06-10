@@ -1,0 +1,63 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent" >
+
+	<ImageView
+		android:id="@+id/itembg"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="bottom"
+		android:contentDescription="@string/itembg"
+		android:src="@drawable/itembg"
+		android:state_pressed="true" />
+		
+	<LinearLayout
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		android:padding="5dp" >
+
+		<uk.co.thomasc.wordmaster.util.RussoText
+			android:id="@+id/time"
+			android:layout_width="0dp"
+			android:layout_height="fill_parent"
+			android:layout_weight="1"
+			android:gravity="left"
+			android:text="@string/default_time"
+			android:textColor="@color/maintext" />
+
+		<uk.co.thomasc.wordmaster.util.RussoText
+			android:id="@+id/guess"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center"
+			android:layout_marginRight="10dp"
+			android:gravity="center"
+			android:text="@string/default_opp_guess"
+			android:textColor="@color/maintext" />
+
+		<ImageView
+			android:id="@+id/peg0"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:src="@drawable/silverpeg" />
+
+		<ImageView
+			android:id="@+id/peg1"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:src="@drawable/silverpeg" />
+
+		<ImageView
+			android:id="@+id/peg2"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:src="@drawable/goldpeg" />
+
+		<ImageView
+			android:id="@+id/peg3"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:src="@drawable/whitepeg" />
+	</LinearLayout>
+	
+</FrameLayout>

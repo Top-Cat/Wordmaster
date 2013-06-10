@@ -1,25 +1,40 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:padding="10dp" >
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
 
-    <TextView
-        android:id="@+id/playera"
+    <ImageView
+        android:id="@+id/itembg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:drawableLeft="@drawable/ic_launcher"
-        android:drawablePadding="20dp"
-        android:gravity="center|left"
-        android:text="@string/default_menu_text"
-        android:textColor="@color/maintext" />
-
-    <TextView
-        android:id="@+id/time"
-        android:layout_width="0dp"
-        android:layout_height="fill_parent"
-        android:layout_weight="1"
-        android:gravity="right"
-        android:text="@string/default_time"
-        android:textColor="@color/maintext" />
-
-</LinearLayout>
+        android:layout_gravity="bottom"
+        android:src="@drawable/itembg"
+        android:contentDescription="@string/itembg"
+        android:state_pressed="true" />
+		
+	<LinearLayout
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+	    android:padding="10dp" >
+	
+		<TextView
+			android:id="@+id/playera"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:drawableLeft="@drawable/ic_launcher"
+			android:drawablePadding="20dp"
+			android:gravity="center|left"
+			android:text="@string/default_menu_text"
+			android:textColor="@color/maintext" />
+	
+		<TextView
+			android:id="@+id/time"
+			android:layout_width="0dp"
+			android:layout_height="fill_parent"
+			android:layout_weight="1"
+			android:gravity="right"
+			android:text="@string/default_time"
+			android:textColor="@color/maintext" />
+	
+	</LinearLayout>
+	
+</FrameLayout>

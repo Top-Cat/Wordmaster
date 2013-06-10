@@ -14,6 +14,7 @@ import android.widget.ListView;
 public class MenuListFragment extends ListFragment {
 	
 	private Activity act;
+	private MenuAdapter adapter;
 	
 	@Override
 	public void onAttach(Activity activity) {
@@ -21,7 +22,7 @@ public class MenuListFragment extends ListFragment {
 		
 		this.act = activity;
 		
-		MenuAdapter adapter = new MenuAdapter(activity);
+		adapter = new MenuAdapter(activity);
 		// TODO: Delete examples
 		adapter.add(new Game("123", new User("123", "Josh", Uri.EMPTY), new User("124", "Adam", Uri.EMPTY)));
 		adapter.add(new Game("123", new User("123", "Josh", Uri.EMPTY), new User("124", "Adam", Uri.EMPTY)));
@@ -34,7 +35,7 @@ public class MenuListFragment extends ListFragment {
 		super.onListItemClick(l, v, position, id);
 		
 		Intent detailIntent = new Intent(act, PlayActivity.class);
-        detailIntent.putExtra(MenuDetailFragment.ARG_ITEM_ID, id);
+        detailIntent.putExtra(MenuDetailFragment.ARG_ITEM_ID, adapter.getItem((int) id).getID());
         startActivity(detailIntent);
 	}
 	

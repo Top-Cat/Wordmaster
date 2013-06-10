@@ -1,7 +1,12 @@
 package uk.co.thomasc.wordmaster.view.game;
 
-import uk.co.thomasc.wordmaster.R;
+import java.util.Date;
 
+import uk.co.thomasc.wordmaster.R;
+import uk.co.thomasc.wordmaster.objects.Turn;
+import uk.co.thomasc.wordmaster.objects.User;
+
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -9,6 +14,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 
 public class SwipeController extends FragmentPagerAdapter {
 
@@ -39,7 +45,13 @@ public class SwipeController extends FragmentPagerAdapter {
 		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 			View rootView;
 			if (getArguments().getBoolean(ARG_OBJECT)) {
-				rootView = inflater.inflate(R.layout.gamefeed, container, false);
+				rootView = new ListView(getActivity());
+				GameAdapter gm = new GameAdapter(getActivity());
+				
+				gm.add(new Turn(0, new Date(), new User("124", "Adam", Uri.EMPTY), "MEOW", 1, 2));
+				gm.add(new Turn(0, new Date(), new User("123", "Josh", Uri.EMPTY), "MEOW", 1, 2));
+				
+				((ListView) rootView).setAdapter(gm);
 			} else {
 				rootView = inflater.inflate(R.layout.alphabet, container, false);
 			}
