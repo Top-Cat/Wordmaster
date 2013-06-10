@@ -20,6 +20,14 @@ public class ServerAPI {
 	
 	private static final String BASE_URL = "http://thomasc.co.uk/wm/";
 
+	/**
+	 * Calls the getMatches function of the server API. Retrieves
+	 * a list of all the games a player is involved in.
+	 * 
+	 * @param playerID – the Google+ ID of the player to retrieve games for
+	 * @param activityReference – a reference to the BaseGame activity, used to get avatars from Google+
+	 * @return an array of Game objects for each of the games the player is involved in
+	 */
 	public static Game[] getMatches(String playerID, BaseGame activityReference) {
 		JSONObject json = makeRequest("getMatches", playerID, null, null); 
 		boolean success = ((Boolean) json.get("success")).booleanValue();
@@ -131,6 +139,16 @@ public class ServerAPI {
 		return result;
 	}
 	
+	/**
+	 * Calls the createGame function of the server API. Creates a new game
+	 * involving the given players. If no opponent is specified, the player
+	 * is put into the automatch pool.
+	 * 
+	 * @param playerID – the Google+ ID of the user
+	 * @param opponentID – the Google+ ID of the opponent (null for automatch)
+	 * @param activityReference – reference to the BaseGame activity, used to get avatars from Google+
+	 * @return a Game object representing the game which was created
+	 */
 	public static Game createGame(String playerID, String opponentID, BaseGame activityReference) {
 		JSONObject json = makeRequest("createGame", playerID, opponentID, null);
 		boolean success = ((Boolean) json.get("success")).booleanValue();
@@ -145,10 +163,24 @@ public class ServerAPI {
 		}
 	}
 	
-	public static boolean setWord(String playerID, String gameID, String word) {
-		JSONObject json = makeRequest("setWord", playerID, gameID, word); 
+	/**
+	 * Calls the setWord function of the server API. If no word has been set
+	 * for the given player in the given game, their word is updated. Returns
+	 * two booleans representing the response from the server.
+	 * 
+	 * @param playerID – the Google+ ID of the player whose word is being set
+	 * @param gameID – the game ID of the game the player is involved in
+	 * @param word – the word the player wishes to use
+	 * @return 
+	 */
+	public static boolean[] setWord(String playerID, String gameID, String word) {
+		JSONObject json = makeRequest("setWord", playerID, gameID, word);
 		boolean success = ((Boolean) json.get("success")).booleanValue();
-		return success;
+		JSONArray response = (JSONArray) json.get("response");
+		JSONObject gameObject = (JSONObject) response.get(0);
+		boolean validWord = ((Boolean) gameObject.get("validword")).booleanValue();
+		boolean[] result = {success, validWord};
+		return result;
 	}
 	
 	private static JSONObject makeRequest(String iface, String param1, String param2, String param3) {
