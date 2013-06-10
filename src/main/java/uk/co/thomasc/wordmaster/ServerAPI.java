@@ -69,8 +69,9 @@ public class ServerAPI {
 	}
 	
 	public static boolean setWord(String playerID, String gameID, String word) {
-		// do some server stuff
-		return false;
+		JSONObject json = makeRequest("setWord", playerID, gameID, word); 
+		boolean success = ((Boolean) json.get("success")).booleanValue();
+		return success;
 	}
 	
 	private static JSONObject makeRequest(String iface, String param1, String param2, String param3) {
