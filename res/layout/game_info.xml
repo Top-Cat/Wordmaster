@@ -4,11 +4,11 @@
 
     <ImageView
         android:id="@+id/itembg"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
         android:layout_gravity="bottom"
-        android:src="@drawable/itembg"
         android:contentDescription="@string/itembg"
+        android:src="@drawable/itembg"
         android:state_pressed="true" />
 		
 	<LinearLayout
@@ -16,7 +16,7 @@
 	    android:layout_height="fill_parent"
 	    android:padding="10dp" >
 	
-		<TextView
+		<uk.co.thomasc.wordmaster.util.RussoText
 			android:id="@+id/playera"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
@@ -26,7 +26,7 @@
 			android:text="@string/default_menu_text"
 			android:textColor="@color/maintext" />
 	
-		<TextView
+		<uk.co.thomasc.wordmaster.util.RussoText
 			android:id="@+id/time"
 			android:layout_width="0dp"
 			android:layout_height="fill_parent"
