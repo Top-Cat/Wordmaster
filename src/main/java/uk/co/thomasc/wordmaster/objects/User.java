@@ -54,13 +54,11 @@ public class User {
 	public Uri getAvatarURL() {
 		return Uri.parse(avatarUri);
 	}
-	public Drawable getAvatar() {
+	public Drawable getAvatar(BaseGame activityReference) {
 		try {
-			InputStream is = (InputStream) new URL(avatarUri).getContent();
-			Drawable d = Drawable.createFromStream(is, "player avatar");
+			InputStream stream = activityReference.getContentResolver().openInputStream(getAvatarURL());
+			Drawable d = Drawable.createFromStream(stream, "player avatar");
 			return d;
-		} catch (MalformedURLException ex) {
-			return null;
 		} catch (IOException ex) {
 			return null;
 		}
