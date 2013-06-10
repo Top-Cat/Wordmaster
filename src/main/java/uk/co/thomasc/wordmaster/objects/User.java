@@ -38,8 +38,8 @@ public class User {
 		this.plusID = plusID;
 		activityReference.getPlusClient().loadPerson(new OnPersonLoadedListener() {
 			@Override
-			public void onPersonLoaded(ConnectionResult arg0, Person arg1) {
-				System.out.println(arg1.getImage().getUrl());
+			public void onPersonLoaded(ConnectionResult result, Person person) {
+				// TODO download the avatar and grab its uri
 			}
 		}, plusID);
 	}
