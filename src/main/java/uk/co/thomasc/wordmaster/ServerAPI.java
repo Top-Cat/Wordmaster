@@ -49,9 +49,24 @@ public class ServerAPI {
 		return null;
 	}
 	
-	public static boolean takeTurn(String playerID, String gameID, String word) {
-		// do some server stuff
-		return false;
+	/**
+	 * Calls the takeTurn function on the server API. Makes a guess for the player
+	 * and updates the state of the game on the server. Returns two booleans to
+	 * represent the outcome of the call.
+	 * 
+	 * @param playerID – the Google+ ID of the player taking the turn
+	 * @param gameID – the game ID of the game the turn is from
+	 * @param word – the guess the player has made
+	 * @return a 2-item array of booleans containing the server response: [success, validword]
+	 */
+	public static boolean[] takeTurn(String playerID, String gameID, String word) {
+		JSONObject json = makeRequest("takeTurn", playerID, gameID, word);
+		boolean success = ((Boolean) json.get("success")).booleanValue();
+		JSONArray response = (JSONArray) json.get("response");
+		JSONObject gameObject = (JSONObject) response.get(0);
+		boolean validWord = ((Boolean) gameObject.get("validword")).booleanValue();
+		boolean[] result = {success, validWord};
+		return result;
 	}
 	
 	public static Game createGame(String playerID, String opponentID, BaseGame activityReference) {
