@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.Date;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -12,6 +13,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import uk.co.thomasc.wordmaster.objects.Game;
+import uk.co.thomasc.wordmaster.objects.Turn;
 import uk.co.thomasc.wordmaster.objects.User;
 
 public class ServerAPI {
@@ -44,9 +46,69 @@ public class ServerAPI {
 		}
 	}
 	
-	public static Object[] getTurns(String gameID, int turnID, int number) {
-		// do some server stuff
-		return null;
+	/**
+	 * Calls the getTurns function on the server API. Returns an array
+	 * containing all the turns taken in the game.
+	 * 
+	 * @param gameID – the game ID of the game to retrieve turns from
+	 * @param activityReference – a reference to the BaseGame activity, used to get avatars from Google+
+	 * @return an array containing Turn objects for all turns taken in the game
+	 */
+	public static Turn[] getTurns(String gameID, BaseGame activityReference) {
+		JSONObject json = makeRequest("getTurns", gameID, null, null);
+		boolean success = ((Boolean) json.get("success")).booleanValue();
+		if (success) {
+			JSONArray response = (JSONArray) json.get("response");
+			Turn[] turns = new Turn[response.size()];
+			for (int i = 0; i < response.size(); i ++) {
+				JSONObject turnObject = (JSONObject) response.get(i);
+				String id = turnObject.get("turnid").toString();
+				String playerID = turnObject.get("playerid").toString();
+				String guess = turnObject.get("guess").toString();
+				long when = ((Long) turnObject.get("when")).longValue();
+				int correct = ((Integer) turnObject.get("correct")).intValue();
+				int displaced = ((Integer) turnObject.get("displaced")).intValue();
+				Turn turn = new Turn(id, new Date(when), new User(playerID, activityReference), guess, correct, displaced);
+				turns[i] = turn;
+			}
+			return turns;
+		} else {
+			return null;
+		}
+	}
+	
+	/**
+	 * Calls the getTurns function on the server API. Starting from a 'pivot'
+	 * turn, retrieves a given number of turns from before or after this point.
+	 * Returns an array containing the turns.
+	 * 
+	 * @param gameID – the game ID of the game to retrieve turns from
+	 * @param turnID – the turn ID of the 'pivot' turn
+	 * @param number – the number of turns to retrieve (negative for less recent, positive for more recent) 
+	 * @param activityReference – a reference to the BaseGame activity, used to get avatars from Google+
+	 * @return an array containing Turn objects for turns retrieved
+	 */
+	public static Turn[] getTurns(String gameID, String turnID, int number, BaseGame activityReference) {
+		JSONObject json = makeRequest("getTurns", gameID, turnID, Integer.toString(number));
+		boolean success = ((Boolean) json.get("success")).booleanValue();
+		if (success) {
+			JSONArray response = (JSONArray) json.get("response");
+			Turn[] turns = new Turn[response.size()];
+			for (int i = 0; i < response.size(); i ++) {
+				JSONObject turnObject = (JSONObject) response.get(i);
+				String id = turnObject.get("turnid").toString();
+				String playerID = turnObject.get("playerid").toString();
+				String guess = turnObject.get("guess").toString();
+				long when = ((Long) turnObject.get("when")).longValue();
+				int correct = ((Integer) turnObject.get("correct")).intValue();
+				int displaced = ((Integer) turnObject.get("displaced")).intValue();
+				Turn turn = new Turn(id, new Date(when), new User(playerID, activityReference), guess, correct, displaced);
+				turns[i] = turn;
+			}
+			return turns;
+		} else {
+			return null;
+		}
 	}
 	
 	/**
