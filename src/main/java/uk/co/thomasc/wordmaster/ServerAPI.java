@@ -132,9 +132,8 @@ public class ServerAPI {
 	public static boolean[] takeTurn(String playerID, String gameID, String word) {
 		JSONObject json = makeRequest("takeTurn", playerID, gameID, word);
 		boolean success = ((Boolean) json.get("success")).booleanValue();
-		JSONArray response = (JSONArray) json.get("response");
-		JSONObject gameObject = (JSONObject) response.get(0);
-		boolean validWord = ((Boolean) gameObject.get("validword")).booleanValue();
+		JSONObject response = (JSONObject) json.get("response");
+		boolean validWord = ((Boolean) response.get("validword")).booleanValue();
 		boolean[] result = {success, validWord};
 		return result;
 	}
@@ -176,9 +175,8 @@ public class ServerAPI {
 	public static boolean[] setWord(String playerID, String gameID, String word) {
 		JSONObject json = makeRequest("setWord", playerID, gameID, word);
 		boolean success = ((Boolean) json.get("success")).booleanValue();
-		JSONArray response = (JSONArray) json.get("response");
-		JSONObject gameObject = (JSONObject) response.get(0);
-		boolean validWord = ((Boolean) gameObject.get("validword")).booleanValue();
+		JSONObject response = (JSONObject) json.get("response");
+		boolean validWord = ((Boolean) response.get("validword")).booleanValue();
 		boolean[] result = {success, validWord};
 		return result;
 	}
