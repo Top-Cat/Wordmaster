@@ -5,6 +5,7 @@ import android.graphics.Typeface;
 import com.google.android.gms.common.SignInButton;
 
 import uk.co.thomasc.wordmaster.util.BaseGameActivity;
+import uk.co.thomasc.wordmaster.view.menu.MenuAdapter;
 
 import android.os.Bundle;
 import android.view.View;
@@ -21,6 +22,7 @@ import android.widget.LinearLayout;
 public class BaseGame extends BaseGameActivity implements OnClickListener {
 	
 	public static Typeface russo;
+	public MenuAdapter adapter = new MenuAdapter(this);
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
