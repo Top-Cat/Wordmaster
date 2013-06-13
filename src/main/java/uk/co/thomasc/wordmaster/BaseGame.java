@@ -56,7 +56,7 @@ public class BaseGame extends BaseGameActivity implements OnClickListener, GetMa
 	public void onClick(View v) {
 		if (v.getId() == R.id.button_sign_in) {
 			beginUserInitiatedSignIn();
-		} else if (v.getId() == R.id.refresh) {
+		} else if (v.getId() == R.id.refresh && findViewById(R.id.refresh).getVisibility() == View.VISIBLE) {
 			findViewById(R.id.refresh).setVisibility(View.GONE);
 			findViewById(R.id.refresh_progress).setVisibility(View.VISIBLE);
 			loadGames();
@@ -78,8 +78,6 @@ public class BaseGame extends BaseGameActivity implements OnClickListener, GetMa
 		findViewById(R.id.refresh).setOnClickListener(this);
 		
 		loadGames();
-		
-		//signOut();
 	}
 	
 	private void loadGames() {
@@ -100,13 +98,24 @@ public class BaseGame extends BaseGameActivity implements OnClickListener, GetMa
 					BaseGame.games.put(game.getID(), game);
 					adapter.add(game);
 				}
+				refreshOver();
 			}
 		});
 	}
 
 	@Override
 	public void onRequestFailed() {
-		// TODO Tell the user their parents have been murdered		
+		runOnUiThread(new Runnable() {
+			public void run() {
+				// TODO Tell the user their parents have been murdered
+				refreshOver();
+			}
+		});
+	}
+	
+	private void refreshOver() {
+		findViewById(R.id.refresh).setVisibility(View.VISIBLE);
+		findViewById(R.id.refresh_progress).setVisibility(View.GONE);
 	}
 	
 }
