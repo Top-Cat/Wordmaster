@@ -46,7 +46,7 @@ public class MenuAdapter extends ArrayAdapter<Game> {
 			view = vi.inflate(R.layout.game_info, null);
 			
 			Game item = getItem(position);
-			String opponentName = "Adam"; //TODO: Get these
+			String opponentName = item.getOpponent().getName(); //TODO: Get these
 			String mostRecentMove = "2m";
 			((TextView) view.findViewById(R.id.playera)).setText("vs " + opponentName);
 			((TextView) view.findViewById(R.id.time)).setText(mostRecentMove);

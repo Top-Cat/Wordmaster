@@ -56,6 +56,14 @@ public class Game {
 		return this.playersTurn;
 	}
 	
+	public User getPlayer() {
+		return player;
+	}
+	
+	public User getOpponent() {
+		return opponent;
+	}
+	
 	/* Setters */
 	public void setPlayerWord(String word) {
 		this.playerWord = word;
