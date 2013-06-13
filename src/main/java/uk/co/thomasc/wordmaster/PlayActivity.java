@@ -1,43 +1,30 @@
 package uk.co.thomasc.wordmaster;
 
 import uk.co.thomasc.wordmaster.util.BaseGameActivity;
-import uk.co.thomasc.wordmaster.util.CapsLockLimiter;
-import uk.co.thomasc.wordmaster.view.game.GameLayout;
-import uk.co.thomasc.wordmaster.view.game.SwipeController;
-import uk.co.thomasc.wordmaster.view.game.SwipeListener;
 import uk.co.thomasc.wordmaster.view.menu.MenuDetailFragment;
 
 import android.os.Bundle;
-import android.support.v4.view.ViewPager;
-import android.widget.EditText;
-import android.widget.ImageView;
 
 public class PlayActivity extends BaseGameActivity {
 	
-	private EditText input;
+	public String gid;
 	
 	@Override
 	protected void onCreate(Bundle arg0) {
 		super.onCreate(arg0);
 				
-		setContentView(R.layout.game_screen);
+		setContentView(R.layout.empty_screen);
 		
 		overridePendingTransition(R.anim.slide_right, R.anim.slide_left);
 		
 		if (arg0 == null) {
 			Bundle args = new Bundle();
-			args.putString(MenuDetailFragment.ARG_ITEM_ID, getIntent().getStringExtra(MenuDetailFragment.ARG_ITEM_ID));
+			gid = getIntent().getStringExtra(MenuDetailFragment.ARG_ITEM_ID);
+			args.putString(MenuDetailFragment.ARG_ITEM_ID, gid);
+			MenuDetailFragment fragment = new MenuDetailFragment();
+			fragment.setArguments(args);
+			getSupportFragmentManager().beginTransaction().add(R.id.empty, fragment).commit();
 		}
-		
-		input = (EditText) findViewById(R.id.editText1);
-		input.addTextChangedListener(new CapsLockLimiter(input));
-		
-		((GameLayout) findViewById(R.id.screen_game)).setActivity(this);
-		
-		SwipeController swipe = new SwipeController(getSupportFragmentManager());
-		ViewPager mPager = ((ViewPager) findViewById(R.id.pager));
-		mPager.setAdapter(swipe);
-		mPager.setOnPageChangeListener(new SwipeListener((ImageView) findViewById(R.id.indicator)));
 	}
 	
 	@Override

@@ -2,12 +2,14 @@ package uk.co.thomasc.wordmaster.view.game;
 
 import java.util.Date;
 
+import uk.co.thomasc.wordmaster.PlayActivity;
 import uk.co.thomasc.wordmaster.R;
 import uk.co.thomasc.wordmaster.objects.Turn;
 import uk.co.thomasc.wordmaster.objects.User;
 import uk.co.thomasc.wordmaster.util.RussoText;
 
-import android.graphics.drawable.Drawable;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -19,10 +21,9 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TextView;
 
 public class SwipeController extends FragmentPagerAdapter {
-
+	
 	public SwipeController(FragmentManager fm) {
 		super(fm);
 	}
@@ -45,7 +46,9 @@ public class SwipeController extends FragmentPagerAdapter {
 
 	public static class Pages extends Fragment {
 		public static final String ARG_OBJECT = "object";
+		private static final String SP_PREF = "WM_ALPHA_";
 		private ToggleListener listener = new ToggleListener();
+		private SharedPreferences alphaPref;
 
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -59,12 +62,18 @@ public class SwipeController extends FragmentPagerAdapter {
 				
 				((ListView) rootView).setAdapter(gm);
 			} else {
+				alphaPref = getActivity().getSharedPreferences(SP_PREF + ((PlayActivity) getActivity()).gid, 0);
+				
 				rootView = inflater.inflate(R.layout.alphabet, container, false);
 				LinearLayout root = (LinearLayout) rootView;
 				for (int i = 0; i < root.getChildCount(); i++) {
 					LinearLayout child = (LinearLayout) root.getChildAt(i);
 					for (int j = 0; j < child.getChildCount(); j++) {
-						child.getChildAt(j).setOnClickListener(listener);
+						RussoText txt = (RussoText) child.getChildAt(j);
+						txt.setOnClickListener(listener);
+						boolean strike = alphaPref.getBoolean(txt.getText().toString(), false);
+						txt.setTextColor(getResources().getColor(strike ? R.color.hiddenletter : R.color.maintext));
+						txt.setStrike(strike);
 					}
 				}
 			}
@@ -78,6 +87,9 @@ public class SwipeController extends FragmentPagerAdapter {
 				RussoText txt = (RussoText) v;
 				txt.setTextColor(getResources().getColor(txt.isStrike() ? R.color.maintext : R.color.hiddenletter));
 				txt.setStrike(!txt.isStrike());
+				Editor edit = alphaPref.edit();
+				edit.putBoolean(txt.getText().toString(), txt.isStrike());
+				edit.commit();
 			}
 			
 		}
