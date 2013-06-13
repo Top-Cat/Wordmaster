@@ -4,6 +4,8 @@ import java.util.Comparator;
 
 import uk.co.thomasc.wordmaster.R;
 import uk.co.thomasc.wordmaster.objects.Game;
+import uk.co.thomasc.wordmaster.objects.User;
+import uk.co.thomasc.wordmaster.objects.UserLoadedListener;
 
 import android.app.Activity;
 import android.content.Context;
@@ -39,20 +41,34 @@ public class MenuAdapter extends ArrayAdapter<Game> {
 	
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		View view = convertView;
+		View rview = convertView;
 		
-		if (view == null) {
+		if (rview == null) {
 			LayoutInflater vi = (LayoutInflater) act.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			view = vi.inflate(R.layout.game_info, null);
+			final View view = vi.inflate(R.layout.game_info, null);
+			rview = view;
 			
-			Game item = getItem(position);
-			String opponentName = item.getOpponent().getName(); //TODO: Get these
+			final Game item = getItem(position);
+			
+			((TextView) view.findViewById(R.id.playera)).setText("Loading...");
+			item.getOpponent().getNameBlocking(new UserLoadedListener() {
+				@Override
+				public void onUserLoaded(final User user) {
+					act.runOnUiThread(new Runnable() {
+						
+						@Override
+						public void run() {
+							((TextView) view.findViewById(R.id.playera)).setText("vs " + user.getName());
+						}
+					});
+				}
+			});
+			
 			String mostRecentMove = "2m";
-			((TextView) view.findViewById(R.id.playera)).setText("vs " + opponentName);
 			((TextView) view.findViewById(R.id.time)).setText(mostRecentMove);
 		}
 		
-		return view;
+		return rview;
 	}
 	
 }

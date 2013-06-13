@@ -2,6 +2,8 @@ package uk.co.thomasc.wordmaster.objects;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import uk.co.thomasc.wordmaster.BaseGame;
 import uk.co.thomasc.wordmaster.util.BaseGameActivity;
@@ -19,6 +21,7 @@ public class User {
 	private String plusID; 
 	private String name;
 	private String avatarUri;
+	private List<UserLoadedListener> listeners = new ArrayList<UserLoadedListener>();
 	
 	public User(String plusID, String name, Uri avatarUri) {
 		this.plusID = plusID;
@@ -34,20 +37,30 @@ public class User {
 	
 	public User(String plusID, BaseGameActivity activityReference) {
 		this.plusID = plusID;
-	/*	activityReference.getPlusClient().loadPerson(new OnPersonLoadedListener() {
+		activityReference.getPlusClient().loadPerson(new OnPersonLoadedListener() {
 			@Override
 			public void onPersonLoaded(ConnectionResult result, Person person) {
-				// TODO download the avatar and grab its uri
+				name = person.getDisplayName();
+				avatarUri = Uri.parse(person.getImage().getUrl()).toString(); //TODO: I don't think parsing then toString actually does anything :P
+				System.out.println(avatarUri);
+				for (UserLoadedListener listener : listeners) {
+					listener.onUserLoaded(User.this);
+				}
+				listeners.clear();
 			}
-		}, plusID); */
+		}, plusID);
 	}
 	
 	/* Getters */
 	public String getPlusID() {
 		return plusID;
 	}
-	public String getName() {
-		return name;
+	public void getNameBlocking(UserLoadedListener listener) {
+		if (name != null) {
+			listener.onUserLoaded(this);
+		} else {
+			listeners.add(listener);
+		}
 	}
 	public Uri getAvatarURL() {
 		return Uri.parse(avatarUri);
@@ -60,6 +73,10 @@ public class User {
 		} catch (IOException ex) {
 			return null;
 		}
+	}
+
+	public String getName() {
+		return name;
 	}
 	
 }
