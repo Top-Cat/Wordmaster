@@ -1,5 +1,6 @@
 package uk.co.thomasc.wordmaster;
 
+import uk.co.thomasc.wordmaster.util.BaseGameActivity;
 import uk.co.thomasc.wordmaster.util.CapsLockLimiter;
 import uk.co.thomasc.wordmaster.view.game.GameLayout;
 import uk.co.thomasc.wordmaster.view.game.SwipeController;
@@ -7,12 +8,11 @@ import uk.co.thomasc.wordmaster.view.game.SwipeListener;
 import uk.co.thomasc.wordmaster.view.menu.MenuDetailFragment;
 
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.widget.EditText;
 import android.widget.ImageView;
 
-public class PlayActivity extends FragmentActivity {
+public class PlayActivity extends BaseGameActivity {
 	
 	private EditText input;
 	
@@ -44,6 +44,16 @@ public class PlayActivity extends FragmentActivity {
 	public void onBackPressed() {
 		finish();
 		overridePendingTransition(R.anim.slide_left_2, R.anim.slide_right_2);
+	}
+
+	@Override
+	public void onSignInFailed() {
+		
+	}
+
+	@Override
+	public void onSignInSucceeded() {
+		
 	}
 	
 }

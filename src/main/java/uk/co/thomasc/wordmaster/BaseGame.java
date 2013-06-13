@@ -66,9 +66,4 @@ public class BaseGame extends BaseGameActivity implements OnClickListener {
 		//signOut();
 	}
 	
-	public String getUserId() {
-		//return getGamesClient().getCurrentPlayer().getPlayerId();
-		return "1";
-	}
-	
 }

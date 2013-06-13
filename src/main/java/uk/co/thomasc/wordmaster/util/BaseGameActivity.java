@@ -171,4 +171,10 @@ public abstract class BaseGameActivity extends FragmentActivity implements GameH
 		mHelper.setSigningInMessage(signingInMessage);
 		mHelper.setSigningOutMessage(signingOutMessage);
 	}
+	
+	public String getUserId() {
+		//return getGamesClient().getCurrentPlayer().getPlayerId();
+		return "1";
+	}
+	
 }
