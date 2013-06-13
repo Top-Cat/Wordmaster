@@ -15,10 +15,12 @@
 	</style>
 	
 	<style name="RevealedLetter">
-	    <item name="android:textColor">@color/maintext</item>
-	    <item name="android:textSize">32dp</item>
-	    <item name="android:layout_height">wrap_content</item>
-	    <item name="android:layout_width">wrap_content</item>
+		<item name="android:textColor">@color/maintext</item>
+		<item name="android:textSize">32sp</item>
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:layout_width">wrap_content</item>
+		<item name="android:paddingLeft">4dp</item>
+		<item name="android:paddingRight">4dp</item>
 	</style>
 
 </resources>

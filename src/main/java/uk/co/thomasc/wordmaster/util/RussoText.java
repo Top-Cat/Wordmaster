@@ -1,12 +1,18 @@
 package uk.co.thomasc.wordmaster.util;
 
 import uk.co.thomasc.wordmaster.BaseGame;
+import uk.co.thomasc.wordmaster.R;
 
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
 public class RussoText extends TextView {
+	
+	private boolean strike;
+	private Paint paint = new Paint();
 	
 	public RussoText(Context context) {
 		super(context);
@@ -21,6 +27,26 @@ public class RussoText extends TextView {
 	public RussoText(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		this.setTypeface(BaseGame.russo);
+	}
+	
+	public void setStrike(boolean strike) {
+		paint.setStyle(Paint.Style.STROKE);
+		paint.setStrokeWidth(5);
+		paint.setColor(getResources().getColor(R.color.strike));
+		this.strike = strike;
+		invalidate();
+	}
+	
+	public boolean isStrike() {
+		return strike;
+	}
+	
+	@Override
+	protected void onDraw(Canvas canvas) {
+		super.onDraw(canvas);
+		if (strike) {
+			canvas.drawLine(0, getHeight() - 10, getWidth(), 10, paint);
+		}
 	}
 	
 }

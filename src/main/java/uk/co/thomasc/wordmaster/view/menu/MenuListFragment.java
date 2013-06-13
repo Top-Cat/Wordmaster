@@ -18,8 +18,10 @@ public class MenuListFragment extends ListFragment {
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
 		
-		MenuAdapter adapter = new MenuAdapter(activity);
-		((BaseGame) activity).adapter = adapter;
+		this.act = (BaseGame) activity;
+		
+		adapter = new MenuAdapter(activity);
+		act.adapter = adapter;
 		setListAdapter(adapter);
 	}
 	

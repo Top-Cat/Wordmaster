@@ -1,14 +1,15 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:background="@color/mainbg"
-    android:orientation="vertical"
-    android:paddingTop="10dp" >
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:background="@color/mainbg"
+	android:orientation="vertical"
+	android:paddingTop="10dp" >
 
 	<LinearLayout
-	    android:layout_width="match_parent"
-	    android:layout_height="wrap_content"
-	    android:gravity="center" >
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:gravity="center"
+		android:paddingTop="20dp" >
 
 		<uk.co.thomasc.wordmaster.util.RussoText
 			android:id="@+id/alphaQ"
@@ -63,9 +64,10 @@
 	</LinearLayout>
 	
 	<LinearLayout
-	    android:layout_width="match_parent"
-	    android:layout_height="wrap_content"
-	    android:gravity="center" >
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:gravity="center"
+		android:paddingTop="20dp" >
 
 		<uk.co.thomasc.wordmaster.util.RussoText
 			android:id="@+id/alphaA"
@@ -115,9 +117,10 @@
 	</LinearLayout>
 	
 	<LinearLayout
-	    android:layout_width="match_parent"
-	    android:layout_height="wrap_content"
-	    android:gravity="center" >
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:gravity="center"
+		android:paddingTop="20dp" >
 
 		<uk.co.thomasc.wordmaster.util.RussoText
 			android:id="@+id/alphaZ"
