@@ -45,28 +45,28 @@ public class MenuAdapter extends ArrayAdapter<Game> {
 		
 		if (rview == null) {
 			LayoutInflater vi = (LayoutInflater) act.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			final View view = vi.inflate(R.layout.game_info, null);
-			rview = view;
-			
-			final Game item = getItem(position);
-			
-			((TextView) view.findViewById(R.id.playera)).setText("Loading...");
-			item.getOpponent().getNameBlocking(new UserLoadedListener() {
-				@Override
-				public void onUserLoaded(final User user) {
-					act.runOnUiThread(new Runnable() {
-						
-						@Override
-						public void run() {
-							((TextView) view.findViewById(R.id.playera)).setText("vs " + user.getName());
-						}
-					});
-				}
-			});
-			
-			String mostRecentMove = "2m";
-			((TextView) view.findViewById(R.id.time)).setText(mostRecentMove);
+			rview = vi.inflate(R.layout.game_info, null);
 		}
+		
+		final View view = rview;
+		final Game item = getItem(position);
+		
+		((TextView) rview.findViewById(R.id.playera)).setText("Loading...");
+		item.getOpponent().getNameBlocking(new UserLoadedListener() {
+			@Override
+			public void onUserLoaded(final User user) {
+				act.runOnUiThread(new Runnable() {
+					
+					@Override
+					public void run() {
+						((TextView) view.findViewById(R.id.playera)).setText("vs " + user.getName());
+					}
+				});
+			}
+		});
+		
+		String mostRecentMove = "2m";
+		((TextView) view.findViewById(R.id.time)).setText(mostRecentMove);
 		
 		return rview;
 	}
