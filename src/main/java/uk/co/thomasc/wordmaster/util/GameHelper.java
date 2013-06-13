@@ -305,7 +305,7 @@ public class GameHelper implements GooglePlayServicesClient.ConnectionCallbacks,
         } else {
             // Attempt to connect the clients.
             debugLog("onStart: connecting clients.");
-            //startConnections(); TODO: Uncomment me
+            startConnections();
         }
     }
 
