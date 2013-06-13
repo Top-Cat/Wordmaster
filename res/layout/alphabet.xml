@@ -1,11 +1,159 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical" >
+    android:background="@color/mainbg"
+    android:orientation="vertical"
+    android:paddingTop="10dp" >
 
-    <RatingBar
-        android:id="@+id/ratingBar1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+	<LinearLayout
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:gravity="center" >
+
+		<uk.co.thomasc.wordmaster.util.RussoText
+			android:id="@+id/alphaQ"
+			style="@style/RevealedLetter"
+			android:text="@string/Q" />
+		
+		<uk.co.thomasc.wordmaster.util.RussoText
+			android:id="@+id/alphaW"
+			style="@style/RevealedLetter"
+			android:text="@string/W" />
+		
+		<uk.co.thomasc.wordmaster.util.RussoText
+			android:id="@+id/alphaE"
+			style="@style/RevealedLetter"
+			android:text="@string/E" />
+		
+		<uk.co.thomasc.wordmaster.util.RussoText
+			android:id="@+id/alphaR"
+			style="@style/RevealedLetter"
+			android:text="@string/R" />
+		
+		<uk.co.thomasc.wordmaster.util.RussoText
+			android:id="@+id/alphaT"
+			style="@style/RevealedLetter"
+			android:text="@string/T" />
+		
+		<uk.co.thomasc.wordmaster.util.RussoText
+			android:id="@+id/alphaY"
+			style="@style/RevealedLetter"
+			android:text="@string/Y" />
+		
+		<uk.co.thomasc.wordmaster.util.RussoText
+			android:id="@+id/alphaU"
+			style="@style/RevealedLetter"
+			android:text="@string/U" />
+		
+		<uk.co.thomasc.wordmaster.util.RussoText
+			android:id="@+id/alphaI"
+			style="@style/RevealedLetter"
+			android:text="@string/I" />
+		
+		<uk.co.thomasc.wordmaster.util.RussoText
+			android:id="@+id/alphaO"
+			style="@style/RevealedLetter"
+			android:text="@string/O" />
+
+		<uk.co.thomasc.wordmaster.util.RussoText
+			android:id="@+id/alphaP"
+			style="@style/RevealedLetter"
+			android:text="@string/P" />
+		
+	</LinearLayout>
+	
+	<LinearLayout
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:gravity="center" >
+
+		<uk.co.thomasc.wordmaster.util.RussoText
+			android:id="@+id/alphaA"
+			style="@style/RevealedLetter"
+			android:text="@string/A" />
+		
+		<uk.co.thomasc.wordmaster.util.RussoText
+			android:id="@+id/alphaS"
+			style="@style/RevealedLetter"
+			android:text="@string/S" />
+		
+		<uk.co.thomasc.wordmaster.util.RussoText
+			android:id="@+id/alphaD"
+			style="@style/RevealedLetter"
+			android:text="@string/D" />
+		
+		<uk.co.thomasc.wordmaster.util.RussoText
+			android:id="@+id/alphaF"
+			style="@style/RevealedLetter"
+			android:text="@string/F" />
+		
+		<uk.co.thomasc.wordmaster.util.RussoText
+			android:id="@+id/alphaG"
+			style="@style/RevealedLetter"
+			android:text="@string/G" />
+		
+		<uk.co.thomasc.wordmaster.util.RussoText
+			android:id="@+id/alphaH"
+			style="@style/RevealedLetter"
+			android:text="@string/H" />
+		
+		<uk.co.thomasc.wordmaster.util.RussoText
+			android:id="@+id/alphaJ"
+			style="@style/RevealedLetter"
+			android:text="@string/J" />
+		
+		<uk.co.thomasc.wordmaster.util.RussoText
+			android:id="@+id/alphaK"
+			style="@style/RevealedLetter"
+			android:text="@string/K" />
+		
+		<uk.co.thomasc.wordmaster.util.RussoText
+			android:id="@+id/alphaL"
+			style="@style/RevealedLetter"
+			android:text="@string/L" />
+		
+	</LinearLayout>
+	
+	<LinearLayout
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:gravity="center" >
+
+		<uk.co.thomasc.wordmaster.util.RussoText
+			android:id="@+id/alphaZ"
+			style="@style/RevealedLetter"
+			android:text="@string/Z" />
+		
+		<uk.co.thomasc.wordmaster.util.RussoText
+			android:id="@+id/alphaX"
+			style="@style/RevealedLetter"
+			android:text="@string/X" />
+		
+		<uk.co.thomasc.wordmaster.util.RussoText
+			android:id="@+id/alphaC"
+			style="@style/RevealedLetter"
+			android:text="@string/C" />
+		
+		<uk.co.thomasc.wordmaster.util.RussoText
+			android:id="@+id/alphaV"
+			style="@style/RevealedLetter"
+			android:text="@string/V" />
+		
+		<uk.co.thomasc.wordmaster.util.RussoText
+			android:id="@+id/alphaB"
+			style="@style/RevealedLetter"
+			android:text="@string/B" />
+		
+		<uk.co.thomasc.wordmaster.util.RussoText
+			android:id="@+id/alphaN"
+			style="@style/RevealedLetter"
+			android:text="@string/N" />
+		
+		<uk.co.thomasc.wordmaster.util.RussoText
+			android:id="@+id/alphaM"
+			style="@style/RevealedLetter"
+			android:text="@string/M" />
+		
+	</LinearLayout>
 
 </LinearLayout>

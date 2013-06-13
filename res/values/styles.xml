@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
 
 	<!-- Application theme. -->
 	<style name="FullscreenTheme" parent="android:Theme.NoTitleBar">
@@ -12,6 +12,13 @@
 		<item name="android:layout_marginTop">140dp</item>
 		<item name="android:layout_marginBottom">20dp</item>
 		<item name="android:layout_gravity">center</item>
+	</style>
+	
+	<style name="RevealedLetter">
+	    <item name="android:textColor">@color/maintext</item>
+	    <item name="android:textSize">32dp</item>
+	    <item name="android:layout_height">wrap_content</item>
+	    <item name="android:layout_width">wrap_content</item>
 	</style>
 
 </resources>
