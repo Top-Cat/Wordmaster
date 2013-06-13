@@ -27,13 +27,12 @@ public class ServerAPI {
 	 * 
 	 * @param playerID – the Google+ ID of the player to retrieve games for
 	 * @param activityReference – a reference to the BaseGame activity, used to get avatars from Google+
-	 * @return an array of Game objects for each of the games the player is involved in
+	 * @param listener – a GetMatchesRequestListener to be notified when the request finishes 
 	 */
 	public static void getMatches(final String playerID, final BaseGame activityReference, final GetMatchesRequestListener listener) {
 		Thread t = new Thread() {
 			@Override
 			public void run() {
-				super.run();
 				JSONObject json = makeRequest("getMatches", playerID); 
 				boolean success = ((Boolean) json.get("success")).booleanValue();
 				if (success) {
@@ -68,11 +67,21 @@ public class ServerAPI {
 	 * 
 	 * @param gameID – the game ID of the game to retrieve turns from
 	 * @param activityReference – a reference to the BaseGame activity, used to get avatars from Google+
-	 * @return an array containing Turn objects for all turns taken in the game
+	 * @param listener – a GetTurnsRequestListener to be notified when the request finishes 
 	 */
-	public static Turn[] getTurns(String gameID, BaseGame activityReference) {
-		JSONObject json = makeRequest("getTurns", gameID);
-		return getTurns(json, activityReference);
+	public static void getTurns(final String gameID, final BaseGame activityReference, final GetTurnsRequestListener listener) {
+		Thread t = new Thread() {
+			public void run() {
+				JSONObject json = makeRequest("getTurns", gameID);
+				Turn[] turns = getTurns(json, activityReference);
+				if (turns != null) {
+					listener.onRequestComplete(turns);
+				} else {
+					listener.onRequestFailed();
+				}
+			}
+		};
+		t.start();
 	}
 	
 	/**
@@ -84,11 +93,21 @@ public class ServerAPI {
 	 * @param turnID – the turn ID of the 'pivot' turn
 	 * @param number – the number of turns to retrieve (negative for less recent, positive for more recent) 
 	 * @param activityReference – a reference to the BaseGame activity, used to get avatars from Google+
-	 * @return an array containing Turn objects for turns retrieved
+	 * @param listener – a GetTurnsRequestListener to be notified when the request finishes 
 	 */
-	public static Turn[] getTurns(String gameID, int turnID, int number, BaseGame activityReference) {
-		JSONObject json = makeRequest("getTurns", gameID, String.valueOf(turnID), Integer.toString(number));
-		return getTurns(json, activityReference);
+	public static void getTurns(final String gameID, final int turnID, final int number, final BaseGame activityReference, final GetTurnsRequestListener listener) {
+		Thread t = new Thread() {
+			public void run() {
+				JSONObject json = makeRequest("getTurns", gameID, String.valueOf(turnID), Integer.toString(number));
+				Turn[] turns = getTurns(json, activityReference);
+				if (turns != null) {
+					listener.onRequestComplete(turns);
+				} else {
+					listener.onRequestFailed();
+				}
+			}
+		};
+		t.start();
 	}
 	
 	private static Turn[] getTurns(JSONObject json, BaseGame activityReference) {
@@ -121,15 +140,20 @@ public class ServerAPI {
 	 * @param playerID – the Google+ ID of the player taking the turn
 	 * @param gameID – the game ID of the game the turn is from
 	 * @param word – the guess the player has made
-	 * @return a 2-item array of booleans containing the server response: [success, validword]
+	 * @param listener – a TakeTurnRequestListener to be notified when the request finishes 
 	 */
-	public static boolean[] takeTurn(String playerID, String gameID, String word) {
-		JSONObject json = makeRequest("takeTurn", playerID, gameID, word);
-		boolean success = ((Boolean) json.get("success")).booleanValue();
-		JSONObject response = (JSONObject) json.get("response");
-		boolean validWord = (Boolean) response.get("validword");
-		boolean[] result = {success, validWord};
-		return result;
+	public static void takeTurn(final String playerID, final String gameID, final String word, final TakeTurnRequestListener listener) {
+		Thread t = new Thread() {
+			public void run() {
+				JSONObject json = makeRequest("takeTurn", playerID, gameID, word);
+				boolean success = ((Boolean) json.get("success")).booleanValue();
+				JSONObject response = (JSONObject) json.get("response");
+				boolean validWord = (Boolean) response.get("validword");
+				boolean[] result = {success, validWord};
+				listener.onRequestComplete(result);
+			}
+		};
+		t.start();
 	}
 	
 	/**
@@ -140,20 +164,25 @@ public class ServerAPI {
 	 * @param playerID – the Google+ ID of the user
 	 * @param opponentID – the Google+ ID of the opponent (null for automatch)
 	 * @param activityReference – reference to the BaseGame activity, used to get avatars from Google+
-	 * @return a Game object representing the game which was created
+	 * @param listener – a CreateGameRequestListener to be notified when the request finishes 
 	 */
-	public static Game createGame(String playerID, String opponentID, BaseGame activityReference) {
-		JSONObject json = makeRequest("createGame", playerID, opponentID);
-		boolean success = ((Boolean) json.get("success")).booleanValue();
-		if (success) {
-			JSONArray response = (JSONArray) json.get("response");
-			JSONObject gameObject = (JSONObject) response.get(0);
-			String gameID = (String) gameObject.get("gameid");
-			Game game = new Game(gameID, new User(playerID, activityReference), new User(opponentID, activityReference));
-			return game;
-		} else {
-			return null;
-		}
+	public static void createGame(final String playerID, final String opponentID, final BaseGame activityReference, final CreateGameRequestListener listener) {
+		Thread t = new Thread() {
+			public void run() {
+				JSONObject json = makeRequest("createGame", playerID, opponentID);
+				boolean success = ((Boolean) json.get("success")).booleanValue();
+				if (success) {
+					JSONArray response = (JSONArray) json.get("response");
+					JSONObject gameObject = (JSONObject) response.get(0);
+					String gameID = (String) gameObject.get("gameid");
+					Game game = new Game(gameID, new User(playerID, activityReference), new User(opponentID, activityReference));
+					listener.onRequestComplete(game);
+				} else {
+					listener.onRequestFailed();
+				}
+			}
+		};
+		t.start();
 	}
 	
 	/**
@@ -164,15 +193,20 @@ public class ServerAPI {
 	 * @param playerID – the Google+ ID of the player whose word is being set
 	 * @param gameID – the game ID of the game the player is involved in
 	 * @param word – the word the player wishes to use
-	 * @return a 2-item boolean array containing the server response: [success, validword]
+	 * @param listener – a SetWordRequestListener to be notified when the request finishes 
 	 */
-	public static boolean[] setWord(String playerID, String gameID, String word) {
-		JSONObject json = makeRequest("setWord", playerID, gameID, word);
-		boolean success = ((Boolean) json.get("success")).booleanValue();
-		JSONObject response = (JSONObject) json.get("response");
-		boolean validWord = (Boolean) response.get("validword");
-		boolean[] result = {success, validWord};
-		return result;
+	public static void setWord(final String playerID, final String gameID, final String word, final SetWordRequestListener listener) {
+		Thread t = new Thread() {
+			public void run() {
+				JSONObject json = makeRequest("setWord", playerID, gameID, word);
+				boolean success = ((Boolean) json.get("success")).booleanValue();
+				JSONObject response = (JSONObject) json.get("response");
+				boolean validWord = (Boolean) response.get("validword");
+				boolean[] result = {success, validWord};
+				listener.onRequestComplete(result);
+			}
+		};
+		t.start();
 	}
 	
 	private static JSONObject makeRequest(String iface, String param1, String param2, String param3) {
