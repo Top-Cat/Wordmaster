@@ -173,8 +173,7 @@ public abstract class BaseGameActivity extends FragmentActivity implements GameH
 	}
 	
 	public String getUserId() {
-		//return getGamesClient().getCurrentPlayer().getPlayerId();
-		return "1";
+		return getGamesClient().getCurrentPlayer().getPlayerId();
 	}
 	
 }

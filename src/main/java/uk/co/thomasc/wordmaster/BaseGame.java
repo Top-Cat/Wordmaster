@@ -47,8 +47,7 @@ public class BaseGame extends BaseGameActivity implements OnClickListener, GetMa
 	@Override
 	public void onClick(View v) {
 		if (v.getId() == R.id.button_sign_in) {
-			//beginUserInitiatedSignIn(); For now we skip this
-			onSignInSucceeded();
+			beginUserInitiatedSignIn();
 		} else if (v.getId() == R.id.refresh) {
 			findViewById(R.id.refresh).setVisibility(View.GONE);
 			findViewById(R.id.refresh_progress).setVisibility(View.VISIBLE);
