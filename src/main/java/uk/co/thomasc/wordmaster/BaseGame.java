@@ -14,6 +14,8 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.SignInButton;
 
 /**
@@ -40,8 +42,14 @@ public class BaseGame extends BaseGameActivity implements OnClickListener, GetMa
 		setContentView(R.layout.menu_screen);
 		
 		SignInButton button = (SignInButton) findViewById(R.id.button_sign_in);
-		button.setOnClickListener(this);
 		button.setSize(SignInButton.SIZE_WIDE); // I commend anyone who can do this in XML
+		
+		int services = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+		if (services == ConnectionResult.SUCCESS) {
+			button.setOnClickListener(this);
+		} else {
+			GooglePlayServicesUtil.getErrorDialog(services, this, 1);
+		}
 	}
 
 	@Override
