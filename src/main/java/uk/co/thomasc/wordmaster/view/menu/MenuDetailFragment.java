@@ -1,9 +1,10 @@
 package uk.co.thomasc.wordmaster.view.menu;
 
+import uk.co.thomasc.wordmaster.BaseGame;
 import uk.co.thomasc.wordmaster.R;
 import uk.co.thomasc.wordmaster.objects.Game;
+import uk.co.thomasc.wordmaster.objects.User;
 import uk.co.thomasc.wordmaster.util.BaseGameActivity;
-
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -15,6 +16,7 @@ public class MenuDetailFragment extends Fragment {
 	public static final String ARG_ITEM_ID = "gameid";
 	private Game game;
 	private BaseGameActivity act;
+	private String gameid;
 	
 	public MenuDetailFragment() {
 		
@@ -24,7 +26,7 @@ public class MenuDetailFragment extends Fragment {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (getArguments().containsKey(ARG_ITEM_ID)) {
-			String gameid = getArguments().getString(ARG_ITEM_ID);
+			gameid = getArguments().getString(ARG_ITEM_ID);
 		}
 	}
 	
@@ -37,8 +39,8 @@ public class MenuDetailFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.game_screen, container, false);
 		
-		// TODO: Get game from id and populate view
-		//game = ??
+		game = BaseGame.gameForGameID(gameid);
+		// TODO: populate view
 		
 		return rootView;
 	}

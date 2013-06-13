@@ -2,11 +2,9 @@ package uk.co.thomasc.wordmaster.objects;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 import uk.co.thomasc.wordmaster.BaseGame;
-
+import uk.co.thomasc.wordmaster.util.BaseGameActivity;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 
@@ -34,7 +32,7 @@ public class User {
 		this.avatarUri = player.getIconImageUri().toString();
 	}
 	
-	public User(String plusID, BaseGame activityReference) {
+	public User(String plusID, BaseGameActivity activityReference) {
 		this.plusID = plusID;
 		activityReference.getPlusClient().loadPerson(new OnPersonLoadedListener() {
 			@Override

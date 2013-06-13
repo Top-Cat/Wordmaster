@@ -1,17 +1,18 @@
 package uk.co.thomasc.wordmaster;
 
-import android.graphics.Typeface;
+import java.util.HashMap;
 
-import com.google.android.gms.common.SignInButton;
-
+import uk.co.thomasc.wordmaster.objects.Game;
 import uk.co.thomasc.wordmaster.util.BaseGameActivity;
 import uk.co.thomasc.wordmaster.view.menu.MenuAdapter;
-
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
+
+import com.google.android.gms.common.SignInButton;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -23,6 +24,8 @@ public class BaseGame extends BaseGameActivity implements OnClickListener {
 	
 	public static Typeface russo;
 	public MenuAdapter adapter = new MenuAdapter(this);
+	
+	public static HashMap<String, Game> games = new HashMap<String, Game>();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +69,18 @@ public class BaseGame extends BaseGameActivity implements OnClickListener {
 		//TODO: Populate menu feed
 		
 		//signOut();
+	}
+	
+	private void loadGames() {
+		games.clear();
+		Game[] gameList = ServerAPI.getMatches(getUserId(), this);
+		for (Game game : gameList) {
+			games.put(game.getID(), game);
+		}
+	}
+	
+	public static Game gameForGameID(String gameID) {
+		return games.get(gameID);
 	}
 	
 }
