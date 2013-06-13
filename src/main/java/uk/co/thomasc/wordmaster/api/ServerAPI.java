@@ -1,4 +1,4 @@
-package uk.co.thomasc.wordmaster;
+package uk.co.thomasc.wordmaster.api;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,6 +12,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import uk.co.thomasc.wordmaster.BaseGame;
 import uk.co.thomasc.wordmaster.objects.Game;
 import uk.co.thomasc.wordmaster.objects.Turn;
 import uk.co.thomasc.wordmaster.objects.User;
@@ -28,30 +29,37 @@ public class ServerAPI {
 	 * @param activityReference – a reference to the BaseGame activity, used to get avatars from Google+
 	 * @return an array of Game objects for each of the games the player is involved in
 	 */
-	public static Game[] getMatches(String playerID, BaseGame activityReference) {
-		JSONObject json = makeRequest("getMatches", playerID); 
-		boolean success = ((Boolean) json.get("success")).booleanValue();
-		if (success) {
-			JSONArray response = (JSONArray) json.get("response");
-			Game[] games = new Game[response.size()];
-			for (int i = 0; i < response.size(); i ++) {
-				JSONObject gameObject = (JSONObject) response.get(i);
-				String opponentID = (String) gameObject.get("oppid");
-				String gameID = (String) gameObject.get("gameid");
-				boolean needsWord = (Boolean) gameObject.get("needword");
-				int playerScore = ((Long) gameObject.get("pscore")).intValue();
-				int opponentScore = ((Long) gameObject.get("oscore")).intValue();
-				boolean playersTurn = (Boolean) gameObject.get("turn");
-				Game game = new Game(gameID, new User(playerID, activityReference), new User(opponentID, activityReference));
-				game.setPlayersTurn(playersTurn);
-				game.setNeedsWord(needsWord);
-				game.setScore(playerScore, opponentScore);
-				games[i] = game;
+	public static void getMatches(final String playerID, final BaseGame activityReference, final GetMatchesRequestListener listener) {
+		Thread t = new Thread() {
+			@Override
+			public void run() {
+				super.run();
+				JSONObject json = makeRequest("getMatches", playerID); 
+				boolean success = ((Boolean) json.get("success")).booleanValue();
+				if (success) {
+					JSONArray response = (JSONArray) json.get("response");
+					Game[] games = new Game[response.size()];
+					for (int i = 0; i < response.size(); i ++) {
+						JSONObject gameObject = (JSONObject) response.get(i);
+						String opponentID = (String) gameObject.get("oppid");
+						String gameID = (String) gameObject.get("gameid");
+						boolean needsWord = (Boolean) gameObject.get("needword");
+						int playerScore = ((Long) gameObject.get("pscore")).intValue();
+						int opponentScore = ((Long) gameObject.get("oscore")).intValue();
+						boolean playersTurn = (Boolean) gameObject.get("turn");
+						Game game = new Game(gameID, new User(playerID, activityReference), new User(opponentID, activityReference));
+						game.setPlayersTurn(playersTurn);
+						game.setNeedsWord(needsWord);
+						game.setScore(playerScore, opponentScore);
+						games[i] = game;
+					}
+					listener.onRequestComplete(games);
+				} else {
+					listener.onRequestFailed();
+				}
 			}
-			return games;
-		} else {
-			return null;
-		}
+		};
+		t.start();
 	}
 	
 	/**

@@ -2,6 +2,8 @@ package uk.co.thomasc.wordmaster;
 
 import java.util.HashMap;
 
+import uk.co.thomasc.wordmaster.api.GetMatchesRequestListener;
+import uk.co.thomasc.wordmaster.api.ServerAPI;
 import uk.co.thomasc.wordmaster.objects.Game;
 import uk.co.thomasc.wordmaster.util.BaseGameActivity;
 import uk.co.thomasc.wordmaster.view.menu.MenuAdapter;
@@ -20,16 +22,18 @@ import com.google.android.gms.common.SignInButton;
  *
  * @see SystemUiHider
  */
-public class BaseGame extends BaseGameActivity implements OnClickListener {
+public class BaseGame extends BaseGameActivity implements OnClickListener, GetMatchesRequestListener {
 	
 	public static Typeface russo;
-	public MenuAdapter adapter = new MenuAdapter(this);
+	public MenuAdapter adapter;
 	
 	public static HashMap<String, Game> games = new HashMap<String, Game>();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		adapter = new MenuAdapter(this);
 		
 		russo = Typeface.createFromAsset(getAssets(), "fonts/Russo_One.ttf");
 
@@ -48,7 +52,7 @@ public class BaseGame extends BaseGameActivity implements OnClickListener {
 		} else if (v.getId() == R.id.refresh) {
 			findViewById(R.id.refresh).setVisibility(View.GONE);
 			findViewById(R.id.refresh_progress).setVisibility(View.VISIBLE);
-			//TODO: Populate menu feed
+			loadGames();
 		}
 	}
 	
@@ -66,21 +70,36 @@ public class BaseGame extends BaseGameActivity implements OnClickListener {
 		// Enable UI
 		findViewById(R.id.refresh).setOnClickListener(this);
 		
-		//TODO: Populate menu feed
+		loadGames();
 		
 		//signOut();
 	}
 	
 	private void loadGames() {
 		games.clear();
-		Game[] gameList = ServerAPI.getMatches(getUserId(), this);
-		for (Game game : gameList) {
-			games.put(game.getID(), game);
-		}
+		ServerAPI.getMatches(getUserId(), this, this);
 	}
 	
 	public static Game gameForGameID(String gameID) {
 		return games.get(gameID);
+	}
+
+	@Override
+	public void onRequestComplete(final Game[] games) {
+		runOnUiThread(new Runnable() {
+			public void run() {
+				adapter.clear();
+				for (Game game : games) {
+					BaseGame.games.put(game.getID(), game);
+					adapter.add(game);
+				}
+			}
+		});
+	}
+
+	@Override
+	public void onRequestFailed() {
+		// TODO Tell the user their parents have been murdered		
 	}
 	
 }

@@ -34,12 +34,12 @@ public class User {
 	
 	public User(String plusID, BaseGameActivity activityReference) {
 		this.plusID = plusID;
-		activityReference.getPlusClient().loadPerson(new OnPersonLoadedListener() {
+	/*	activityReference.getPlusClient().loadPerson(new OnPersonLoadedListener() {
 			@Override
 			public void onPersonLoaded(ConnectionResult result, Person person) {
 				// TODO download the avatar and grab its uri
 			}
-		}, plusID);
+		}, plusID); */
 	}
 	
 	/* Getters */
