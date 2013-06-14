@@ -16,6 +16,7 @@ import uk.co.thomasc.wordmaster.R;
 import uk.co.thomasc.wordmaster.objects.Game;
 import uk.co.thomasc.wordmaster.objects.callbacks.ImageLoadedListener;
 import uk.co.thomasc.wordmaster.objects.callbacks.NameLoadedListener;
+import uk.co.thomasc.wordmaster.util.TimeUtil;
 
 public class MenuAdapter extends ArrayAdapter<Game> {
 
@@ -78,7 +79,7 @@ public class MenuAdapter extends ArrayAdapter<Game> {
 			}
 		});
 
-		String mostRecentMove = "2m";
+		String mostRecentMove = TimeUtil.timeSince(1371212315);
 		((TextView) view.findViewById(R.id.time)).setText(mostRecentMove);
 
 		return rview;
