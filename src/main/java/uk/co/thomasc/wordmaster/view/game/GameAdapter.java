@@ -52,7 +52,8 @@ public class GameAdapter extends ArrayAdapter<Turn> {
 		
 		Turn item = getItem(position);
 		User user = item.getUser();
-		boolean isPlayer = user.getPlusID().equals(((BaseGame) act).getUserId());
+		boolean isPlayer = (user.getPlusID().equals(((BaseGame) act).getUserId()));
+		boolean winningTurn = (item.getCorrectLetters() == 4);
 		
 		if (view == null) {
 			LayoutInflater vi = (LayoutInflater) act.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -81,56 +82,47 @@ public class GameAdapter extends ArrayAdapter<Turn> {
 		Drawable silver = res.getDrawable(R.drawable.silverpeg);
 		Drawable white = res.getDrawable(R.drawable.whitepeg);
 		
-		if (goldPegs == 4) {
+		// peg0
+		if (goldPegs > 0) {
 			((ImageView) view.findViewById(R.id.peg0)).setImageDrawable(gold);
-			((ImageView) view.findViewById(R.id.peg1)).setImageDrawable(gold);
-			((ImageView) view.findViewById(R.id.peg2)).setImageDrawable(gold);
-			((ImageView) view.findViewById(R.id.peg3)).setImageDrawable(gold);
-		} else if (goldPegs == 3) {
-			((ImageView) view.findViewById(R.id.peg0)).setImageDrawable(gold);
-			((ImageView) view.findViewById(R.id.peg1)).setImageDrawable(gold);
-			((ImageView) view.findViewById(R.id.peg2)).setImageDrawable(gold);
-			if (silverPegs == 1) {
-				((ImageView) view.findViewById(R.id.peg3)).setImageDrawable(silver);
-			} else {
-				((ImageView) view.findViewById(R.id.peg3)).setImageDrawable(white);
-			}
-		} else if (goldPegs == 2) {
-			((ImageView) view.findViewById(R.id.peg0)).setImageDrawable(gold);
-			((ImageView) view.findViewById(R.id.peg1)).setImageDrawable(gold);
-			if (silverPegs == 2) {
-				((ImageView) view.findViewById(R.id.peg2)).setImageDrawable(silver);
-				((ImageView) view.findViewById(R.id.peg3)).setImageDrawable(silver);
-			} else if (silverPegs == 1) {
-				((ImageView) view.findViewById(R.id.peg2)).setImageDrawable(silver);
-				((ImageView) view.findViewById(R.id.peg3)).setImageDrawable(white);
-			} else {
-				((ImageView) view.findViewById(R.id.peg2)).setImageDrawable(white);
-				((ImageView) view.findViewById(R.id.peg3)).setImageDrawable(silver);
-			}
-		} else if (goldPegs == 1) {
-			((ImageView) view.findViewById(R.id.peg0)).setImageDrawable(gold);
-			if (silverPegs == 3) {
-				((ImageView) view.findViewById(R.id.peg1)).setImageDrawable(silver);
-				((ImageView) view.findViewById(R.id.peg2)).setImageDrawable(silver);
-				((ImageView) view.findViewById(R.id.peg3)).setImageDrawable(silver);
-			} else if (silverPegs == 2) {
-				((ImageView) view.findViewById(R.id.peg1)).setImageDrawable(silver);
-				((ImageView) view.findViewById(R.id.peg2)).setImageDrawable(silver);
-				((ImageView) view.findViewById(R.id.peg3)).setImageDrawable(white);
-			} else if (silverPegs == 1) {
-				((ImageView) view.findViewById(R.id.peg1)).setImageDrawable(silver);
-				((ImageView) view.findViewById(R.id.peg2)).setImageDrawable(white);
-				((ImageView) view.findViewById(R.id.peg3)).setImageDrawable(white);
-			} else {
-				((ImageView) view.findViewById(R.id.peg1)).setImageDrawable(white);
-				((ImageView) view.findViewById(R.id.peg2)).setImageDrawable(white);
-				((ImageView) view.findViewById(R.id.peg3)).setImageDrawable(white);
-			}
+			goldPegs --;
+		} else if (silverPegs > 0) {
+			((ImageView) view.findViewById(R.id.peg0)).setImageDrawable(silver);
+			silverPegs --;
 		} else {
 			((ImageView) view.findViewById(R.id.peg0)).setImageDrawable(white);
+		}
+		
+		// peg1
+		if (goldPegs > 0) {
+			((ImageView) view.findViewById(R.id.peg1)).setImageDrawable(gold);
+			goldPegs --;
+		} else if (silverPegs > 0) {
+			((ImageView) view.findViewById(R.id.peg1)).setImageDrawable(silver);
+			silverPegs --;
+		} else {
 			((ImageView) view.findViewById(R.id.peg1)).setImageDrawable(white);
+		}
+		
+		// peg2
+		if (goldPegs > 0) {
+			((ImageView) view.findViewById(R.id.peg2)).setImageDrawable(gold);
+			goldPegs --;
+		} else if (silverPegs > 0) {
+			((ImageView) view.findViewById(R.id.peg2)).setImageDrawable(silver);
+			silverPegs --;
+		} else {
 			((ImageView) view.findViewById(R.id.peg2)).setImageDrawable(white);
+		}
+		
+		// peg3
+		if (goldPegs > 0) {
+			((ImageView) view.findViewById(R.id.peg3)).setImageDrawable(gold);
+			goldPegs --;
+		} else if (silverPegs > 0) {
+			((ImageView) view.findViewById(R.id.peg3)).setImageDrawable(silver);
+			silverPegs --;
+		} else {
 			((ImageView) view.findViewById(R.id.peg3)).setImageDrawable(white);
 		}
 
