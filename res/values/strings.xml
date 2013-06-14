@@ -13,6 +13,7 @@
 	<string name="guess">Guess</string>
 	<string name="game_screen">Game Screen</string>
 	<string name="oppavatar">Opponent\'s Avatar</string>
+	<string name="playeravatar">Player\'s Avatar</string>
 	
 	<string name="default_score">0</string>
 	<string name="default_turn">0</string>

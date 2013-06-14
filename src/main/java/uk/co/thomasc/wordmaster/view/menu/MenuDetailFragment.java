@@ -1,6 +1,14 @@
 package uk.co.thomasc.wordmaster.view.menu;
 
+import uk.co.thomasc.wordmaster.BaseGame;
+import uk.co.thomasc.wordmaster.R;
+import uk.co.thomasc.wordmaster.objects.Game;
+import uk.co.thomasc.wordmaster.util.CapsLockLimiter;
+import uk.co.thomasc.wordmaster.view.game.GameLayout;
+import uk.co.thomasc.wordmaster.view.game.SwipeController;
+import uk.co.thomasc.wordmaster.view.game.SwipeListener;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -12,14 +20,7 @@ import android.view.WindowManager.LayoutParams;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
-
-import uk.co.thomasc.wordmaster.BaseGame;
-import uk.co.thomasc.wordmaster.R;
-import uk.co.thomasc.wordmaster.objects.Game;
-import uk.co.thomasc.wordmaster.util.CapsLockLimiter;
-import uk.co.thomasc.wordmaster.view.game.GameLayout;
-import uk.co.thomasc.wordmaster.view.game.SwipeController;
-import uk.co.thomasc.wordmaster.view.game.SwipeListener;
+import android.widget.TextView;
 
 public class MenuDetailFragment extends Fragment {
 
@@ -57,6 +58,15 @@ public class MenuDetailFragment extends Fragment {
 		View rootView = inflater.inflate(R.layout.game_screen, container, false);
 
 		game = ((BaseGame) getActivity()).gameForGameID(gameid);
+		
+		Drawable playerImage = game.getPlayer().getAvatar();
+		Drawable oppImage = game.getOpponent().getAvatar();
+		((ImageView) rootView.findViewById(R.id.playerAvatar)).setImageDrawable(playerImage);
+		((ImageView) rootView.findViewById(R.id.oppAvatar)).setImageDrawable(oppImage);
+		
+		((TextView) rootView.findViewById(R.id.turn)).setText(Integer.toString(game.getTurnNumber()));
+		((TextView) rootView.findViewById(R.id.playerscore)).setText(Integer.toString(game.getPlayerScore()));
+		((TextView) rootView.findViewById(R.id.oppscore)).setText(Integer.toString(game.getOpponentScore()));
 		// TODO: populate view
 
 		input = (EditText) rootView.findViewById(R.id.editText1);
