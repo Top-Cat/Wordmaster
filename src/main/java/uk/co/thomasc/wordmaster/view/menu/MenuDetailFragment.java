@@ -2,7 +2,10 @@ package uk.co.thomasc.wordmaster.view.menu;
 
 import uk.co.thomasc.wordmaster.BaseGame;
 import uk.co.thomasc.wordmaster.R;
+import uk.co.thomasc.wordmaster.api.GetTurnsRequestListener;
+import uk.co.thomasc.wordmaster.api.ServerAPI;
 import uk.co.thomasc.wordmaster.objects.Game;
+import uk.co.thomasc.wordmaster.objects.Turn;
 import uk.co.thomasc.wordmaster.util.CapsLockLimiter;
 import uk.co.thomasc.wordmaster.view.game.GameLayout;
 import uk.co.thomasc.wordmaster.view.game.SwipeController;
@@ -67,7 +70,8 @@ public class MenuDetailFragment extends Fragment {
 		((TextView) rootView.findViewById(R.id.turn)).setText(Integer.toString(game.getTurnNumber()));
 		((TextView) rootView.findViewById(R.id.playerscore)).setText(Integer.toString(game.getPlayerScore()));
 		((TextView) rootView.findViewById(R.id.oppscore)).setText(Integer.toString(game.getOpponentScore()));
-		// TODO: populate view
+		
+		loadTurns();
 
 		input = (EditText) rootView.findViewById(R.id.editText1);
 		input.addTextChangedListener(new CapsLockLimiter(input));
@@ -80,5 +84,23 @@ public class MenuDetailFragment extends Fragment {
 		mPager.setOnPageChangeListener(new SwipeListener((ImageView) rootView.findViewById(R.id.indicator)));
 
 		return rootView;
+	}
+	
+	private void loadTurns() {
+		ServerAPI.getTurns(gameid, (BaseGame) getActivity(), new GetTurnsRequestListener() {
+			
+			@Override
+			public void onRequestFailed() {
+				// TODO: Tell the user the tooth fairy isn't real
+			}
+			
+			@Override
+			public void onRequestComplete(Turn[] turns) {
+				for (Turn turn : turns) {
+					game.addTurn(turn);
+					// TODO: Add turns to the GameAdapter
+				}
+			}
+		});
 	}
 }
