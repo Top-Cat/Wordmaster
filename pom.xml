@@ -68,6 +68,17 @@
 								<goal>zipalign</goal>
 							</goals>
 						</execution>
+						<execution>
+							<id>update-manifest</id>
+							<goals>
+								<goal>manifest-update</goal>
+							</goals>
+							<configuration>
+								<manifest>
+									<versionCode>${build.number}</versionCode>
+								</manifest>
+							</configuration>
+						</execution>
 					</executions>
 					<configuration>
 						<sign>
