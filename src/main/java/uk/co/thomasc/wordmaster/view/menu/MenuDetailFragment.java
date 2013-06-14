@@ -17,7 +17,6 @@ import android.widget.ImageView;
 import uk.co.thomasc.wordmaster.BaseGame;
 import uk.co.thomasc.wordmaster.R;
 import uk.co.thomasc.wordmaster.objects.Game;
-import uk.co.thomasc.wordmaster.util.BaseGameActivity;
 import uk.co.thomasc.wordmaster.util.CapsLockLimiter;
 import uk.co.thomasc.wordmaster.view.game.GameLayout;
 import uk.co.thomasc.wordmaster.view.game.SwipeController;
@@ -27,7 +26,6 @@ public class MenuDetailFragment extends Fragment {
 
 	public static final String ARG_ITEM_ID = "gameid";
 	private Game game;
-	private BaseGameActivity act;
 	private String gameid;
 	private EditText input;
 
@@ -41,12 +39,6 @@ public class MenuDetailFragment extends Fragment {
 		if (getArguments().containsKey(MenuDetailFragment.ARG_ITEM_ID)) {
 			gameid = getArguments().getString(MenuDetailFragment.ARG_ITEM_ID);
 		}
-	}
-
-	@Override
-	public void onAttach(Activity activity) {
-		super.onAttach(activity);
-		act = (BaseGameActivity) activity;
 	}
 
 	@Override
@@ -71,9 +63,9 @@ public class MenuDetailFragment extends Fragment {
 		input = (EditText) rootView.findViewById(R.id.editText1);
 		input.addTextChangedListener(new CapsLockLimiter(input));
 
-		((GameLayout) rootView.findViewById(R.id.screen_game)).setActivity(act);
+		((GameLayout) rootView.findViewById(R.id.screen_game)).setActivity(getActivity());
 
-		SwipeController swipe = new SwipeController(act.getSupportFragmentManager(), gameid);
+		SwipeController swipe = new SwipeController(getActivity().getSupportFragmentManager(), gameid);
 		ViewPager mPager = (ViewPager) rootView.findViewById(R.id.pager);
 		mPager.setAdapter(swipe);
 		mPager.setOnPageChangeListener(new SwipeListener((ImageView) rootView.findViewById(R.id.indicator)));
