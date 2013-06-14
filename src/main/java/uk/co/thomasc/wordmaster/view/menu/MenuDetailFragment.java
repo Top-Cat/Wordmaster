@@ -1,6 +1,5 @@
 package uk.co.thomasc.wordmaster.view.menu;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;

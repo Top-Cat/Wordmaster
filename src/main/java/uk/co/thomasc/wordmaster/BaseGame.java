@@ -20,6 +20,7 @@ import uk.co.thomasc.wordmaster.view.menu.MenuListFragment;
 public class BaseGame extends BaseGameActivity {
 
 	public static Typeface russo;
+
 	public MenuListFragment menuFragment;
 	public MenuDetailFragment menuDetail;
 

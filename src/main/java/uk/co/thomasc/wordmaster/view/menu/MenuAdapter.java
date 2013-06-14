@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import uk.co.thomasc.wordmaster.R;
@@ -71,7 +72,7 @@ public class MenuAdapter extends ArrayAdapter<Game> {
 				act.runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
-						((TextView) view.findViewById(R.id.playera)).setCompoundDrawablesWithIntrinsicBounds(image, null, null, null);
+						((ImageView) view.findViewById(R.id.avatar)).setImageDrawable(image);
 					}
 				});
 			}

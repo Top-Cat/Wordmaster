@@ -72,7 +72,7 @@ public class User {
 	}
 
 	private void loadImage(Person person) {
-		final String avatarUri = person.getImage().getUrl().replace("sz=50", "sz=108"); // This can't be the best solution, surely?
+		final String avatarUri = person.getImage().getUrl();
 
 		new Thread() {
 			@Override
