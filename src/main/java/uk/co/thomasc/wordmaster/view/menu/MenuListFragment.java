@@ -71,17 +71,18 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 	
 	
 	private void loadGames() {
-		BaseGame.games.clear();
+		((BaseGame) getActivity()).games.clear();
 		ServerAPI.getMatches(((BaseGameActivity) getActivity()).getUserId(), (BaseGame) getActivity(), this);
 	}
 	
 	@Override
 	public void onRequestComplete(final Game[] games) {
+		final BaseGame act = (BaseGame) getActivity();
 		getActivity().runOnUiThread(new Runnable() {
 			public void run() {
 				adapter.clear();
 				for (Game game : games) {
-					BaseGame.games.put(game.getID(), game);
+					act.games.put(game.getID(), game);
 					adapter.add(game);
 				}
 				refreshOver();

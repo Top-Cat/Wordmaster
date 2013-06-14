@@ -22,7 +22,7 @@ public class BaseGame extends BaseGameActivity {
 	public MenuListFragment menuFragment;
 	public MenuDetailFragment menuDetail;
 	
-	public static HashMap<String, Game> games = new HashMap<String, Game>();
+	public HashMap<String, Game> games = new HashMap<String, Game>();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +47,7 @@ public class BaseGame extends BaseGameActivity {
 		menuFragment.onSignInSucceeded();
 	}
 	
-	public static Game gameForGameID(String gameID) {
+	public Game gameForGameID(String gameID) {
 		return games.get(gameID);
 	}
 	

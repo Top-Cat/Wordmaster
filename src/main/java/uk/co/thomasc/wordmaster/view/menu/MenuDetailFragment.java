@@ -65,7 +65,7 @@ public class MenuDetailFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.game_screen, container, false);
 		
-		game = BaseGame.gameForGameID(gameid);
+		game = ((BaseGame) getActivity()).gameForGameID(gameid);
 		// TODO: populate view
 		
 		
