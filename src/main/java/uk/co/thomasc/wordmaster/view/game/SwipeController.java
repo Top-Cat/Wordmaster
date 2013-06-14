@@ -1,9 +1,5 @@
 package uk.co.thomasc.wordmaster.view.game;
 
-import uk.co.thomasc.wordmaster.R;
-import uk.co.thomasc.wordmaster.util.RussoText;
-import uk.co.thomasc.wordmaster.view.menu.MenuDetailFragment;
-
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
@@ -17,24 +13,28 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
+import uk.co.thomasc.wordmaster.R;
+import uk.co.thomasc.wordmaster.util.RussoText;
+import uk.co.thomasc.wordmaster.view.menu.MenuDetailFragment;
+
 public class SwipeController extends FragmentStatePagerAdapter {
-	
+
 	private String gid;
-	
+
 	public SwipeController(FragmentManager fm, String gameid) {
 		super(fm);
-		this.gid = gameid;
+		gid = gameid;
 	}
 
 	@Override
 	public Fragment getItem(int arg0) {
 		Fragment fragment = new Pages();
 		Bundle args = new Bundle();
-		
+
 		args.putBoolean(Pages.ARG_OBJECT, arg0 == 0);
 		args.putString(MenuDetailFragment.ARG_ITEM_ID, gid);
 		fragment.setArguments(args);
-		
+
 		return fragment;
 	}
 
@@ -52,17 +52,17 @@ public class SwipeController extends FragmentStatePagerAdapter {
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 			View rootView;
-			if (getArguments().getBoolean(ARG_OBJECT)) {
+			if (getArguments().getBoolean(Pages.ARG_OBJECT)) {
 				rootView = new ListView(getActivity());
 				GameAdapter gm = new GameAdapter(getActivity());
-				
+
 				//gm.add(new Turn(0, new Date(), User.getUser("124", "Adam", Uri.EMPTY), "MEOW", 1, 2));
 				//gm.add(new Turn(0, new Date(), User.getUser("123", "Josh", Uri.EMPTY), "MEOW", 1, 2));
-				
+
 				((ListView) rootView).setAdapter(gm);
 			} else {
-				alphaPref = getActivity().getSharedPreferences(SP_PREF + getArguments().getString(MenuDetailFragment.ARG_ITEM_ID), 0);
-				
+				alphaPref = getActivity().getSharedPreferences(Pages.SP_PREF + getArguments().getString(MenuDetailFragment.ARG_ITEM_ID), 0);
+
 				rootView = inflater.inflate(R.layout.alphabet, container, false);
 				LinearLayout root = (LinearLayout) rootView;
 				for (int i = 0; i < root.getChildCount(); i++) {
@@ -78,7 +78,7 @@ public class SwipeController extends FragmentStatePagerAdapter {
 			}
 			return rootView;
 		}
-		
+
 		private class ToggleListener implements OnClickListener {
 
 			@Override
@@ -90,8 +90,8 @@ public class SwipeController extends FragmentStatePagerAdapter {
 				edit.putBoolean(txt.getText().toString(), txt.isStrike());
 				edit.commit();
 			}
-			
+
 		}
 	}
-	
+
 }

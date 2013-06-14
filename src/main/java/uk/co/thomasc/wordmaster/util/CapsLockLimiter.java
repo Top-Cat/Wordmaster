@@ -5,19 +5,21 @@ import android.text.TextWatcher;
 import android.widget.EditText;
 
 public class CapsLockLimiter implements TextWatcher {
-	
+
 	private EditText input;
-	
+
 	public CapsLockLimiter(EditText input) {
 		this.input = input;
 	}
-	
+
 	@Override
-	public void onTextChanged(CharSequence s, int start, int before, int count) {}
-	
+	public void onTextChanged(CharSequence s, int start, int before, int count) {
+	}
+
 	@Override
-	public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-	
+	public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+	}
+
 	@Override
 	public void afterTextChanged(Editable s) {
 		char[] str = s.toString().toCharArray();
@@ -36,5 +38,5 @@ public class CapsLockLimiter implements TextWatcher {
 		}
 		System.out.println(fin);
 	}
-	
+
 }

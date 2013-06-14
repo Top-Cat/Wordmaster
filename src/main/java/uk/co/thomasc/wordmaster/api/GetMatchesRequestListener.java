@@ -5,7 +5,7 @@ import uk.co.thomasc.wordmaster.objects.Game;
 public interface GetMatchesRequestListener {
 
 	public void onRequestComplete(Game[] games);
-	
+
 	public void onRequestFailed();
-	
+
 }

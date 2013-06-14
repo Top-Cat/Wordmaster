@@ -7,7 +7,7 @@ import android.view.KeyEvent;
 import android.widget.LinearLayout;
 
 public class GameLayout extends LinearLayout {
-	
+
 	private Activity playActivity;
 
 	public GameLayout(Context context, AttributeSet attrs) {
@@ -21,7 +21,7 @@ public class GameLayout extends LinearLayout {
 	public void setActivity(Activity playActivity) {
 		this.playActivity = playActivity;
 	}
-	
+
 	@Override
 	public boolean dispatchKeyEventPreIme(KeyEvent event) {
 		if (playActivity != null && event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
@@ -38,5 +38,5 @@ public class GameLayout extends LinearLayout {
 		}
 		return super.dispatchKeyEventPreIme(event);
 	}
-	
+
 }

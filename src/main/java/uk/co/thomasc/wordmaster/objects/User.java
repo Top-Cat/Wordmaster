@@ -8,52 +8,53 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import uk.co.thomasc.wordmaster.objects.callbacks.ImageLoadedListener;
-import uk.co.thomasc.wordmaster.objects.callbacks.NameLoadedListener;
-import uk.co.thomasc.wordmaster.util.BaseGameActivity;
 import android.graphics.drawable.Drawable;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.plus.PlusClient.OnPersonLoadedListener;
 import com.google.android.gms.plus.model.people.Person;
 
+import uk.co.thomasc.wordmaster.objects.callbacks.ImageLoadedListener;
+import uk.co.thomasc.wordmaster.objects.callbacks.NameLoadedListener;
+import uk.co.thomasc.wordmaster.util.BaseGameActivity;
+
 public class User {
 
 	private static Map<String, User> users = new HashMap<String, User>();
-	
+
 	public static User getUser(Person player, BaseGameActivity activityReference) {
-		if (users.containsKey(player.getId())) {
-			return users.get(player.getId());
+		if (User.users.containsKey(player.getId())) {
+			return User.users.get(player.getId());
 		} else {
 			User user = new User(player, activityReference);
-			users.put(player.getId(), user);
+			User.users.put(player.getId(), user);
 			return user;
 		}
 	}
-	
+
 	public static User getUser(String plusID, BaseGameActivity activityReference) {
-		if (users.containsKey(plusID)) {
-			return users.get(plusID);
+		if (User.users.containsKey(plusID)) {
+			return User.users.get(plusID);
 		} else {
 			User user = new User(plusID, activityReference);
-			users.put(plusID, user);
+			User.users.put(plusID, user);
 			return user;
 		}
 	}
-	
+
 	/* Properties */
-	private String plusID; 
+	private String plusID;
 	private String name;
 	private Drawable drawable;
 	private List<NameLoadedListener> userListeners = new ArrayList<NameLoadedListener>();
 	private List<ImageLoadedListener> imageListeners = new ArrayList<ImageLoadedListener>();
-	
+
 	private User(Person person, BaseGameActivity activityReference) {
-		this.plusID = person.getId();
-		this.name = person.getDisplayName();
+		plusID = person.getId();
+		name = person.getDisplayName();
 		loadImage(person);
 	}
-	
+
 	private User(String plusID, BaseGameActivity activityReference) {
 		this.plusID = plusID;
 		activityReference.getPlusClient().loadPerson(new OnPersonLoadedListener() {
@@ -61,7 +62,7 @@ public class User {
 			public void onPersonLoaded(ConnectionResult result, Person person) {
 				name = person.getDisplayName();
 				loadImage(person);
-				
+
 				for (NameLoadedListener listener : userListeners) {
 					listener.onNameLoaded(name);
 				}
@@ -69,18 +70,18 @@ public class User {
 			}
 		}, plusID);
 	}
-	
+
 	private void loadImage(Person person) {
 		final String avatarUri = person.getImage().getUrl().replace("sz=50", "sz=108"); // This can't be the best solution, surely?
-		
-		(new Thread() {
+
+		new Thread() {
 			@Override
 			public void run() {
 				try {
 					URL url = new URL(avatarUri);
 					HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 					conn.connect();
-					User.this.drawable = Drawable.createFromStream(conn.getInputStream(), "player avatar");
+					drawable = Drawable.createFromStream(conn.getInputStream(), "player avatar");
 
 					for (ImageLoadedListener listener : imageListeners) {
 						listener.onImageLoaded(drawable);
@@ -90,9 +91,9 @@ public class User {
 					e.printStackTrace();
 				}
 			}
-		}).start();
+		}.start();
 	}
-	
+
 	public void listenForLoad(NameLoadedListener listener) {
 		if (name != null) {
 			listener.onNameLoaded(name);
@@ -100,7 +101,7 @@ public class User {
 			userListeners.add(listener);
 		}
 	}
-	
+
 	public void listenForImage(ImageLoadedListener listener) {
 		if (drawable != null) {
 			listener.onImageLoaded(drawable);
@@ -108,12 +109,12 @@ public class User {
 			imageListeners.add(listener);
 		}
 	}
-	
+
 	/* Getters */
 	public String getPlusID() {
 		return plusID;
 	}
-	
+
 	public Drawable getAvatar() {
 		return drawable;
 	}
@@ -121,5 +122,5 @@ public class User {
 	public String getName() {
 		return name;
 	}
-	
+
 }

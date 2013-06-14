@@ -10,28 +10,28 @@ public class Turn {
 	private User user;
 	private String guess;
 	private int correctLetters, displacedLetters;
-	
+
 	/* Constructors */
 	public Turn(int id, Date timestamp, User user, String guess, int correctLetters, int displacedLetters) {
-		this.turnID = id;
+		turnID = id;
 		this.timestamp = timestamp;
 		this.user = user;
 		this.guess = guess;
 		this.correctLetters = correctLetters;
 		this.displacedLetters = displacedLetters;
 	}
-	
+
 	/* Getters */
 	public int getID() {
-		return this.turnID;
+		return turnID;
 	}
-	
+
 	public Date getTimestamp() {
-		return this.timestamp;
+		return timestamp;
 	}
-	
+
 	public long getUnixTimestamp() {
-		return this.timestamp.getTime();
+		return timestamp.getTime();
 	}
 
 	public User getUser() {
