@@ -127,7 +127,7 @@ public abstract class BaseGameActivity extends FragmentActivity implements GameH
 		return mHelper.isSignedIn();
 	}
 
-	protected void beginUserInitiatedSignIn() {
+	public void beginUserInitiatedSignIn() {
 		mHelper.beginUserInitiatedSignIn();
 	}
 

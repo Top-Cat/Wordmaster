@@ -2,11 +2,11 @@ package uk.co.thomasc.wordmaster.view.game;
 
 import java.util.Date;
 
-import uk.co.thomasc.wordmaster.PlayActivity;
 import uk.co.thomasc.wordmaster.R;
 import uk.co.thomasc.wordmaster.objects.Turn;
 import uk.co.thomasc.wordmaster.objects.User;
 import uk.co.thomasc.wordmaster.util.RussoText;
+import uk.co.thomasc.wordmaster.view.menu.MenuDetailFragment;
 
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -14,7 +14,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -22,10 +22,13 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
-public class SwipeController extends FragmentPagerAdapter {
+public class SwipeController extends FragmentStatePagerAdapter {
 	
-	public SwipeController(FragmentManager fm) {
+	private String gid;
+	
+	public SwipeController(FragmentManager fm, String gameid) {
 		super(fm);
+		this.gid = gameid;
 	}
 
 	@Override
@@ -34,6 +37,7 @@ public class SwipeController extends FragmentPagerAdapter {
 		Bundle args = new Bundle();
 		
 		args.putBoolean(Pages.ARG_OBJECT, arg0 == 0);
+		args.putString(MenuDetailFragment.ARG_ITEM_ID, gid);
 		fragment.setArguments(args);
 		
 		return fragment;
@@ -62,7 +66,7 @@ public class SwipeController extends FragmentPagerAdapter {
 				
 				((ListView) rootView).setAdapter(gm);
 			} else {
-				alphaPref = getActivity().getSharedPreferences(SP_PREF + ((PlayActivity) getActivity()).gid, 0);
+				alphaPref = getActivity().getSharedPreferences(SP_PREF + getArguments().getString(MenuDetailFragment.ARG_ITEM_ID), 0);
 				
 				rootView = inflater.inflate(R.layout.alphabet, container, false);
 				LinearLayout root = (LinearLayout) rootView;
