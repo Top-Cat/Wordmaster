@@ -82,48 +82,16 @@ public class GameAdapter extends ArrayAdapter<Turn> {
 		Drawable silver = res.getDrawable(R.drawable.silverpeg);
 		Drawable white = res.getDrawable(R.drawable.whitepeg);
 		
-		// peg0
-		if (goldPegs > 0) {
-			((ImageView) view.findViewById(R.id.peg0)).setImageDrawable(gold);
-			goldPegs --;
-		} else if (silverPegs > 0) {
-			((ImageView) view.findViewById(R.id.peg0)).setImageDrawable(silver);
-			silverPegs --;
-		} else {
-			((ImageView) view.findViewById(R.id.peg0)).setImageDrawable(white);
-		}
-		
-		// peg1
-		if (goldPegs > 0) {
-			((ImageView) view.findViewById(R.id.peg1)).setImageDrawable(gold);
-			goldPegs --;
-		} else if (silverPegs > 0) {
-			((ImageView) view.findViewById(R.id.peg1)).setImageDrawable(silver);
-			silverPegs --;
-		} else {
-			((ImageView) view.findViewById(R.id.peg1)).setImageDrawable(white);
-		}
-		
-		// peg2
-		if (goldPegs > 0) {
-			((ImageView) view.findViewById(R.id.peg2)).setImageDrawable(gold);
-			goldPegs --;
-		} else if (silverPegs > 0) {
-			((ImageView) view.findViewById(R.id.peg2)).setImageDrawable(silver);
-			silverPegs --;
-		} else {
-			((ImageView) view.findViewById(R.id.peg2)).setImageDrawable(white);
-		}
-		
-		// peg3
-		if (goldPegs > 0) {
-			((ImageView) view.findViewById(R.id.peg3)).setImageDrawable(gold);
-			goldPegs --;
-		} else if (silverPegs > 0) {
-			((ImageView) view.findViewById(R.id.peg3)).setImageDrawable(silver);
-			silverPegs --;
-		} else {
-			((ImageView) view.findViewById(R.id.peg3)).setImageDrawable(white);
+		for (int peg = R.id.peg0; peg <= R.id.peg3; peg++) {
+			if (goldPegs > 0) {
+				((ImageView) view.findViewById(peg)).setImageDrawable(gold);
+				goldPegs --;
+			} else if (silverPegs > 0) {
+				((ImageView) view.findViewById(peg)).setImageDrawable(silver);
+				silverPegs --;
+			} else {
+				((ImageView) view.findViewById(peg)).setImageDrawable(white);
+			}
 		}
 
 		return view;
