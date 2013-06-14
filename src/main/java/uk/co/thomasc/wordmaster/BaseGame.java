@@ -57,8 +57,9 @@ public class BaseGame extends BaseGameActivity {
 	public void onBackPressed() {
 		if (menuDetail != null) {
 			menuDetail.hideKeyboard();
-			getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.slide_left_2, R.anim.slide_right_2).remove(menuDetail).commit();
+			menuDetail = null;
 		}
+		super.onBackPressed();
 	}
 
 }

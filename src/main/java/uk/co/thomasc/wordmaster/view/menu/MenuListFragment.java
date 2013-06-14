@@ -51,11 +51,17 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View v, int position, long id) {
+		BaseGame act = (BaseGame) getActivity();
 		Bundle args = new Bundle();
 		args.putString(MenuDetailFragment.ARG_ITEM_ID, adapter.getItem(position).getID());
-		Fragment fragment = ((BaseGame) getActivity()).menuDetail = new MenuDetailFragment();
+		Fragment fragment = act.menuDetail = new MenuDetailFragment();
 		fragment.setArguments(args);
-		getActivity().getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.slide_right, R.anim.slide_left).add(R.id.empty, fragment).commit();
+		getActivity().getSupportFragmentManager().beginTransaction()
+			.setCustomAnimations(R.anim.slide_right, R.anim.slide_left, R.anim.slide_left_2, R.anim.slide_right_2)
+			.addToBackStack("menu")
+			.hide(act.menuFragment)
+			.add(R.id.empty, fragment)
+			.commit();
 	}
 
 	@Override
