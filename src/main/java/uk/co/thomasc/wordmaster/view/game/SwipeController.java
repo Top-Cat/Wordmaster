@@ -1,16 +1,11 @@
 package uk.co.thomasc.wordmaster.view.game;
 
-import java.util.Date;
-
 import uk.co.thomasc.wordmaster.R;
-import uk.co.thomasc.wordmaster.objects.Turn;
-import uk.co.thomasc.wordmaster.objects.User;
 import uk.co.thomasc.wordmaster.util.RussoText;
 import uk.co.thomasc.wordmaster.view.menu.MenuDetailFragment;
 
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -61,8 +56,8 @@ public class SwipeController extends FragmentStatePagerAdapter {
 				rootView = new ListView(getActivity());
 				GameAdapter gm = new GameAdapter(getActivity());
 				
-				gm.add(new Turn(0, new Date(), new User("124", "Adam", Uri.EMPTY), "MEOW", 1, 2));
-				gm.add(new Turn(0, new Date(), new User("123", "Josh", Uri.EMPTY), "MEOW", 1, 2));
+				//gm.add(new Turn(0, new Date(), User.getUser("124", "Adam", Uri.EMPTY), "MEOW", 1, 2));
+				//gm.add(new Turn(0, new Date(), User.getUser("123", "Josh", Uri.EMPTY), "MEOW", 1, 2));
 				
 				((ListView) rootView).setAdapter(gm);
 			} else {

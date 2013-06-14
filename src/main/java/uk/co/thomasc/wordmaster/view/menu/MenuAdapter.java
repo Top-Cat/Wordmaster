@@ -4,11 +4,12 @@ import java.util.Comparator;
 
 import uk.co.thomasc.wordmaster.R;
 import uk.co.thomasc.wordmaster.objects.Game;
-import uk.co.thomasc.wordmaster.objects.User;
-import uk.co.thomasc.wordmaster.objects.UserLoadedListener;
+import uk.co.thomasc.wordmaster.objects.callbacks.ImageLoadedListener;
+import uk.co.thomasc.wordmaster.objects.callbacks.NameLoadedListener;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,14 +53,24 @@ public class MenuAdapter extends ArrayAdapter<Game> {
 		final Game item = getItem(position);
 		
 		((TextView) rview.findViewById(R.id.playera)).setText("Loading...");
-		item.getOpponent().getNameBlocking(new UserLoadedListener() {
+		item.getOpponent().listenForLoad(new NameLoadedListener() {
 			@Override
-			public void onUserLoaded(final User user) {
+			public void onNameLoaded(final String name) {
 				act.runOnUiThread(new Runnable() {
-					
 					@Override
 					public void run() {
-						((TextView) view.findViewById(R.id.playera)).setText("vs " + user.getName());
+						((TextView) view.findViewById(R.id.playera)).setText("vs " + name);
+					}
+				});
+			}
+		});
+		item.getOpponent().listenForImage(new ImageLoadedListener() {
+			@Override
+			public void onImageLoaded(final Drawable image) {
+				act.runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						((TextView) view.findViewById(R.id.playera)).setCompoundDrawablesWithIntrinsicBounds(image, null, null, null);
 					}
 				});
 			}

@@ -1,78 +1,121 @@
 package uk.co.thomasc.wordmaster.objects;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import uk.co.thomasc.wordmaster.BaseGame;
+import uk.co.thomasc.wordmaster.objects.callbacks.ImageLoadedListener;
+import uk.co.thomasc.wordmaster.objects.callbacks.NameLoadedListener;
 import uk.co.thomasc.wordmaster.util.BaseGameActivity;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.games.Player;
 import com.google.android.gms.plus.PlusClient.OnPersonLoadedListener;
 import com.google.android.gms.plus.model.people.Person;
 
 public class User {
 
+	private static Map<String, User> users = new HashMap<String, User>();
+	
+	public static User getUser(Person player, BaseGameActivity activityReference) {
+		if (users.containsKey(player.getId())) {
+			return users.get(player.getId());
+		} else {
+			User user = new User(player, activityReference);
+			users.put(player.getId(), user);
+			return user;
+		}
+	}
+	
+	public static User getUser(String plusID, BaseGameActivity activityReference) {
+		if (users.containsKey(plusID)) {
+			return users.get(plusID);
+		} else {
+			User user = new User(plusID, activityReference);
+			users.put(plusID, user);
+			return user;
+		}
+	}
+	
 	/* Properties */
 	private String plusID; 
 	private String name;
-	private String avatarUri;
-	private List<UserLoadedListener> listeners = new ArrayList<UserLoadedListener>();
+	private Drawable drawable;
+	private List<NameLoadedListener> userListeners = new ArrayList<NameLoadedListener>();
+	private List<ImageLoadedListener> imageListeners = new ArrayList<ImageLoadedListener>();
 	
-	public User(String plusID, String name, Uri avatarUri) {
-		this.plusID = plusID;
-		this.name = name;
-		this.avatarUri = avatarUri.toString();
+	private User(Person person, BaseGameActivity activityReference) {
+		this.plusID = person.getId();
+		this.name = person.getDisplayName();
+		loadImage(person);
 	}
 	
-	public User(Player player) {
-		this.plusID = player.getPlayerId();
-		this.name = player.getDisplayName();
-		this.avatarUri = player.getIconImageUri().toString();
-	}
-	
-	public User(String plusID, BaseGameActivity activityReference) {
+	private User(String plusID, BaseGameActivity activityReference) {
 		this.plusID = plusID;
 		activityReference.getPlusClient().loadPerson(new OnPersonLoadedListener() {
 			@Override
 			public void onPersonLoaded(ConnectionResult result, Person person) {
 				name = person.getDisplayName();
-				avatarUri = Uri.parse(person.getImage().getUrl()).toString(); //TODO: I don't think parsing then toString actually does anything :P
-				System.out.println(avatarUri);
-				for (UserLoadedListener listener : listeners) {
-					listener.onUserLoaded(User.this);
+				loadImage(person);
+				
+				for (NameLoadedListener listener : userListeners) {
+					listener.onNameLoaded(name);
 				}
-				listeners.clear();
+				userListeners.clear();
 			}
 		}, plusID);
+	}
+	
+	private void loadImage(Person person) {
+		final String avatarUri = person.getImage().getUrl().replace("sz=50", "sz=108"); // This can't be the best solution, surely?
+		
+		(new Thread() {
+			@Override
+			public void run() {
+				try {
+					URL url = new URL(avatarUri);
+					HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+					conn.connect();
+					User.this.drawable = Drawable.createFromStream(conn.getInputStream(), "player avatar");
+
+					for (ImageLoadedListener listener : imageListeners) {
+						listener.onImageLoaded(drawable);
+					}
+					imageListeners.clear();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}).start();
+	}
+	
+	public void listenForLoad(NameLoadedListener listener) {
+		if (name != null) {
+			listener.onNameLoaded(name);
+		} else {
+			userListeners.add(listener);
+		}
+	}
+	
+	public void listenForImage(ImageLoadedListener listener) {
+		if (drawable != null) {
+			listener.onImageLoaded(drawable);
+		} else {
+			imageListeners.add(listener);
+		}
 	}
 	
 	/* Getters */
 	public String getPlusID() {
 		return plusID;
 	}
-	public void getNameBlocking(UserLoadedListener listener) {
-		if (name != null) {
-			listener.onUserLoaded(this);
-		} else {
-			listeners.add(listener);
-		}
-	}
-	public Uri getAvatarURL() {
-		return Uri.parse(avatarUri);
-	}
-	public Drawable getAvatar(BaseGame activityReference) {
-		try {
-			InputStream stream = activityReference.getContentResolver().openInputStream(getAvatarURL());
-			Drawable d = Drawable.createFromStream(stream, "player avatar");
-			return d;
-		} catch (IOException ex) {
-			return null;
-		}
+	
+	public Drawable getAvatar() {
+		return drawable;
 	}
 
 	public String getName() {

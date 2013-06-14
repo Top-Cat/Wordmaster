@@ -3,6 +3,7 @@ package uk.co.thomasc.wordmaster;
 import java.util.HashMap;
 
 import uk.co.thomasc.wordmaster.objects.Game;
+import uk.co.thomasc.wordmaster.objects.User;
 import uk.co.thomasc.wordmaster.util.BaseGameActivity;
 import uk.co.thomasc.wordmaster.view.menu.MenuDetailFragment;
 import uk.co.thomasc.wordmaster.view.menu.MenuListFragment;
@@ -44,6 +45,7 @@ public class BaseGame extends BaseGameActivity {
 	
 	@Override
 	public void onSignInSucceeded() {
+		User.getUser(mHelper.getPlusClient().getCurrentPerson(), this); // Load local user into cache
 		menuFragment.onSignInSucceeded();
 	}
 	
