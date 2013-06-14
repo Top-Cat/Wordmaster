@@ -44,12 +44,12 @@ public class GameAdapter extends ArrayAdapter<Turn> {
 		if (view == null) {
 			LayoutInflater vi = (LayoutInflater) act.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			view = vi.inflate(R.layout.game_row_big, null);
-
-			Turn item = getItem(position);
-			String mostRecentMove = "2m"; //TODO: Calculate this
-			((TextView) view.findViewById(R.id.guess)).setText(item.getGuess());
-			((TextView) view.findViewById(R.id.time)).setText(mostRecentMove);
 		}
+		
+		Turn item = getItem(position);
+		String mostRecentMove = "2m"; //TODO: Calculate this
+		((TextView) view.findViewById(R.id.guess)).setText(item.getGuess());
+		((TextView) view.findViewById(R.id.time)).setText(mostRecentMove);
 
 		return view;
 	}
