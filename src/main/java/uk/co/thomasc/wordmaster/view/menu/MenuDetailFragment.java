@@ -1,5 +1,7 @@
 package uk.co.thomasc.wordmaster.view.menu;
 
+import java.util.ArrayList;
+
 import uk.co.thomasc.wordmaster.BaseGame;
 import uk.co.thomasc.wordmaster.R;
 import uk.co.thomasc.wordmaster.api.GetTurnsRequestListener;
@@ -8,7 +10,6 @@ import uk.co.thomasc.wordmaster.objects.Game;
 import uk.co.thomasc.wordmaster.objects.Turn;
 import uk.co.thomasc.wordmaster.objects.callbacks.TurnAddedListener;
 import uk.co.thomasc.wordmaster.util.CapsLockLimiter;
-import uk.co.thomasc.wordmaster.view.game.GameAdapter;
 import uk.co.thomasc.wordmaster.view.game.GameLayout;
 import uk.co.thomasc.wordmaster.view.game.SwipeController;
 import uk.co.thomasc.wordmaster.view.game.SwipeListener;
@@ -105,8 +106,18 @@ public class MenuDetailFragment extends Fragment {
 			
 			@Override
 			public void onRequestComplete(Turn[] turns) {
+				ArrayList<Turn> gameTurns = game.getTurns();
 				for (Turn turn : turns) {
-					game.addTurn(turn);
+					boolean found = false;
+					for (Turn t : gameTurns) {
+						if (t.getID() == turn.getID()) {
+							found = true;
+							break;
+						}
+					}
+					if (! found) {
+						game.addTurn(turn);
+					}
 				}
 				((BaseGame) getActivity()).updateGame(gameid, game);
 			}
@@ -114,14 +125,16 @@ public class MenuDetailFragment extends Fragment {
 	}
 	
 	private void updateTurnCount(final View rootView) {
-		getActivity().runOnUiThread(new Runnable() {
-			
-			@Override
-			public void run() {
-				System.out.println(game.getTurnNumber());
-				((TextView) rootView.findViewById(R.id.turn)).setText(Integer.toString(game.getTurnNumber()));
-			}
-		});
-		
+		BaseGame act = ((BaseGame) getActivity());
+		if (act != null) {
+			act.runOnUiThread(new Runnable() {
+				
+				@Override
+				public void run() {
+					System.out.println(game.getTurnNumber());
+					((TextView) rootView.findViewById(R.id.turn)).setText(Integer.toString(game.getTurnNumber()));
+				}
+			});
+		}
 	}
 }
