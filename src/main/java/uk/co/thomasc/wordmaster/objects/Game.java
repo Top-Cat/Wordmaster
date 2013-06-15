@@ -102,8 +102,12 @@ public class Game {
 		}
 	}
 	
-	public void listenForTurns(TurnAddedListener listener) {
+	public void addTurnListener(TurnAddedListener listener) {
 		turnListeners.add(listener);
+	}
+
+	public void removeTurnListener(TurnAddedListener listener) {
+		turnListeners.remove(listener);
 	}
 
 }

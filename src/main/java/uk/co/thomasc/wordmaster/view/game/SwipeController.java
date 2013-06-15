@@ -63,7 +63,7 @@ public class SwipeController extends FragmentStatePagerAdapter {
 				for (Turn t : game.getTurns()) {
 					gm.add(t);
 				}
-				game.listenForTurns(new TurnAddedListener() {
+				game.addTurnListener(new TurnAddedListener() {
 					
 					@Override
 					public void onTurnAdded(final Turn turn) {

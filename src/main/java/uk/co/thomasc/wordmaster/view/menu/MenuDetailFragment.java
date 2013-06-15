@@ -28,7 +28,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class MenuDetailFragment extends Fragment {
+public class MenuDetailFragment extends Fragment implements TurnAddedListener {
 
 	public static final String ARG_ITEM_ID = "gameid";
 	private Game game;
@@ -47,6 +47,12 @@ public class MenuDetailFragment extends Fragment {
 		}
 	}
 
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		game.removeTurnListener(this);
+	}
+	
 	@Override
 	public void onResume() {
 		super.onResume();
@@ -75,13 +81,7 @@ public class MenuDetailFragment extends Fragment {
 		((TextView) rootView.findViewById(R.id.oppscore)).setText(Integer.toString(game.getOpponentScore()));
 		
 		loadTurns();
-		game.listenForTurns(new TurnAddedListener() {
-			
-			@Override
-			public void onTurnAdded(final Turn turn) {
-				updateTurnCount(rootView);	
-			}
-		});
+		game.addTurnListener(this);
 
 		input = (EditText) rootView.findViewById(R.id.editText1);
 		input.addTextChangedListener(new CapsLockLimiter(input, rootView));
@@ -124,17 +124,19 @@ public class MenuDetailFragment extends Fragment {
 		});
 	}
 	
-	private void updateTurnCount(final View rootView) {
+	private void updateTurnCount() {
 		BaseGame act = ((BaseGame) getActivity());
-		if (act != null) {
-			act.runOnUiThread(new Runnable() {
-				
-				@Override
-				public void run() {
-					System.out.println(game.getTurnNumber());
-					((TextView) rootView.findViewById(R.id.turn)).setText(Integer.toString(game.getTurnNumber()));
-				}
-			});
-		}
+		act.runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				System.out.println(game.getTurnNumber());
+				((TextView) getView().findViewById(R.id.turn)).setText(Integer.toString(game.getTurnNumber()));
+			}
+		});
+	}
+
+	@Override
+	public void onTurnAdded(Turn turn) {
+		updateTurnCount();
 	}
 }
