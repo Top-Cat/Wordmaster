@@ -6,6 +6,7 @@ import uk.co.thomasc.wordmaster.api.GetTurnsRequestListener;
 import uk.co.thomasc.wordmaster.api.ServerAPI;
 import uk.co.thomasc.wordmaster.objects.Game;
 import uk.co.thomasc.wordmaster.objects.Turn;
+import uk.co.thomasc.wordmaster.objects.callbacks.TurnAddedListener;
 import uk.co.thomasc.wordmaster.util.CapsLockLimiter;
 import uk.co.thomasc.wordmaster.view.game.GameAdapter;
 import uk.co.thomasc.wordmaster.view.game.GameLayout;
@@ -59,7 +60,7 @@ public class MenuDetailFragment extends Fragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View rootView = inflater.inflate(R.layout.game_screen, container, false);
+		final View rootView = inflater.inflate(R.layout.game_screen, container, false);
 
 		game = ((BaseGame) getActivity()).gameForGameID(gameid);
 		
@@ -73,6 +74,13 @@ public class MenuDetailFragment extends Fragment {
 		((TextView) rootView.findViewById(R.id.oppscore)).setText(Integer.toString(game.getOpponentScore()));
 		
 		loadTurns();
+		game.listenForTurns(new TurnAddedListener() {
+			
+			@Override
+			public void onTurnAdded(final Turn turn) {
+				updateTurnCount(rootView);	
+			}
+		});
 
 		input = (EditText) rootView.findViewById(R.id.editText1);
 		input.addTextChangedListener(new CapsLockLimiter(input, rootView));
@@ -103,5 +111,17 @@ public class MenuDetailFragment extends Fragment {
 				((BaseGame) getActivity()).updateGame(gameid, game);
 			}
 		});
+	}
+	
+	private void updateTurnCount(final View rootView) {
+		getActivity().runOnUiThread(new Runnable() {
+			
+			@Override
+			public void run() {
+				System.out.println(game.getTurnNumber());
+				((TextView) rootView.findViewById(R.id.turn)).setText(Integer.toString(game.getTurnNumber()));
+			}
+		});
+		
 	}
 }

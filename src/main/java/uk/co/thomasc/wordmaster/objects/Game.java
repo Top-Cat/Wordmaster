@@ -96,6 +96,7 @@ public class Game {
 	/* Other Methods */
 	public void addTurn(Turn turn) {
 		turns.add(turn);
+		turnNumber = (turns.size() / 2) + 1;
 		for (TurnAddedListener l : turnListeners) {
 			l.onTurnAdded(turn);
 		}
