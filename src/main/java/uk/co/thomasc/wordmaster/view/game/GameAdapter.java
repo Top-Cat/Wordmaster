@@ -12,7 +12,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
-import android.sax.RootElement;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,14 +53,11 @@ public class GameAdapter extends ArrayAdapter<Turn> {
 		User user = item.getUser();
 		boolean isPlayer = (user.getPlusID().equals(((BaseGame) act).getUserId()));
 		boolean winningTurn = (item.getCorrectLetters() == 4);
+		int viewId = isPlayer ? R.layout.game_row_big : R.layout.game_row_small;
 		
-		if (view == null) {
+		if (view == null || view.getId() != viewId) {
 			LayoutInflater vi = (LayoutInflater) act.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			if (isPlayer) {
-				view = vi.inflate(R.layout.game_row_big, null);
-			} else {
-				view = vi.inflate(R.layout.game_row_small, null);
-			}
+			view = vi.inflate(viewId, null);
 		}
 		
 		if (isPlayer) {
