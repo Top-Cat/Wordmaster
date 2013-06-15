@@ -17,6 +17,7 @@ public class Game {
 		gameID = id;
 		this.player = player;
 		this.opponent = opponent;
+		this.turns = new ArrayList<Turn>();
 	}
 
 	/* Getters */
