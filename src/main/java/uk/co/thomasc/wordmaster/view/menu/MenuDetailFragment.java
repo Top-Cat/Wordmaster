@@ -6,6 +6,7 @@ import uk.co.thomasc.wordmaster.BaseGame;
 import uk.co.thomasc.wordmaster.R;
 import uk.co.thomasc.wordmaster.api.GetTurnsRequestListener;
 import uk.co.thomasc.wordmaster.api.ServerAPI;
+import uk.co.thomasc.wordmaster.api.TakeTurnSpinnerListener;
 import uk.co.thomasc.wordmaster.objects.Game;
 import uk.co.thomasc.wordmaster.objects.Turn;
 import uk.co.thomasc.wordmaster.objects.callbacks.ImageLoadedListener;
@@ -15,6 +16,7 @@ import uk.co.thomasc.wordmaster.util.TurnMaker;
 import uk.co.thomasc.wordmaster.view.game.GameLayout;
 import uk.co.thomasc.wordmaster.view.game.SwipeController;
 import uk.co.thomasc.wordmaster.view.game.SwipeListener;
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
@@ -31,7 +33,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class MenuDetailFragment extends Fragment implements TurnAddedListener {
+public class MenuDetailFragment extends Fragment implements TurnAddedListener, TakeTurnSpinnerListener {
 
 	public static final String ARG_ITEM_ID = "gameid";
 	private Game game;
@@ -111,7 +113,7 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener {
 		input = (EditText) rootView.findViewById(R.id.editText1);
 		input.addTextChangedListener(new CapsLockLimiter(input, rootView, guessEnabled, guessDisabled));
 		
-		((ImageView) rootView.findViewById(R.id.guess_button)).setOnClickListener(new TurnMaker(game, (BaseGame) getActivity(), rootView));
+		((ImageView) rootView.findViewById(R.id.guess_button)).setOnClickListener(new TurnMaker(game, (BaseGame) getActivity(), rootView, this));
 
 		((GameLayout) rootView.findViewById(R.id.screen_game)).setActivity(getActivity());
 
@@ -122,6 +124,8 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener {
 
 		return rootView;
 	}
+	
+	
 	
 	private void loadTurns() {
 		ServerAPI.getTurns(gameid, (BaseGame) getActivity(), new GetTurnsRequestListener() {
@@ -164,5 +168,22 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener {
 	@Override
 	public void onTurnAdded(Turn turn) {
 		updateTurnCount();
+	}
+
+	@Override
+	public void startSpinner() {
+		getView().findViewById(R.id.turn_progress).setVisibility(View.VISIBLE);
+		getView().findViewById(R.id.guess_button).setVisibility(View.GONE);
+	}
+
+	@Override
+	public void stopSpinner() {
+		getActivity().runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				getView().findViewById(R.id.guess_button).setVisibility(View.VISIBLE);
+				getView().findViewById(R.id.turn_progress).setVisibility(View.GONE);
+			}
+		});
 	}
 }
