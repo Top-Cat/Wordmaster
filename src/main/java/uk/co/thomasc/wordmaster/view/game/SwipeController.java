@@ -46,39 +46,43 @@ public class SwipeController extends FragmentStatePagerAdapter {
 		return 2;
 	}
 
-	public static class Pages extends Fragment {
+	public static class Pages extends Fragment implements TurnAddedListener {
 		public static final String ARG_OBJECT = "object";
 		private static final String SP_PREF = "WM_ALPHA_";
 		private ToggleListener listener = new ToggleListener();
 		private SharedPreferences alphaPref;
+		private GameAdapter adapter;
+		private Game game;
+		
+		@Override
+		public void onDestroy() {
+			super.onDestroy();
+			if (game != null) {
+				game.removeTurnListener(this);
+			}
+		}
+		
+		public void onTurnAdded(final Turn turn) {
+			getActivity().runOnUiThread(new Runnable() {
+				public void run() {
+					adapter.add(turn);
+				}
+			});
+		}
 
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 			View rootView;
 			if (getArguments().getBoolean(Pages.ARG_OBJECT)) {
 				rootView = new ListView(getActivity());
-				final GameAdapter gm = new GameAdapter(getActivity());
+				adapter = new GameAdapter(getActivity());
 				
-				Game game = ((BaseGame) getActivity()).gameForGameID(gid);
+				game = ((BaseGame) getActivity()).gameForGameID(gid);
 				for (Turn t : game.getTurns()) {
-					gm.add(t);
+					adapter.add(t);
 				}
-				game.addTurnListener(new TurnAddedListener() {
-					
-					@Override
-					public void onTurnAdded(final Turn turn) {
-						getActivity().runOnUiThread(new Runnable() {
-							public void run() {
-								gm.add(turn);
-							}
-						});
-					}
-				});
-				
-				//gm.add(new Turn(0, new Date(), User.getUser("124", "Adam", Uri.EMPTY), "MEOW", 1, 2));
-				//gm.add(new Turn(0, new Date(), User.getUser("123", "Josh", Uri.EMPTY), "MEOW", 1, 2));
-
-				((ListView) rootView).setAdapter(gm);
+				game.addTurnListener(this);
+				((ListView) rootView).setAdapter(adapter);
 			} else {
 				alphaPref = getActivity().getSharedPreferences(Pages.SP_PREF + getArguments().getString(MenuDetailFragment.ARG_ITEM_ID), 0);
 
