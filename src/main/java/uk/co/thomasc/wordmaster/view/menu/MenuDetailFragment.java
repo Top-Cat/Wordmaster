@@ -8,6 +8,7 @@ import uk.co.thomasc.wordmaster.api.GetTurnsRequestListener;
 import uk.co.thomasc.wordmaster.api.ServerAPI;
 import uk.co.thomasc.wordmaster.objects.Game;
 import uk.co.thomasc.wordmaster.objects.Turn;
+import uk.co.thomasc.wordmaster.objects.callbacks.ImageLoadedListener;
 import uk.co.thomasc.wordmaster.objects.callbacks.TurnAddedListener;
 import uk.co.thomasc.wordmaster.util.CapsLockLimiter;
 import uk.co.thomasc.wordmaster.view.game.GameLayout;
@@ -71,10 +72,28 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener {
 
 		game = ((BaseGame) getActivity()).gameForGameID(gameid);
 		
-		Drawable playerImage = game.getPlayer().getAvatar();
-		Drawable oppImage = game.getOpponent().getAvatar();
-		((ImageView) rootView.findViewById(R.id.playerAvatar)).setImageDrawable(playerImage);
-		((ImageView) rootView.findViewById(R.id.oppAvatar)).setImageDrawable(oppImage);
+		game.getPlayer().listenForImage(new ImageLoadedListener() {
+			@Override
+			public void onImageLoaded(final Drawable image) {
+				getActivity().runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						((ImageView) rootView.findViewById(R.id.playerAvatar)).setImageDrawable(image);
+					}
+				});
+			}
+		});
+		game.getOpponent().listenForImage(new ImageLoadedListener() {
+			@Override
+			public void onImageLoaded(final Drawable image) {
+				getActivity().runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						((ImageView) rootView.findViewById(R.id.oppAvatar)).setImageDrawable(image);
+					}
+				});
+			}
+		});
 		
 		((TextView) rootView.findViewById(R.id.turn)).setText(Integer.toString(game.getTurnNumber()));
 		((TextView) rootView.findViewById(R.id.playerscore)).setText(Integer.toString(game.getPlayerScore()));
