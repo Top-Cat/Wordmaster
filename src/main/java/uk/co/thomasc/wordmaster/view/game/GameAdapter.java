@@ -1,12 +1,14 @@
 package uk.co.thomasc.wordmaster.view.game;
 
 import java.util.Comparator;
+import java.util.Locale;
 
 import uk.co.thomasc.wordmaster.BaseGame;
 import uk.co.thomasc.wordmaster.R;
 import uk.co.thomasc.wordmaster.objects.Game;
 import uk.co.thomasc.wordmaster.objects.Turn;
 import uk.co.thomasc.wordmaster.objects.User;
+import uk.co.thomasc.wordmaster.objects.callbacks.NameLoadedListener;
 import uk.co.thomasc.wordmaster.util.TimeUtil;
 import android.app.Activity;
 import android.content.Context;
@@ -49,7 +51,7 @@ public class GameAdapter extends ArrayAdapter<Turn> {
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View view = convertView;
 		
-		Turn item = getItem(position);
+		final Turn item = getItem(position);
 		User user = item.getUser();
 		boolean isPlayer = (user.getPlusID().equals(((BaseGame) act).getUserId()));
 		boolean winningTurn = (item.getCorrectLetters() == 4);
@@ -61,10 +63,16 @@ public class GameAdapter extends ArrayAdapter<Turn> {
 		}
 		
 		if (isPlayer) {
-			((TextView) view.findViewById(R.id.guess)).setText(item.getGuess().toUpperCase());
+			((TextView) view.findViewById(R.id.guess)).setText(item.getGuess().toUpperCase(Locale.ENGLISH));
 		} else {
-			String firstName = user.getName().substring(0, user.getName().indexOf(' '));
-			((TextView) view.findViewById(R.id.guess)).setText(firstName + " guessed " + item.getGuess().toUpperCase());
+			final TextView txtview = (TextView) view.findViewById(R.id.guess);
+			user.listenForLoad(new NameLoadedListener() {
+				@Override
+				public void onNameLoaded(String name) {
+					String firstName = name.substring(0, name.indexOf(' '));
+					txtview.setText(firstName + " guessed " + item.getGuess().toUpperCase(Locale.ENGLISH));
+				}
+			});
 		}
 		
 		String timeSince = TimeUtil.timeSince(item.getUnixTimestamp());
