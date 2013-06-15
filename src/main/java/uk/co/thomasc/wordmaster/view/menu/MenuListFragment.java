@@ -52,11 +52,14 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View v, int position, long id) {
 		BaseGame act = (BaseGame) getActivity();
+		if (act.getSupportFragmentManager().getBackStackEntryCount() > 0) {
+			act.getSupportFragmentManager().popBackStack();
+		}
 		Bundle args = new Bundle();
 		args.putString(MenuDetailFragment.ARG_ITEM_ID, adapter.getItem(position).getID());
 		Fragment fragment = act.menuDetail = new MenuDetailFragment();
 		fragment.setArguments(args);
-		getActivity().getSupportFragmentManager().beginTransaction()
+		act.getSupportFragmentManager().beginTransaction()
 			.setCustomAnimations(R.anim.slide_right, R.anim.slide_left, R.anim.slide_left_2, R.anim.slide_right_2)
 			.addToBackStack("menu")
 			.hide(act.menuFragment)
