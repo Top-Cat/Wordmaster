@@ -14,6 +14,7 @@
 	<string name="game_screen">Game Screen</string>
 	<string name="oppavatar">Opponent\'s Avatar</string>
 	<string name="playeravatar">Player\'s Avatar</string>
+	<string name="crown">Winner</string>
 	
 	<string name="network_error">Network Unavailable</string>
 	<string name="network_error_help">Please check your data connection</string>
@@ -24,6 +25,7 @@
 	<string name="default_word">CATS</string>
 	<string name="default_menu_text">vs Adam</string>
 	<string name="default_opp_guess">Adam guessed DUCT</string>
+	<string name="default_opp_guess_win">Adam guessed DUCT\nAdam\'s word was FEET</string>
 	
 	<string name="whysignin">Sign in with Google to begin playing with your friends.</string>
 	<string name="itembg">List Item Background</string>
