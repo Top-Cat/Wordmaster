@@ -14,6 +14,7 @@ import uk.co.thomasc.wordmaster.view.game.GameLayout;
 import uk.co.thomasc.wordmaster.view.game.SwipeController;
 import uk.co.thomasc.wordmaster.view.game.SwipeListener;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -82,9 +83,13 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener {
 		
 		loadTurns();
 		game.addTurnListener(this);
+		
+		Resources res = getActivity().getResources();
+		Drawable guessEnabled = res.getDrawable(R.drawable.guess);
+		Drawable guessDisabled = res.getDrawable(R.drawable.guess_disabled);
 
 		input = (EditText) rootView.findViewById(R.id.editText1);
-		input.addTextChangedListener(new CapsLockLimiter(input, rootView));
+		input.addTextChangedListener(new CapsLockLimiter(input, rootView, guessEnabled, guessDisabled));
 
 		((GameLayout) rootView.findViewById(R.id.screen_game)).setActivity(getActivity());
 
@@ -129,7 +134,6 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener {
 		act.runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				System.out.println(game.getTurnNumber());
 				((TextView) getView().findViewById(R.id.turn)).setText(Integer.toString(game.getTurnNumber()));
 			}
 		});

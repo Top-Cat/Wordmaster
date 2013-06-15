@@ -36,11 +36,11 @@
 		    android:textColor="@color/maintext" />
 
 		<ImageView
-			android:id="@+id/peg0"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:src="@drawable/silverpeg"
-			android:contentDescription="@string/silverpeg" />
+		    android:id="@+id/peg0"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:contentDescription="@string/silverpeg"
+		    android:src="@drawable/silverpeg" />
 
 		<ImageView
 			android:id="@+id/peg1"
