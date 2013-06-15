@@ -79,7 +79,13 @@ public class MenuAdapter extends ArrayAdapter<Game> {
 			}
 		});
 
-		String mostRecentMove = TimeUtil.timeSince(1371212315);
+		long lastUpdate = item.getLastUpdateTimestamp();
+		String mostRecentMove;
+		if (lastUpdate > 0) {
+			mostRecentMove = TimeUtil.timeSince(lastUpdate);
+		} else {
+			mostRecentMove = "";
+		}
 		((TextView) view.findViewById(R.id.time)).setText(mostRecentMove);
 
 		return rview;

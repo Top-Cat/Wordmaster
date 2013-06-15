@@ -50,6 +50,10 @@ public class ServerAPI {
 						game.setPlayersTurn(playersTurn);
 						game.setNeedsWord(needsWord);
 						game.setScore(playerScore, opponentScore);
+						if (gameObject.get("updated") != null) {
+							long updated = (Long) gameObject.get("updated");
+							game.setLastUpdateTimestamp(updated);
+						}
 						games[i] = game;
 					}
 					listener.onRequestComplete(games);

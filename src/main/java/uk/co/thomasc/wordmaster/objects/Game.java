@@ -14,6 +14,7 @@ public class Game {
 	private String playerWord = "", opponentWord = "";
 	private boolean needsWord = false, playersTurn = false;
 	private ArrayList<TurnAddedListener> turnListeners = new ArrayList<TurnAddedListener>();
+	private long lastUpdated = 0;
 
 	/* Constructors */
 	public Game(String id, User player, User opponent) {
@@ -66,6 +67,10 @@ public class Game {
 	public User getOpponent() {
 		return opponent;
 	}
+	
+	public long getLastUpdateTimestamp() {
+		return lastUpdated;
+	}
 
 	/* Setters */
 	public void setPlayerWord(String word) {
@@ -91,6 +96,10 @@ public class Game {
 
 	public void setPlayersTurn(boolean isPlayersTurn) {
 		playersTurn = isPlayersTurn;
+	}
+	
+	public void setLastUpdateTimestamp(long timestamp) {
+		lastUpdated = timestamp;
 	}
 
 	/* Other Methods */
