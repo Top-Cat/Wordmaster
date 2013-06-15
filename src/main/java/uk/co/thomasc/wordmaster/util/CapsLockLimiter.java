@@ -46,7 +46,6 @@ public class CapsLockLimiter implements TextWatcher {
 				((TextView) rootView.findViewById(R.id.char0 + i)).setText(i >= fin.length() ? "" : fin.substring(i, i + 1));
 			}
 		}
-		System.out.println(fin);
 	}
 
 }
