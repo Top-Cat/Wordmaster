@@ -35,7 +35,8 @@ public class BaseGame extends BaseGameActivity {
 		
 		setContentView(R.layout.empty_screen);
 		
-		wideLayout = ((getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == 4) || ((getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_LARGE);
+		int screenLayoutSize = getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK;
+		wideLayout = screenLayoutSize > 2;
 		if (!wideLayout) {
 			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 		}
