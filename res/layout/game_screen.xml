@@ -1,11 +1,12 @@
 <uk.co.thomasc.wordmaster.view.game.GameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:tools="http://schemas.android.com/tools"
-	android:id="@+id/screen_game"
-	android:layout_width="fill_parent"
-	android:layout_height="match_parent"
-	android:background="@color/mainbg"
-	android:orientation="vertical"
-	android:visibility="visible">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/screen_game"
+    android:layout_width="0dp"
+    android:layout_weight="1"
+    android:layout_height="match_parent"
+    android:background="@color/mainbg"
+    android:orientation="vertical"
+    android:visibility="visible">
 
 	<LinearLayout
 		android:layout_width="match_parent"

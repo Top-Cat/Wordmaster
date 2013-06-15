@@ -2,6 +2,8 @@ package uk.co.thomasc.wordmaster;
 
 import java.util.HashMap;
 
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.graphics.Typeface;
 import android.os.Bundle;
 
@@ -23,18 +25,24 @@ public class BaseGame extends BaseGameActivity {
 
 	public MenuListFragment menuFragment;
 	public MenuDetailFragment menuDetail;
+	public boolean wideLayout = false;
 
 	public HashMap<String, Game> games = new HashMap<String, Game>();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		setContentView(R.layout.empty_screen);
+		
+		wideLayout = ((getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == 4) || ((getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_LARGE);
+		if (!wideLayout) {
+			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+		}
 
 		menuFragment = new MenuListFragment();
 
 		BaseGame.russo = Typeface.createFromAsset(getAssets(), "fonts/Russo_One.ttf");
-
-		setContentView(R.layout.empty_screen);
 
 		getSupportFragmentManager().beginTransaction().add(R.id.empty, menuFragment).commit();
 	}
