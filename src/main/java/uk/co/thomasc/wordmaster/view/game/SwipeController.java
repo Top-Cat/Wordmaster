@@ -53,6 +53,7 @@ public class SwipeController extends FragmentStatePagerAdapter {
 		private SharedPreferences alphaPref;
 		private GameAdapter adapter;
 		private Game game;
+		private ListView listView;
 		
 		@Override
 		public void onDestroy() {
@@ -66,6 +67,12 @@ public class SwipeController extends FragmentStatePagerAdapter {
 			getActivity().runOnUiThread(new Runnable() {
 				public void run() {
 					adapter.add(turn);
+					listView.post(new Runnable() {
+				        @Override
+				        public void run() {
+				            listView.setSelection(adapter.getCount() - 1);
+				        }
+				    });
 				}
 			});
 		}
@@ -83,6 +90,7 @@ public class SwipeController extends FragmentStatePagerAdapter {
 				}
 				game.addTurnListener(this);
 				((ListView) rootView).setAdapter(adapter);
+				listView = (ListView) rootView;
 			} else {
 				alphaPref = getActivity().getSharedPreferences(Pages.SP_PREF + getArguments().getString(MenuDetailFragment.ARG_ITEM_ID), 0);
 
