@@ -1,12 +1,12 @@
 <uk.co.thomasc.wordmaster.view.game.GameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/screen_game"
-    android:layout_width="0dp"
-    android:layout_weight="1"
-    android:layout_height="match_parent"
-    android:background="@color/mainbg"
-    android:orientation="vertical"
-    android:visibility="visible">
+	xmlns:tools="http://schemas.android.com/tools"
+	android:id="@+id/screen_game"
+	android:layout_width="0dp"
+	android:layout_weight="1"
+	android:layout_height="match_parent"
+	android:background="@color/mainbg"
+	android:orientation="vertical"
+	android:visibility="visible">
 
 	<LinearLayout
 		android:layout_width="match_parent"
@@ -103,8 +103,8 @@
 			android:layout_centerInParent="true" >
 
 			<uk.co.thomasc.wordmaster.util.InputRussoText
-			    android:id="@+id/char0"
-			    style="@style/inputchar" />
+				android:id="@+id/char0"
+				style="@style/inputchar" />
 
 			<uk.co.thomasc.wordmaster.util.InputRussoText
 				android:id="@+id/char1"
@@ -125,18 +125,18 @@
 			android:layout_height="wrap_content"
 			android:layout_alignParentRight="true"
 			android:layout_centerVertical="true"
-		    android:layout_marginRight="4dp"
+			android:layout_marginRight="4dp"
 			android:visibility="gone" />
 		
 		<ImageView
-		    android:id="@+id/guess_button"
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-		    android:layout_alignParentRight="true"
-		    android:layout_centerVertical="true"
-		    android:layout_marginRight="4dp"
-		    android:contentDescription="@string/guess"
-		    android:src="@drawable/guess_disabled" />
+			android:id="@+id/guess_button"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentRight="true"
+			android:layout_centerVertical="true"
+			android:layout_marginRight="4dp"
+			android:contentDescription="@string/guess"
+			android:src="@drawable/guess_disabled" />
 
 	</RelativeLayout>
 	

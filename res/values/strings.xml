@@ -15,6 +15,9 @@
 	<string name="oppavatar">Opponent\'s Avatar</string>
 	<string name="playeravatar">Player\'s Avatar</string>
 	
+	<string name="network_error">Network Unavailable</string>
+	<string name="network_error_help">Please check your data connection</string>
+	
 	<string name="default_score">0</string>
 	<string name="default_turn">0</string>
 	<string name="default_time">23h</string>
