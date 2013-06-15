@@ -74,7 +74,7 @@ public class MenuDetailFragment extends Fragment {
 		loadTurns();
 
 		input = (EditText) rootView.findViewById(R.id.editText1);
-		input.addTextChangedListener(new CapsLockLimiter(input));
+		input.addTextChangedListener(new CapsLockLimiter(input, rootView));
 
 		((GameLayout) rootView.findViewById(R.id.screen_game)).setActivity(getActivity());
 

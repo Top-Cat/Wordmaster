@@ -1,15 +1,21 @@
 package uk.co.thomasc.wordmaster.util;
 
+import uk.co.thomasc.wordmaster.R;
+
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 
 public class CapsLockLimiter implements TextWatcher {
 
 	private EditText input;
+	private View rootView;
 
-	public CapsLockLimiter(EditText input) {
+	public CapsLockLimiter(EditText input, View rootView) {
 		this.input = input;
+		this.rootView = rootView;
 	}
 
 	@Override
@@ -35,6 +41,10 @@ public class CapsLockLimiter implements TextWatcher {
 		if (!fin.equals(s.toString())) {
 			input.setText(fin);
 			input.setSelection(input.length());
+		} else {
+			for (int i = 0; i < 4; i++) {
+				((TextView) rootView.findViewById(R.id.char0 + i)).setText(i >= fin.length() ? "" : fin.substring(i, i + 1));
+			}
 		}
 		System.out.println(fin);
 	}

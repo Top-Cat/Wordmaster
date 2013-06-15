@@ -22,5 +22,16 @@
 		<item name="android:paddingLeft">4dp</item>
 		<item name="android:paddingRight">4dp</item>
 	</style>
+	
+	<style name="inputchar">
+		<item name="android:textColor">@color/footer_text</item>
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:layout_width">36dp</item>
+		<item name="android:textSize">36sp</item>
+		<item name="android:layout_marginLeft">3dp</item>
+		<item name="android:layout_marginRight">3dp</item>
+		<item name="android:layout_gravity">center</item>
+		<item name="android:gravity">center</item>
+	</style>
 
 </resources>
