@@ -7,6 +7,7 @@ import uk.co.thomasc.wordmaster.api.ServerAPI;
 import uk.co.thomasc.wordmaster.objects.Game;
 import uk.co.thomasc.wordmaster.objects.Turn;
 import uk.co.thomasc.wordmaster.util.CapsLockLimiter;
+import uk.co.thomasc.wordmaster.view.game.GameAdapter;
 import uk.co.thomasc.wordmaster.view.game.GameLayout;
 import uk.co.thomasc.wordmaster.view.game.SwipeController;
 import uk.co.thomasc.wordmaster.view.game.SwipeListener;
@@ -98,8 +99,8 @@ public class MenuDetailFragment extends Fragment {
 			public void onRequestComplete(Turn[] turns) {
 				for (Turn turn : turns) {
 					game.addTurn(turn);
-					// TODO: Add turns to the GameAdapter
 				}
+				((BaseGame) getActivity()).updateGame(gameid, game);
 			}
 		});
 	}

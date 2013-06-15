@@ -1,5 +1,12 @@
 package uk.co.thomasc.wordmaster.view.game;
 
+import uk.co.thomasc.wordmaster.BaseGame;
+import uk.co.thomasc.wordmaster.R;
+import uk.co.thomasc.wordmaster.objects.Game;
+import uk.co.thomasc.wordmaster.objects.Turn;
+import uk.co.thomasc.wordmaster.objects.callbacks.TurnAddedListener;
+import uk.co.thomasc.wordmaster.util.RussoText;
+import uk.co.thomasc.wordmaster.view.menu.MenuDetailFragment;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
@@ -13,13 +20,9 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
-import uk.co.thomasc.wordmaster.R;
-import uk.co.thomasc.wordmaster.util.RussoText;
-import uk.co.thomasc.wordmaster.view.menu.MenuDetailFragment;
-
 public class SwipeController extends FragmentStatePagerAdapter {
 
-	private String gid;
+	private static String gid;
 
 	public SwipeController(FragmentManager fm, String gameid) {
 		super(fm);
@@ -54,8 +57,20 @@ public class SwipeController extends FragmentStatePagerAdapter {
 			View rootView;
 			if (getArguments().getBoolean(Pages.ARG_OBJECT)) {
 				rootView = new ListView(getActivity());
-				GameAdapter gm = new GameAdapter(getActivity());
-
+				final GameAdapter gm = new GameAdapter(getActivity());
+				
+				Game game = ((BaseGame) getActivity()).gameForGameID(gid);
+				for (Turn t : game.getTurns()) {
+					gm.add(t);
+				}
+				game.listenForTurns(new TurnAddedListener() {
+					
+					@Override
+					public void onTurnAdded(Turn turn) {
+						gm.add(turn);
+					}
+				});
+				
 				//gm.add(new Turn(0, new Date(), User.getUser("124", "Adam", Uri.EMPTY), "MEOW", 1, 2));
 				//gm.add(new Turn(0, new Date(), User.getUser("123", "Josh", Uri.EMPTY), "MEOW", 1, 2));
 

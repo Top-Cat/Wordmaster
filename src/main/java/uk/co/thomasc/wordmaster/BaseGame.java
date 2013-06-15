@@ -53,6 +53,10 @@ public class BaseGame extends BaseGameActivity {
 	public Game gameForGameID(String gameID) {
 		return games.get(gameID);
 	}
+	
+	public void updateGame(String gameID, Game game) {
+		games.put(gameID, game);
+	}
 
 	@Override
 	public void onBackPressed() {

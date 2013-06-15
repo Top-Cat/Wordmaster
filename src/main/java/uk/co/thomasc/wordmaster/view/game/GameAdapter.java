@@ -61,10 +61,10 @@ public class GameAdapter extends ArrayAdapter<Turn> {
 		}
 		
 		if (isPlayer) {
-			((TextView) view.findViewById(R.id.guess)).setText(item.getGuess());
+			((TextView) view.findViewById(R.id.guess)).setText(item.getGuess().toUpperCase());
 		} else {
 			String firstName = user.getName().substring(0, user.getName().indexOf(' '));
-			((TextView) view.findViewById(R.id.guess)).setText(firstName + " guessed " + item.getGuess());
+			((TextView) view.findViewById(R.id.guess)).setText(firstName + " guessed " + item.getGuess().toUpperCase());
 		}
 		
 		String timeSince = TimeUtil.timeSince(item.getUnixTimestamp());

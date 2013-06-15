@@ -2,22 +2,24 @@ package uk.co.thomasc.wordmaster.objects;
 
 import java.util.ArrayList;
 
+import uk.co.thomasc.wordmaster.objects.callbacks.TurnAddedListener;
+
 public class Game {
 
 	/* Properties */
 	private String gameID;
 	private User player, opponent;
-	private ArrayList<Turn> turns;
+	private ArrayList<Turn> turns = new ArrayList<Turn>();
 	private int playerScore = 0, opponentScore = 0, turnNumber = 1;
 	private String playerWord = "", opponentWord = "";
 	private boolean needsWord = false, playersTurn = false;
+	private ArrayList<TurnAddedListener> turnListeners = new ArrayList<TurnAddedListener>();
 
 	/* Constructors */
 	public Game(String id, User player, User opponent) {
 		gameID = id;
 		this.player = player;
 		this.opponent = opponent;
-		this.turns = new ArrayList<Turn>();
 	}
 
 	/* Getters */
@@ -94,6 +96,13 @@ public class Game {
 	/* Other Methods */
 	public void addTurn(Turn turn) {
 		turns.add(turn);
+		for (TurnAddedListener l : turnListeners) {
+			l.onTurnAdded(turn);
+		}
+	}
+	
+	public void listenForTurns(TurnAddedListener listener) {
+		turnListeners.add(listener);
 	}
 
 }
