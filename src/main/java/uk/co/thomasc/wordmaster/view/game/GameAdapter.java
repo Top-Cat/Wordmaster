@@ -55,7 +55,7 @@ public class GameAdapter extends ArrayAdapter<Turn> {
 		User user = item.getUser();
 		boolean isPlayer = (user.getPlusID().equals(((BaseGame) act).getUserId()));
 		final boolean winningTurn = (item.getCorrectLetters() == 4);
-		int viewId = isPlayer ? R.layout.game_row_big : winningTurn ? R.layout.game_row_win : R.layout.game_row_small;
+		int viewId = isPlayer ? winningTurn ? R.layout.game_row_win : R.layout.game_row_big : winningTurn ? R.layout.game_row_lose : R.layout.game_row_small;
 		
 		if (view == null || view.getId() != viewId) {
 			LayoutInflater vi = (LayoutInflater) act.getSystemService(Context.LAYOUT_INFLATER_SERVICE);

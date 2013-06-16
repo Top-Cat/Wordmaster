@@ -69,13 +69,13 @@
 			android:textSize="30sp" />
 	
 		<uk.co.thomasc.wordmaster.util.RussoText
-			android:id="@+id/time"
-			android:layout_width="0dp"
-			android:layout_height="fill_parent"
-			android:layout_weight="1"
-			android:gravity="right"
-			android:text="@string/default_time"
-			android:textColor="@color/maintext" />
+		    android:id="@+id/time"
+		    android:layout_width="0dp"
+		    android:layout_height="fill_parent"
+		    android:layout_weight="1"
+		    android:gravity="right|center"
+		    android:text="@string/default_time"
+		    android:textColor="@color/maintext" />
 	
 	</LinearLayout>
 	
