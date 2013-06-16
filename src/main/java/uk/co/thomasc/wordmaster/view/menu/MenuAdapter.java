@@ -1,6 +1,8 @@
 package uk.co.thomasc.wordmaster.view.menu;
 
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 
 import android.app.Activity;
 import android.content.Context;
@@ -14,11 +16,12 @@ import android.widget.TextView;
 
 import uk.co.thomasc.wordmaster.R;
 import uk.co.thomasc.wordmaster.objects.Game;
+import uk.co.thomasc.wordmaster.objects.User;
 import uk.co.thomasc.wordmaster.objects.callbacks.ImageLoadedListener;
 import uk.co.thomasc.wordmaster.objects.callbacks.NameLoadedListener;
 import uk.co.thomasc.wordmaster.util.TimeUtil;
 
-public class MenuAdapter extends ArrayAdapter<Game> implements NameLoadedListener, ImageLoadedListener {
+public class MenuAdapter extends ArrayAdapter<Game> {
 
 	private Activity act;
 	final private Comparator<Game> comp;
@@ -42,6 +45,8 @@ public class MenuAdapter extends ArrayAdapter<Game> implements NameLoadedListene
 		super.add(object);
 		sort(comp);
 	}
+	
+	private Map<View, User> checkList = new HashMap<View, User>();
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
@@ -52,19 +57,37 @@ public class MenuAdapter extends ArrayAdapter<Game> implements NameLoadedListene
 			rview = vi.inflate(R.layout.game_info, null);
 		}
 
-		Game item = getItem(position);
+		final View view = rview;
+		final Game item = getItem(position);
+		checkList.put(view, item.getOpponent());
 
-		if (item.getOpponent().getName() == null) {
-			((TextView) rview.findViewById(R.id.playera)).setText("Loading...");
-			item.getOpponent().listenForLoad(this);
-		} else {
-			((TextView) rview.findViewById(R.id.playera)).setText("vs " + item.getOpponent().getName());
-		}
-		if (item.getOpponent().getAvatar() == null) {
-			item.getOpponent().listenForImage(this);
-		} else {
-			((ImageView) rview.findViewById(R.id.avatar)).setImageDrawable(item.getOpponent().getAvatar());
-		}
+		((TextView) rview.findViewById(R.id.playera)).setText("Loading...");
+		item.getOpponent().listenForLoad(new NameLoadedListener() {
+			@Override
+			public void onNameLoaded(final String name) {
+				act.runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						if (item.getOpponent() == checkList.get(view)) {
+							((TextView) view.findViewById(R.id.playera)).setText("vs " + name);
+						}
+					}
+				});
+			}
+		});
+		item.getOpponent().listenForImage(new ImageLoadedListener() {
+			@Override
+			public void onImageLoaded(final Drawable image) {
+				act.runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						if (item.getOpponent() == checkList.get(view)) {
+							((ImageView) view.findViewById(R.id.avatar)).setImageDrawable(image);
+						}
+					}
+				});
+			}
+		});
 
 		long lastUpdate = item.getLastUpdateTimestamp();
 		String mostRecentMove;
@@ -73,29 +96,9 @@ public class MenuAdapter extends ArrayAdapter<Game> implements NameLoadedListene
 		} else {
 			mostRecentMove = "";
 		}
-		((TextView) rview.findViewById(R.id.time)).setText(mostRecentMove);
+		((TextView) view.findViewById(R.id.time)).setText(mostRecentMove);
 
-		return rview;
-	}
-
-	@Override
-	public void onNameLoaded(String name) {
-		act.runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				notifyDataSetChanged();
-			}
-		});
-	}
-
-	@Override
-	public void onImageLoaded(Drawable image) {
-		act.runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				notifyDataSetChanged();
-			}
-		});
+		return view;
 	}
 
 }
