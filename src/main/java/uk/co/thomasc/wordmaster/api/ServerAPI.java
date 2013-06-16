@@ -129,7 +129,13 @@ public class ServerAPI {
 				long when = (Long) turnObject.get("when");
 				int correct = ((Long) turnObject.get("correct")).intValue();
 				int displaced = ((Long) turnObject.get("displaced")).intValue();
-				Turn turn = new Turn(id, new Date(when), User.getUser(playerID, activityReference), guess, correct, displaced);
+				Turn turn;
+			//	if (correct == 4) {
+			//		String opponentWord = (String) turnObject.get("oppword");
+			//		turn = new Turn(id, new Date(when), User.getUser(playerID, activityReference), guess, correct, displaced, opponentWord);
+			//	} else {
+					turn = new Turn(id, new Date(when), User.getUser(playerID, activityReference), guess, correct, displaced);
+			//	}
 				turns[i] = turn;
 			}
 			return turns;

@@ -54,8 +54,8 @@ public class GameAdapter extends ArrayAdapter<Turn> {
 		final Turn item = getItem(position);
 		User user = item.getUser();
 		boolean isPlayer = (user.getPlusID().equals(((BaseGame) act).getUserId()));
-		boolean winningTurn = (item.getCorrectLetters() == 4);
-		int viewId = isPlayer ? R.layout.game_row_big : R.layout.game_row_small;
+		final boolean winningTurn = (item.getCorrectLetters() == 4);
+		int viewId = isPlayer ? R.layout.game_row_big : winningTurn ? R.layout.game_row_win : R.layout.game_row_small;
 		
 		if (view == null || view.getId() != viewId) {
 			LayoutInflater vi = (LayoutInflater) act.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -70,7 +70,12 @@ public class GameAdapter extends ArrayAdapter<Turn> {
 				@Override
 				public void onNameLoaded(String name) {
 					String firstName = name.substring(0, name.indexOf(' '));
-					txtview.setText(firstName + " guessed " + item.getGuess().toUpperCase(Locale.ENGLISH));
+					if (winningTurn) {
+						txtview.setText(firstName + " guessed " + item.getGuess().toUpperCase(Locale.ENGLISH) +
+								"\n" + firstName + "'s word was " + item.getOpponentWord().toLowerCase(Locale.ENGLISH));
+					} else {
+						txtview.setText(firstName + " guessed " + item.getGuess().toUpperCase(Locale.ENGLISH));
+					}
 				}
 			});
 		}
@@ -86,15 +91,18 @@ public class GameAdapter extends ArrayAdapter<Turn> {
 		Drawable silver = res.getDrawable(R.drawable.silverpeg);
 		Drawable white = res.getDrawable(R.drawable.whitepeg);
 		
-		for (int peg = R.id.peg0; peg <= R.id.peg3; peg++) {
-			if (goldPegs > 0) {
-				((ImageView) view.findViewById(peg)).setImageDrawable(gold);
-				goldPegs --;
-			} else if (silverPegs > 0) {
-				((ImageView) view.findViewById(peg)).setImageDrawable(silver);
-				silverPegs --;
-			} else {
-				((ImageView) view.findViewById(peg)).setImageDrawable(white);
+		if (! winningTurn) {
+			int[] pegs = { R.id.peg0, R.id.peg1, R.id.peg2, R.id.peg3 };
+			for (int peg : pegs) {
+				if (goldPegs > 0) {
+					((ImageView) view.findViewById(peg)).setImageDrawable(gold);
+					goldPegs --;
+				} else if (silverPegs > 0) {
+					((ImageView) view.findViewById(peg)).setImageDrawable(silver);
+					silverPegs --;
+				} else {
+					((ImageView) view.findViewById(peg)).setImageDrawable(white);
+				}
 			}
 		}
 
