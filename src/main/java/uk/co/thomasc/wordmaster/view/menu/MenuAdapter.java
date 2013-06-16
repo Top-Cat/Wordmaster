@@ -18,7 +18,7 @@ import uk.co.thomasc.wordmaster.objects.callbacks.ImageLoadedListener;
 import uk.co.thomasc.wordmaster.objects.callbacks.NameLoadedListener;
 import uk.co.thomasc.wordmaster.util.TimeUtil;
 
-public class MenuAdapter extends ArrayAdapter<Game> {
+public class MenuAdapter extends ArrayAdapter<Game> implements NameLoadedListener, ImageLoadedListener {
 
 	private Activity act;
 	final private Comparator<Game> comp;
@@ -52,32 +52,19 @@ public class MenuAdapter extends ArrayAdapter<Game> {
 			rview = vi.inflate(R.layout.game_info, null);
 		}
 
-		final View view = rview;
-		final Game item = getItem(position);
+		Game item = getItem(position);
 
-		((TextView) rview.findViewById(R.id.playera)).setText("Loading...");
-		item.getOpponent().listenForLoad(new NameLoadedListener() {
-			@Override
-			public void onNameLoaded(final String name) {
-				act.runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						((TextView) view.findViewById(R.id.playera)).setText("vs " + name);
-					}
-				});
-			}
-		});
-		item.getOpponent().listenForImage(new ImageLoadedListener() {
-			@Override
-			public void onImageLoaded(final Drawable image) {
-				act.runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						((ImageView) view.findViewById(R.id.avatar)).setImageDrawable(image);
-					}
-				});
-			}
-		});
+		if (item.getOpponent().getName() == null) {
+			((TextView) rview.findViewById(R.id.playera)).setText("Loading...");
+			item.getOpponent().listenForLoad(this);
+		} else {
+			((TextView) rview.findViewById(R.id.playera)).setText("vs " + item.getOpponent().getName());
+		}
+		if (item.getOpponent().getAvatar() == null) {
+			item.getOpponent().listenForImage(this);
+		} else {
+			((ImageView) rview.findViewById(R.id.avatar)).setImageDrawable(item.getOpponent().getAvatar());
+		}
 
 		long lastUpdate = item.getLastUpdateTimestamp();
 		String mostRecentMove;
@@ -86,9 +73,29 @@ public class MenuAdapter extends ArrayAdapter<Game> {
 		} else {
 			mostRecentMove = "";
 		}
-		((TextView) view.findViewById(R.id.time)).setText(mostRecentMove);
+		((TextView) rview.findViewById(R.id.time)).setText(mostRecentMove);
 
 		return rview;
+	}
+
+	@Override
+	public void onNameLoaded(String name) {
+		act.runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				notifyDataSetChanged();
+			}
+		});
+	}
+
+	@Override
+	public void onImageLoaded(Drawable image) {
+		act.runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				notifyDataSetChanged();
+			}
+		});
 	}
 
 }
