@@ -71,7 +71,7 @@ public class BaseGame extends BaseGameActivity {
 
 	@Override
 	public void onBackPressed() {
-		if (menuDetail != null) {
+		if (menuDetail != null && getSupportFragmentManager().getBackStackEntryCount() == 1) {
 			menuDetail.hideKeyboard();
 			menuDetail = null;
 		}

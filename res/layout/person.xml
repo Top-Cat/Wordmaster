@@ -1,0 +1,24 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:padding="3dp" >
+
+	<ImageView
+		android:id="@+id/avatar"
+		android:layout_width="48dp"
+		android:layout_height="48dp"
+		android:layout_gravity="center"
+		android:src="@drawable/ic_launcher"
+		android:contentDescription="@string/oppavatar" />
+
+	<uk.co.thomasc.wordmaster.util.RussoText
+	    android:id="@+id/playera"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_gravity="center"
+	    android:gravity="center|left"
+	    android:paddingLeft="20dp"
+	    android:text="@string/default_menu_text"
+	    android:textColor="@color/header_text" />
+
+</LinearLayout>

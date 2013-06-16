@@ -22,6 +22,7 @@ import uk.co.thomasc.wordmaster.api.GetMatchesRequestListener;
 import uk.co.thomasc.wordmaster.api.ServerAPI;
 import uk.co.thomasc.wordmaster.objects.Game;
 import uk.co.thomasc.wordmaster.util.BaseGameActivity;
+import uk.co.thomasc.wordmaster.view.create.CreateGameFragment;
 
 public class MenuListFragment extends Fragment implements OnClickListener, GetMatchesRequestListener, OnItemClickListener {
 
@@ -78,6 +79,13 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 			getView().findViewById(R.id.refresh).setVisibility(View.GONE);
 			getView().findViewById(R.id.refresh_progress).setVisibility(View.VISIBLE);
 			loadGames();
+		} else if (v.getId() == R.id.startnew) {
+			Fragment fragment = new CreateGameFragment();
+			getActivity().getSupportFragmentManager().beginTransaction()
+				.setCustomAnimations(R.anim.fadein, 0, 0, R.anim.fadeout)
+				.addToBackStack("userpicker")
+				.add(R.id.outer, fragment)
+				.commit();
 		}
 	}
 
@@ -125,6 +133,7 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 
 		// Enable UI
 		getView().findViewById(R.id.refresh).setOnClickListener(this);
+		getView().findViewById(R.id.startnew).setOnClickListener(this);
 
 		loadGames();
 	}
