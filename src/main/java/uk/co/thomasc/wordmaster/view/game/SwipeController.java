@@ -53,7 +53,7 @@ public class SwipeController extends FragmentStatePagerAdapter {
 		private SharedPreferences alphaPref;
 		private GameAdapter adapter;
 		private Game game;
-		private ListView listView;
+		private AutoScrollView listView;
 		
 		@Override
 		public void onDestroy() {
@@ -81,7 +81,7 @@ public class SwipeController extends FragmentStatePagerAdapter {
 		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 			View rootView;
 			if (getArguments().getBoolean(Pages.ARG_OBJECT)) {
-				rootView = new ListView(getActivity());
+				rootView = new AutoScrollView(getActivity());
 				adapter = new GameAdapter(getActivity());
 				
 				game = ((BaseGame) getActivity()).gameForGameID(gid);
@@ -89,8 +89,8 @@ public class SwipeController extends FragmentStatePagerAdapter {
 					adapter.add(t);
 				}
 				game.addTurnListener(this);
-				((ListView) rootView).setAdapter(adapter);
-				listView = (ListView) rootView;
+				((AutoScrollView) rootView).setAdapter(adapter);
+				listView = (AutoScrollView) rootView;
 			} else {
 				alphaPref = getActivity().getSharedPreferences(Pages.SP_PREF + getArguments().getString(MenuDetailFragment.ARG_ITEM_ID), 0);
 
