@@ -33,15 +33,29 @@
 			android:paddingLeft="20dp"
 			android:text="@string/default_menu_text"
 			android:textColor="@color/maintext" />
-	
-		<uk.co.thomasc.wordmaster.util.RussoText
-			android:id="@+id/time"
+
+		<LinearLayout
 			android:layout_width="0dp"
-			android:layout_height="fill_parent"
+			android:layout_height="match_parent"
 			android:layout_weight="1"
 			android:gravity="right"
-			android:text="@string/default_time"
-			android:textColor="@color/maintext" />
+			android:orientation="vertical" >
+
+			<uk.co.thomasc.wordmaster.util.RussoText
+				android:id="@+id/time"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:gravity="right"
+				android:text="@string/default_time"
+				android:textColor="@color/maintext" />
+
+			<ImageView
+				android:id="@+id/turnindicator"
+				android:layout_width="wrap_content"
+				android:layout_height="fill_parent"
+				android:contentDescription="@string/yourturn"
+				android:src="@drawable/goldpeg" />
+		</LinearLayout>
 	
 	</LinearLayout>
 	

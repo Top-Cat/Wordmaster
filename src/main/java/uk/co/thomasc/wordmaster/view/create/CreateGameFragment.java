@@ -6,7 +6,6 @@ import com.google.android.gms.plus.model.people.Person.Collection;
 import com.google.android.gms.plus.model.people.PersonBuffer;
 
 import uk.co.thomasc.wordmaster.R;
-import uk.co.thomasc.wordmaster.objects.User;
 import uk.co.thomasc.wordmaster.util.BaseGameActivity;
 
 import android.os.Bundle;

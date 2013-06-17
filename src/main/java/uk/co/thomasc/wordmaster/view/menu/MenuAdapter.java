@@ -12,7 +12,6 @@ import uk.co.thomasc.wordmaster.objects.callbacks.NameLoadedListener;
 import uk.co.thomasc.wordmaster.util.TimeUtil;
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,8 +33,9 @@ public class MenuAdapter extends ArrayAdapter<Game> {
 		comp = new Comparator<Game>() {
 			@Override
 			public int compare(Game e1, Game e2) {
-				//TODO: Sort!
-				return e1.hashCode() > e2.hashCode() ? 0 : 1;
+				int e1v = (e1.isPlayersTurn() ? 1 : 0) | (e1.needsWord() ? 2 : 0);
+				int e2v = (e2.isPlayersTurn() ? 1 : 0) | (e2.needsWord() ? 2 : 0);
+				return e2v - e1v;
 			}
 		};
 	}
@@ -53,11 +53,10 @@ public class MenuAdapter extends ArrayAdapter<Game> {
 		View rview = convertView;
 		
 		final Game item = getItem(position);
-		int viewID = (item.isPlayersTurn() || item.needsWord()) ? R.layout.game_info_your_turn : R.layout.game_info;
 		
 		if (rview == null) {
 			LayoutInflater vi = (LayoutInflater) act.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			rview = vi.inflate(viewID, null);
+			rview = vi.inflate(R.layout.game_info, null);
 		}
 
 		final View view = rview;
@@ -100,6 +99,8 @@ public class MenuAdapter extends ArrayAdapter<Game> {
 			mostRecentMove = "";
 		}
 		((TextView) view.findViewById(R.id.time)).setText(mostRecentMove);
+		
+		view.findViewById(R.id.turnindicator).setVisibility(item.isPlayersTurn() || item.needsWord() ? View.VISIBLE : View.GONE);
 
 		return view;
 	}
