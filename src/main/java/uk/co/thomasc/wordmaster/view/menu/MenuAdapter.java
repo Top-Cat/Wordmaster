@@ -4,8 +4,15 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
+import uk.co.thomasc.wordmaster.R;
+import uk.co.thomasc.wordmaster.objects.Game;
+import uk.co.thomasc.wordmaster.objects.User;
+import uk.co.thomasc.wordmaster.objects.callbacks.ImageLoadedListener;
+import uk.co.thomasc.wordmaster.objects.callbacks.NameLoadedListener;
+import uk.co.thomasc.wordmaster.util.TimeUtil;
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,13 +20,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import uk.co.thomasc.wordmaster.R;
-import uk.co.thomasc.wordmaster.objects.Game;
-import uk.co.thomasc.wordmaster.objects.User;
-import uk.co.thomasc.wordmaster.objects.callbacks.ImageLoadedListener;
-import uk.co.thomasc.wordmaster.objects.callbacks.NameLoadedListener;
-import uk.co.thomasc.wordmaster.util.TimeUtil;
 
 public class MenuAdapter extends ArrayAdapter<Game> {
 
@@ -51,16 +51,19 @@ public class MenuAdapter extends ArrayAdapter<Game> {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View rview = convertView;
-
+		
+		final Game item = getItem(position);
+		int viewID = (item.isPlayersTurn() || item.needsWord()) ? R.layout.game_info_your_turn : R.layout.game_info;
+		
 		if (rview == null) {
 			LayoutInflater vi = (LayoutInflater) act.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			rview = vi.inflate(R.layout.game_info, null);
+			rview = vi.inflate(viewID, null);
 		}
 
 		final View view = rview;
-		final Game item = getItem(position);
+		
 		checkList.put(view, item.getOpponent());
-
+		
 		((TextView) rview.findViewById(R.id.playera)).setText("Loading...");
 		item.getOpponent().listenForLoad(new NameLoadedListener() {
 			@Override
