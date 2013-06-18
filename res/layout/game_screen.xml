@@ -14,11 +14,11 @@
 		android:background="@color/header" >
 
 		<ImageView
-			android:id="@+id/playerAvatar"
-			android:layout_width="48dp"
-			android:layout_height="48dp"
-			android:src="@drawable/ic_launcher"
-			android:contentDescription="@string/playeravatar" />
+		    android:id="@+id/playerAvatar"
+		    android:layout_width="48dp"
+		    android:layout_height="48dp"
+		    android:contentDescription="@string/playeravatar"
+		    android:src="@drawable/person" />
 
 		<uk.co.thomasc.wordmaster.util.RussoText
 			android:id="@+id/playerscore"
@@ -52,11 +52,11 @@
 			android:textSize="40sp" />
 
 		<ImageView
-			android:id="@+id/oppAvatar"
-			android:layout_width="48dp"
-			android:layout_height="48dp"
-			android:src="@drawable/ic_launcher"
-			android:contentDescription="@string/oppavatar" />
+		    android:id="@+id/oppAvatar"
+		    android:layout_width="48dp"
+		    android:layout_height="48dp"
+		    android:contentDescription="@string/oppavatar"
+		    android:src="@drawable/person" />
 
 	</LinearLayout>
 
