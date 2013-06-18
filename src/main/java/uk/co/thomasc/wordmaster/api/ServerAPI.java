@@ -34,29 +34,33 @@ public class ServerAPI {
 			@Override
 			public void run() {
 				JSONObject json = ServerAPI.makeRequest("getMatches", playerID);
-				boolean success = ((Boolean) json.get("success")).booleanValue();
-				if (success) {
-					JSONArray response = (JSONArray) json.get("response");
-					Game[] games = new Game[response.size()];
-					for (int i = 0; i < response.size(); i++) {
-						JSONObject gameObject = (JSONObject) response.get(i);
-						String opponentID = (String) gameObject.get("oppid");
-						String gameID = (String) gameObject.get("gameid");
-						boolean needsWord = (Boolean) gameObject.get("needword");
-						int playerScore = ((Long) gameObject.get("pscore")).intValue();
-						int opponentScore = ((Long) gameObject.get("oscore")).intValue();
-						boolean playersTurn = (Boolean) gameObject.get("turn");
-						Game game = new Game(gameID, User.getUser(playerID, activityReference), User.getUser(opponentID, activityReference));
-						game.setPlayersTurn(playersTurn);
-						game.setNeedsWord(needsWord);
-						game.setScore(playerScore, opponentScore);
-						if (gameObject.get("updated") != null) {
-							long updated = (Long) gameObject.get("updated");
-							game.setLastUpdateTimestamp(updated);
+				if (json != null) {
+					boolean success = ((Boolean) json.get("success")).booleanValue();
+					if (success) {
+						JSONArray response = (JSONArray) json.get("response");
+						Game[] games = new Game[response.size()];
+						for (int i = 0; i < response.size(); i++) {
+							JSONObject gameObject = (JSONObject) response.get(i);
+							String opponentID = (String) gameObject.get("oppid");
+							String gameID = (String) gameObject.get("gameid");
+							boolean needsWord = (Boolean) gameObject.get("needword");
+							int playerScore = ((Long) gameObject.get("pscore")).intValue();
+							int opponentScore = ((Long) gameObject.get("oscore")).intValue();
+							boolean playersTurn = (Boolean) gameObject.get("turn");
+							Game game = new Game(gameID, User.getUser(playerID, activityReference), User.getUser(opponentID, activityReference));
+							game.setPlayersTurn(playersTurn);
+							game.setNeedsWord(needsWord);
+							game.setScore(playerScore, opponentScore);
+							if (gameObject.get("updated") != null) {
+								long updated = (Long) gameObject.get("updated");
+								game.setLastUpdateTimestamp(updated);
+							}
+							games[i] = game;
 						}
-						games[i] = game;
+						listener.onRequestComplete(games);
+					} else {
+						listener.onRequestFailed();
 					}
-					listener.onRequestComplete(games);
 				} else {
 					listener.onRequestFailed();
 				}

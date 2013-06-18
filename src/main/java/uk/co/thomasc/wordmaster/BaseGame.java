@@ -47,11 +47,13 @@ public class BaseGame extends BaseGameActivity {
 
 		BaseGame.russo = Typeface.createFromAsset(getAssets(), "fonts/Russo_One.ttf");
 
-		getSupportFragmentManager().beginTransaction().add(R.id.empty, menuFragment).commit();
+		getSupportFragmentManager().beginTransaction().add(R.id.empty, menuFragment).addToBackStack("top").commit();
 	}
 
 	@Override
 	public void onSignInFailed() {
+		getSupportFragmentManager().popBackStack("top", 0); // Close any open games
+		menuFragment.onSignInFailed();
 		System.out.println("oh noes!");
 	}
 
@@ -71,7 +73,7 @@ public class BaseGame extends BaseGameActivity {
 
 	@Override
 	public void onBackPressed() {
-		if (menuDetail != null && getSupportFragmentManager().getBackStackEntryCount() == 1) {
+		if (menuDetail != null && getSupportFragmentManager().getBackStackEntryAt(getSupportFragmentManager().getBackStackEntryCount() - 1).getName().equals("menu")) {
 			menuDetail.hideKeyboard();
 			menuDetail = null;
 		}

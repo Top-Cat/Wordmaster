@@ -54,9 +54,7 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View v, int position, long id) {
 		BaseGame act = (BaseGame) getActivity();
-		if (act.getSupportFragmentManager().getBackStackEntryCount() > 0) {
-			act.getSupportFragmentManager().popBackStack();
-		}
+		act.getSupportFragmentManager().popBackStack("menu", 1);
 		Bundle args = new Bundle();
 		args.putString(MenuDetailFragment.ARG_ITEM_ID, adapter.getItem(position).getID());
 		Fragment fragment = act.menuDetail = new MenuDetailFragment();
@@ -136,6 +134,21 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 		getView().findViewById(R.id.startnew).setOnClickListener(this);
 
 		loadGames();
+	}
+
+	public void onSignInFailed() {
+		// Clear games list
+		((BaseGame) getActivity()).games.clear();
+		adapter.clear();
+		
+		// Show login button
+		getView().findViewById(R.id.main_feed).setVisibility(View.GONE);
+		getView().findViewById(R.id.button_sign_in).setVisibility(View.VISIBLE);
+		getView().findViewById(R.id.whysignin).setVisibility(View.VISIBLE);
+
+		// Disable UI
+		getView().findViewById(R.id.refresh).setOnClickListener(null);
+		getView().findViewById(R.id.startnew).setOnClickListener(null);
 	}
 
 }
