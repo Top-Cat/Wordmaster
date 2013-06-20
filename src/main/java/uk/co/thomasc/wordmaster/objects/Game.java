@@ -129,7 +129,7 @@ public class Game {
 		turns.add(turn);
 		if (turn.getID() > latestTurnId) {
 			latestTurnId = turn.getID();
-			turnNumber = (turn.getTurnNum() + 1) / 2;
+			turnNumber = (turn.getTurnNum() / 2) + 1;
 			setLastUpdateTimestamp(turn.getUnixTimestamp());
 		}
 		if (turn.getID() < oldestTurnId) {
