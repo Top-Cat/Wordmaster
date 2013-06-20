@@ -1,14 +1,11 @@
 package uk.co.thomasc.wordmaster;
 
-import java.util.HashMap;
-
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.widget.LinearLayout;
 
-import uk.co.thomasc.wordmaster.objects.Game;
 import uk.co.thomasc.wordmaster.objects.User;
 import uk.co.thomasc.wordmaster.util.BaseGameActivity;
 import uk.co.thomasc.wordmaster.view.menu.MenuDetailFragment;
@@ -27,8 +24,6 @@ public class BaseGame extends BaseGameActivity {
 	public MenuListFragment menuFragment;
 	public MenuDetailFragment menuDetail;
 	public boolean wideLayout = false;
-
-	public HashMap<String, Game> games = new HashMap<String, Game>();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -61,14 +56,6 @@ public class BaseGame extends BaseGameActivity {
 	public void onSignInSucceeded() {
 		User.getUser(mHelper.getPlusClient().getCurrentPerson(), this); // Load local user into cache
 		menuFragment.onSignInSucceeded();
-	}
-
-	public Game gameForGameID(String gameID) {
-		return games.get(gameID);
-	}
-	
-	public void updateGame(String gameID, Game game) {
-		games.put(gameID, game);
 	}
 
 	@Override

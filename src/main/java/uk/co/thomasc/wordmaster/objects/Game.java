@@ -1,11 +1,31 @@
 package uk.co.thomasc.wordmaster.objects;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import uk.co.thomasc.wordmaster.objects.callbacks.TurnAddedListener;
 
 public class Game {
 
+	public static HashMap<String, Game> games = new HashMap<String, Game>();
+	
+	public static Game getGame(String id) {
+		if (games.containsKey(id)) {
+			return games.get(id);
+		}
+		return null;
+	}
+	
+	public static Game getGame(String id, User player, User opponent) {
+		if (games.containsKey(id)) {
+			return games.get(id);
+		} else {
+			Game newGame = new Game(id, player, opponent);
+			games.put(id, newGame);
+			return newGame;
+		}
+	}
+	
 	/* Properties */
 	private String gameID;
 	private User player, opponent;
@@ -19,7 +39,7 @@ public class Game {
 	private long lastUpdated = 0;
 
 	/* Constructors */
-	public Game(String id, User player, User opponent) {
+	private Game(String id, User player, User opponent) {
 		gameID = id;
 		this.player = player;
 		this.opponent = opponent;
@@ -110,6 +130,7 @@ public class Game {
 		if (turn.getID() > latestTurnId) {
 			latestTurnId = turn.getID();
 			turnNumber = (turn.getTurnNum() + 1) / 2;
+			setLastUpdateTimestamp(turn.getUnixTimestamp());
 		}
 		if (turn.getID() < oldestTurnId) {
 			oldestTurnId = turn.getID();

@@ -1,6 +1,5 @@
 package uk.co.thomasc.wordmaster.view.game;
 
-import uk.co.thomasc.wordmaster.BaseGame;
 import uk.co.thomasc.wordmaster.R;
 import uk.co.thomasc.wordmaster.objects.Game;
 import uk.co.thomasc.wordmaster.objects.Turn;
@@ -83,7 +82,7 @@ public class SwipeController extends FragmentStatePagerAdapter {
 				rootView = new AutoScrollView(getActivity());
 				adapter = new GameAdapter(getActivity());
 				
-				game = ((BaseGame) getActivity()).gameForGameID(gid);
+				game = Game.getGame(gid);
 				for (Turn t : game.getTurns()) {
 					adapter.add(t);
 				}

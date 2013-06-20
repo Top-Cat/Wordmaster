@@ -27,7 +27,7 @@ import uk.co.thomasc.wordmaster.view.create.CreateGameFragment;
 
 public class MenuListFragment extends Fragment implements OnClickListener, GetMatchesRequestListener, OnItemClickListener {
 
-	private MenuAdapter adapter;
+	public MenuAdapter adapter;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -91,19 +91,16 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 		getView().findViewById(R.id.refresh).setVisibility(View.GONE);
 		getView().findViewById(R.id.refresh_progress).setVisibility(View.VISIBLE);
 		
-		((BaseGame) getActivity()).games.clear();
 		ServerAPI.getMatches(((BaseGameActivity) getActivity()).getUserId(), (BaseGame) getActivity(), this);
 	}
 
 	@Override
 	public void onRequestComplete(final Game[] games) {
-		final BaseGame act = (BaseGame) getActivity();
 		getActivity().runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
 				adapter.clear();
 				for (Game game : games) {
-					act.games.put(game.getID(), game);
 					adapter.add(game);
 				}
 				refreshOver();
@@ -144,7 +141,6 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 
 	public void onSignInFailed() {
 		// Clear games list
-		((BaseGame) getActivity()).games.clear();
 		adapter.clear();
 		
 		// Show login button

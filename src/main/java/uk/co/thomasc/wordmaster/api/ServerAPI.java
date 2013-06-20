@@ -47,7 +47,7 @@ public class ServerAPI {
 							int playerScore = ((Long) gameObject.get("pscore")).intValue();
 							int opponentScore = ((Long) gameObject.get("oscore")).intValue();
 							boolean playersTurn = (Boolean) gameObject.get("turn");
-							Game game = new Game(gameID, User.getUser(playerID, activityReference), User.getUser(opponentID, activityReference));
+							Game game = Game.getGame(gameID, User.getUser(playerID, activityReference), User.getUser(opponentID, activityReference));
 							game.setPlayersTurn(playersTurn);
 							game.setNeedsWord(needsWord);
 							game.setScore(playerScore, opponentScore);
@@ -194,7 +194,7 @@ public class ServerAPI {
 					JSONArray response = (JSONArray) json.get("response");
 					JSONObject gameObject = (JSONObject) response.get(0);
 					String gameID = (String) gameObject.get("gameid");
-					Game game = new Game(gameID, User.getUser(playerID, activityReference), User.getUser(opponentID, activityReference));
+					Game game = Game.getGame(gameID, User.getUser(playerID, activityReference), User.getUser(opponentID, activityReference));
 					listener.onRequestComplete(game);
 				} else {
 					listener.onRequestFailed();

@@ -1,7 +1,5 @@
 package uk.co.thomasc.wordmaster.util;
 
-import java.util.ArrayList;
-
 import uk.co.thomasc.wordmaster.BaseGame;
 import uk.co.thomasc.wordmaster.R;
 import uk.co.thomasc.wordmaster.api.GetTurnsRequestListener;
@@ -10,6 +8,7 @@ import uk.co.thomasc.wordmaster.api.TakeTurnRequestListener;
 import uk.co.thomasc.wordmaster.api.TakeTurnSpinnerListener;
 import uk.co.thomasc.wordmaster.objects.Game;
 import uk.co.thomasc.wordmaster.objects.Turn;
+
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
@@ -17,16 +16,13 @@ import android.widget.EditText;
 public class TurnMaker implements OnClickListener, TakeTurnRequestListener, GetTurnsRequestListener {
 
 	private Game game;
-	private Turn turn;
 	private BaseGame activity;
-	private View rootView;
 	private EditText input;
 	private TakeTurnSpinnerListener listener;
 	
 	public TurnMaker(Game game, BaseGame activity, View rootView, TakeTurnSpinnerListener listener) {
 		this.game = game;
 		this.activity = activity;
-		this.rootView = rootView;
 		this.listener = listener;
 		input = (EditText) rootView.findViewById(R.id.editText1);
 	}
@@ -75,10 +71,10 @@ public class TurnMaker implements OnClickListener, TakeTurnRequestListener, GetT
 			game.addTurn(turn);
 		}
 		game.setPlayersTurn(false);
-		activity.updateGame(game.getID(), game);
 		activity.runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
+				activity.menuFragment.adapter.notifyDataSetChanged();
 				input.setText("");
 			}
 		});

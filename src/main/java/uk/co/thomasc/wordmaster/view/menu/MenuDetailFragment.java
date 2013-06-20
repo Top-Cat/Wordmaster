@@ -73,7 +73,7 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener, T
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		final View rootView = inflater.inflate(R.layout.game_screen, container, false);
 
-		game = ((BaseGame) getActivity()).gameForGameID(gameid);
+		game = Game.getGame(gameid);
 		
 		game.getPlayer().listenForImage(new ImageLoadedListener() {
 			@Override
@@ -149,7 +149,6 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener, T
 						game.addTurn(turn);
 					}
 				}
-				((BaseGame) getActivity()).updateGame(gameid, game);
 			}
 		});
 	}
