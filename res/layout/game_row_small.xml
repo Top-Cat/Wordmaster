@@ -16,7 +16,7 @@
 		android:layout_height="fill_parent"
 		android:padding="5dp" >
 
-		<uk.co.thomasc.wordmaster.util.RussoText
+		<uk.co.thomasc.wordmaster.view.TimeSinceText
 			android:id="@+id/time"
 			android:layout_width="0dp"
 			android:layout_height="fill_parent"
@@ -25,7 +25,7 @@
 			android:text="@string/default_time"
 			android:textColor="@color/maintext" />
 
-		<uk.co.thomasc.wordmaster.util.RussoText
+		<uk.co.thomasc.wordmaster.view.RussoText
 			android:id="@+id/guess"
 			android:layout_width="0dp"
 			android:layout_height="wrap_content"

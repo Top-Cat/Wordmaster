@@ -20,7 +20,7 @@
 		    android:contentDescription="@string/playeravatar"
 		    android:src="@drawable/person" />
 
-		<uk.co.thomasc.wordmaster.util.RussoText
+		<uk.co.thomasc.wordmaster.view.RussoText
 			android:id="@+id/playerscore"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
@@ -40,7 +40,7 @@
 			android:paddingBottom="5dp"
 			android:src="@drawable/page_note_left" />
 
-		<uk.co.thomasc.wordmaster.util.RussoText
+		<uk.co.thomasc.wordmaster.view.RussoText
 			android:id="@+id/oppscore"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
@@ -79,14 +79,14 @@
 			android:orientation="vertical"
 			android:paddingLeft="10dp" >
 
-			<uk.co.thomasc.wordmaster.util.RussoText
+			<uk.co.thomasc.wordmaster.view.RussoText
 				android:id="@+id/turnTitle"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:text="@string/turn"
 				android:textColor="@color/footer_text" />
 
-			<uk.co.thomasc.wordmaster.util.RussoText
+			<uk.co.thomasc.wordmaster.view.RussoText
 				android:id="@+id/turn"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
@@ -102,19 +102,19 @@
 			android:layout_height="match_parent"
 			android:layout_centerInParent="true" >
 
-			<uk.co.thomasc.wordmaster.util.InputRussoText
+			<uk.co.thomasc.wordmaster.view.InputRussoText
 				android:id="@+id/char0"
 				style="@style/inputchar" />
 
-			<uk.co.thomasc.wordmaster.util.InputRussoText
+			<uk.co.thomasc.wordmaster.view.InputRussoText
 				android:id="@+id/char1"
 				style="@style/inputchar" />
 
-			<uk.co.thomasc.wordmaster.util.InputRussoText
+			<uk.co.thomasc.wordmaster.view.InputRussoText
 				android:id="@+id/char2"
 				style="@style/inputchar" />
 
-			<uk.co.thomasc.wordmaster.util.InputRussoText
+			<uk.co.thomasc.wordmaster.view.InputRussoText
 				android:id="@+id/char3"
 				style="@style/inputchar" />
 		</LinearLayout>

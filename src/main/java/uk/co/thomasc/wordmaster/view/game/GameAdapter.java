@@ -8,7 +8,8 @@ import uk.co.thomasc.wordmaster.R;
 import uk.co.thomasc.wordmaster.objects.Turn;
 import uk.co.thomasc.wordmaster.objects.User;
 import uk.co.thomasc.wordmaster.objects.callbacks.NameLoadedListener;
-import uk.co.thomasc.wordmaster.util.TimeUtil;
+import uk.co.thomasc.wordmaster.view.TimeSinceText;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
@@ -77,8 +78,7 @@ public class GameAdapter extends ArrayAdapter<Turn> {
 			});
 		}
 		
-		String timeSince = TimeUtil.timeSince(item.getUnixTimestamp());
-		((TextView) view.findViewById(R.id.time)).setText(timeSince);
+		((TimeSinceText) view.findViewById(R.id.time)).setTimestamp(item.getUnixTimestamp());
 		
 		int goldPegs = item.getCorrectLetters();
 		int silverPegs = item.getDisplacedLetters();

@@ -4,7 +4,7 @@ import uk.co.thomasc.wordmaster.R;
 import uk.co.thomasc.wordmaster.objects.Game;
 import uk.co.thomasc.wordmaster.objects.Turn;
 import uk.co.thomasc.wordmaster.objects.callbacks.TurnAddedListener;
-import uk.co.thomasc.wordmaster.util.RussoText;
+import uk.co.thomasc.wordmaster.view.RussoText;
 import uk.co.thomasc.wordmaster.view.menu.MenuDetailFragment;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;

@@ -1,4 +1,4 @@
-package uk.co.thomasc.wordmaster.util;
+package uk.co.thomasc.wordmaster.view;
 
 import uk.co.thomasc.wordmaster.R;
 

@@ -1,4 +1,4 @@
-package uk.co.thomasc.wordmaster.util;
+package uk.co.thomasc.wordmaster.view;
 
 import android.content.Context;
 import android.graphics.Canvas;

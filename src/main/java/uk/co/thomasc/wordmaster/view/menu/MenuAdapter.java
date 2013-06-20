@@ -8,7 +8,8 @@ import uk.co.thomasc.wordmaster.R;
 import uk.co.thomasc.wordmaster.objects.Game;
 import uk.co.thomasc.wordmaster.objects.callbacks.ImageLoadedListener;
 import uk.co.thomasc.wordmaster.objects.callbacks.NameLoadedListener;
-import uk.co.thomasc.wordmaster.util.TimeUtil;
+import uk.co.thomasc.wordmaster.view.TimeSinceText;
+
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -94,31 +95,7 @@ public class MenuAdapter extends ArrayAdapter<Game> {
 			}
 		});
 
-		(new Thread() {
-			public void run() {
-				while (item == checkList.get(view)) {
-					final long lastUpdate = item.getLastUpdateTimestamp();
-					act.runOnUiThread(new Runnable() {
-						@Override
-						public void run() {
-							String mostRecentMove;
-							if (lastUpdate > 0) {
-								mostRecentMove = TimeUtil.timeSince(lastUpdate);
-							} else {
-								mostRecentMove = "";
-							}
-							((TextView) view.findViewById(R.id.time)).setText(mostRecentMove);
-						}
-					});
-					
-					try {
-						Thread.sleep(TimeUtil.sleepTime(lastUpdate));
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		}).start();
+		((TimeSinceText) view.findViewById(R.id.time)).setTimestamp(item.getLastUpdateTimestamp());
 		
 		view.findViewById(R.id.turnindicator).setVisibility(item.isPlayersTurn() || item.needsWord() ? View.VISIBLE : View.GONE);
 

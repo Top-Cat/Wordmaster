@@ -57,7 +57,7 @@
 				android:contentDescription="@string/whitepeg" />
 		</LinearLayout>
 	
-		<uk.co.thomasc.wordmaster.util.RussoText
+		<uk.co.thomasc.wordmaster.view.RussoText
 			android:id="@+id/guess"
 			android:layout_width="wrap_content"
 			android:layout_height="47dp"
@@ -68,7 +68,7 @@
 			android:textColor="@color/maintext"
 			android:textSize="30sp" />
 	
-		<uk.co.thomasc.wordmaster.util.RussoText
+		<uk.co.thomasc.wordmaster.view.TimeSinceText
 			android:id="@+id/time"
 			android:layout_width="0dp"
 			android:layout_height="fill_parent"
