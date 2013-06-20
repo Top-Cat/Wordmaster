@@ -33,7 +33,7 @@ public class GameAdapter extends ArrayAdapter<Turn> {
 		comp = new Comparator<Turn>() {
 			@Override
 			public int compare(Turn e1, Turn e2) {
-				return e1.getUnixTimestamp() == e2.getUnixTimestamp() ? 0 : e1.getUnixTimestamp() > e2.getUnixTimestamp() ? 1 : -1;
+				return (int) (e1.getUnixTimestamp() - e2.getUnixTimestamp());
 			}
 		};
 	}

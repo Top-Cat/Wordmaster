@@ -18,5 +18,18 @@ public class TimeUtil {
 			return (diff / 86400) + "d";
 		}
 	}
+
+	public static long sleepTime(long time) {
+		long diff = now() - time;
+		if (diff / 60 == 0) {
+			return 1000;
+		} else if (diff / 3600 == 0) {
+			return 30 * 1000;
+		} else if (diff / 86400 == 0) {
+			return 10 * 60 * 1000;
+		} else {
+			return 60 * 60 * 1000;
+		}
+	}
 	
 }

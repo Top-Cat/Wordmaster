@@ -6,7 +6,6 @@ import java.util.Map;
 
 import uk.co.thomasc.wordmaster.R;
 import uk.co.thomasc.wordmaster.objects.Game;
-import uk.co.thomasc.wordmaster.objects.User;
 import uk.co.thomasc.wordmaster.objects.callbacks.ImageLoadedListener;
 import uk.co.thomasc.wordmaster.objects.callbacks.NameLoadedListener;
 import uk.co.thomasc.wordmaster.util.TimeUtil;
@@ -35,7 +34,11 @@ public class MenuAdapter extends ArrayAdapter<Game> {
 			public int compare(Game e1, Game e2) {
 				int e1v = (e1.isPlayersTurn() ? 1 : 0) | (e1.needsWord() ? 2 : 0);
 				int e2v = (e2.isPlayersTurn() ? 1 : 0) | (e2.needsWord() ? 2 : 0);
-				return e2v - e1v;
+				int r = e2v - e1v;
+				if (r == 0) {
+					return (int) (e2.getLastUpdateTimestamp() - e1.getLastUpdateTimestamp());
+				}
+				return r;
 			}
 		};
 	}
@@ -46,7 +49,7 @@ public class MenuAdapter extends ArrayAdapter<Game> {
 		sort(comp);
 	}
 	
-	private Map<View, User> checkList = new HashMap<View, User>();
+	private Map<View, Game> checkList = new HashMap<View, Game>();
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
@@ -61,7 +64,7 @@ public class MenuAdapter extends ArrayAdapter<Game> {
 
 		final View view = rview;
 		
-		checkList.put(view, item.getOpponent());
+		checkList.put(view, item);
 		
 		((TextView) rview.findViewById(R.id.playera)).setText("Loading...");
 		item.getOpponent().listenForLoad(new NameLoadedListener() {
@@ -70,7 +73,7 @@ public class MenuAdapter extends ArrayAdapter<Game> {
 				act.runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
-						if (item.getOpponent() == checkList.get(view)) {
+						if (item == checkList.get(view)) {
 							((TextView) view.findViewById(R.id.playera)).setText("vs " + name);
 						}
 					}
@@ -83,7 +86,7 @@ public class MenuAdapter extends ArrayAdapter<Game> {
 				act.runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
-						if (item.getOpponent() == checkList.get(view)) {
+						if (item == checkList.get(view)) {
 							((ImageView) view.findViewById(R.id.avatar)).setImageDrawable(image);
 						}
 					}
@@ -91,14 +94,31 @@ public class MenuAdapter extends ArrayAdapter<Game> {
 			}
 		});
 
-		long lastUpdate = item.getLastUpdateTimestamp();
-		String mostRecentMove;
-		if (lastUpdate > 0) {
-			mostRecentMove = TimeUtil.timeSince(lastUpdate);
-		} else {
-			mostRecentMove = "";
-		}
-		((TextView) view.findViewById(R.id.time)).setText(mostRecentMove);
+		(new Thread() {
+			public void run() {
+				while (item == checkList.get(view)) {
+					final long lastUpdate = item.getLastUpdateTimestamp();
+					act.runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							String mostRecentMove;
+							if (lastUpdate > 0) {
+								mostRecentMove = TimeUtil.timeSince(lastUpdate);
+							} else {
+								mostRecentMove = "";
+							}
+							((TextView) view.findViewById(R.id.time)).setText(mostRecentMove);
+						}
+					});
+					
+					try {
+						Thread.sleep(TimeUtil.sleepTime(lastUpdate));
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}).start();
 		
 		view.findViewById(R.id.turnindicator).setVisibility(item.isPlayersTurn() || item.needsWord() ? View.VISIBLE : View.GONE);
 
