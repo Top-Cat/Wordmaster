@@ -6,6 +6,7 @@ public class Turn {
 
 	/* Properties */
 	private int turnID;
+	private int turnNum;
 	private Date timestamp;
 	private User user;
 	private String guess;
@@ -13,8 +14,9 @@ public class Turn {
 	private String opponentWord;
 
 	/* Constructors */
-	public Turn(int id, Date timestamp, User user, String guess, int correctLetters, int displacedLetters) {
+	public Turn(int id, int num, Date timestamp, User user, String guess, int correctLetters, int displacedLetters) {
 		turnID = id;
+		this.turnNum = num;
 		this.timestamp = timestamp;
 		this.user = user;
 		this.guess = guess;
@@ -23,14 +25,18 @@ public class Turn {
 		this.opponentWord = "";
 	}
 	
-	public Turn(int id, Date timestamp, User user, String guess, int correctLetters, int displacedLetters, String opponentWord) {
-		this(id, timestamp, user, guess, correctLetters, displacedLetters);
+	public Turn(int id, int num, Date timestamp, User user, String guess, int correctLetters, int displacedLetters, String opponentWord) {
+		this(id, num, timestamp, user, guess, correctLetters, displacedLetters);
 		this.opponentWord = opponentWord;
 	}
 
 	/* Getters */
 	public int getID() {
 		return turnID;
+	}
+	
+	public int getTurnNum() {
+		return turnNum;
 	}
 
 	public Date getTimestamp() {

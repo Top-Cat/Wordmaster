@@ -10,6 +10,8 @@ public class Game {
 	private String gameID;
 	private User player, opponent;
 	private ArrayList<Turn> turns = new ArrayList<Turn>();
+	private int latestTurnId = 0;
+	private int oldestTurnId = 0;
 	private int playerScore = 0, opponentScore = 0, turnNumber = 1;
 	private String playerWord = "", opponentWord = "";
 	private boolean needsWord = false, playersTurn = false;
@@ -105,7 +107,13 @@ public class Game {
 	/* Other Methods */
 	public void addTurn(Turn turn) {
 		turns.add(turn);
-		turnNumber = (turns.size() / 2) + 1;
+		if (turn.getID() > latestTurnId) {
+			latestTurnId = turn.getID();
+			turnNumber = (turn.getTurnNum() + 1) / 2;
+		}
+		if (turn.getID() < oldestTurnId) {
+			oldestTurnId = turn.getID();
+		}
 		for (TurnAddedListener l : turnListeners) {
 			l.onTurnAdded(turn);
 		}
@@ -117,6 +125,14 @@ public class Game {
 
 	public void removeTurnListener(TurnAddedListener listener) {
 		turnListeners.remove(listener);
+	}
+
+	public int getPivotLatest() {
+		return latestTurnId;
+	}
+	
+	public int getPivotOldest() {
+		return oldestTurnId;
 	}
 
 }

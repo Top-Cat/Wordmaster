@@ -51,10 +51,9 @@ public class TurnMaker implements OnClickListener, TakeTurnRequestListener, GetT
 		boolean validWord = result[1];
 		
 		if (success) {
-			ArrayList<Turn> turns = game.getTurns();
-			Turn pivot = turns.get(turns.size() - 1);
-			if (pivot != null) {
-				ServerAPI.getTurns(game.getID(), pivot.getID(), 1, activity, this);
+			int pivot = game.getPivotLatest();
+			if (pivot > 0) {
+				ServerAPI.getTurns(game.getID(), pivot, 1, activity, this);
 			} else {
 				ServerAPI.getTurns(game.getID(), activity, this);
 			}
@@ -72,7 +71,6 @@ public class TurnMaker implements OnClickListener, TakeTurnRequestListener, GetT
 
 	@Override
 	public void onRequestComplete(Turn[] turns) {
-		ArrayList<Turn> gameTurns = game.getTurns();
 		for (Turn turn : turns) {
 			game.addTurn(turn);
 		}
