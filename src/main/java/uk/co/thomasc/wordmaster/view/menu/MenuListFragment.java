@@ -60,14 +60,16 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 		args.putString(MenuDetailFragment.ARG_ITEM_ID, adapter.getItem(position).getID());
 		Fragment fragment = act.menuDetail = new MenuDetailFragment();
 		fragment.setArguments(args);
-		FragmentTransaction ft = act.getSupportFragmentManager().beginTransaction()
-			.setCustomAnimations(R.anim.slide_right, R.anim.slide_left, R.anim.slide_left_2, R.anim.slide_right_2)
-			.addToBackStack("game")
-			.add(R.id.empty, fragment);
+		FragmentTransaction ft = act.getSupportFragmentManager().beginTransaction();
 		if (!act.wideLayout) {
-			ft.hide(act.menuFragment);
+			ft.setCustomAnimations(R.anim.slide_right, R.anim.slide_left, R.anim.slide_left_2, R.anim.slide_right_2)
+				.hide(act.menuFragment);
+		} else {
+			ft.setCustomAnimations(R.anim.wide_in, 0, 0, R.anim.wide_out);
 		}
-		ft.commit();
+		ft.addToBackStack("game")
+			.add(R.id.empty, fragment)
+			.commit();
 	}
 
 	@Override

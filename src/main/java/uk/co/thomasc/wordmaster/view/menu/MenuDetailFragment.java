@@ -158,7 +158,9 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener, T
 		act.runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				((TextView) getView().findViewById(R.id.turn)).setText(Integer.toString(game.getTurnNumber()));
+				if (getView() != null) {
+					((TextView) getView().findViewById(R.id.turn)).setText(Integer.toString(game.getTurnNumber()));
+				}
 			}
 		});
 	}
