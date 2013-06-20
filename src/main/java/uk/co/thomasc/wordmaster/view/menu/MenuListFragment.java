@@ -22,6 +22,7 @@ import uk.co.thomasc.wordmaster.api.GetMatchesRequestListener;
 import uk.co.thomasc.wordmaster.api.ServerAPI;
 import uk.co.thomasc.wordmaster.objects.Game;
 import uk.co.thomasc.wordmaster.util.BaseGameActivity;
+import uk.co.thomasc.wordmaster.view.DialogPanel;
 import uk.co.thomasc.wordmaster.view.create.CreateGameFragment;
 
 public class MenuListFragment extends Fragment implements OnClickListener, GetMatchesRequestListener, OnItemClickListener {
@@ -74,8 +75,6 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 		if (v.getId() == R.id.button_sign_in) {
 			((BaseGameActivity) getActivity()).beginUserInitiatedSignIn();
 		} else if (v.getId() == R.id.refresh && getView().findViewById(R.id.refresh).getVisibility() == View.VISIBLE) {
-			getView().findViewById(R.id.refresh).setVisibility(View.GONE);
-			getView().findViewById(R.id.refresh_progress).setVisibility(View.VISIBLE);
 			loadGames();
 		} else if (v.getId() == R.id.startnew) {
 			Fragment fragment = new CreateGameFragment();
@@ -88,6 +87,10 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 	}
 
 	private void loadGames() {
+		//Change UI
+		getView().findViewById(R.id.refresh).setVisibility(View.GONE);
+		getView().findViewById(R.id.refresh_progress).setVisibility(View.VISIBLE);
+		
 		((BaseGame) getActivity()).games.clear();
 		ServerAPI.getMatches(((BaseGameActivity) getActivity()).getUserId(), (BaseGame) getActivity(), this);
 	}
@@ -114,6 +117,9 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 			@Override
 			public void run() {
 				// TODO Tell the user their parents have been murdered
+				DialogPanel netError = (DialogPanel) getView().findViewById(R.id.dialog_panel);
+				netError.show();
+				
 				refreshOver();
 			}
 		});

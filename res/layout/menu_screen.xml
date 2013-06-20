@@ -1,4 +1,4 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:tools="http://schemas.android.com/tools"
 	android:id="@+id/screen_menu"
 	android:layout_width="0dp"
@@ -8,6 +8,7 @@
 	android:orientation="vertical" >
 
 	<LinearLayout
+		android:id="@+id/nav"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:background="@color/menu_header" >
@@ -51,18 +52,22 @@
 			android:contentDescription="@string/game_screen"
 			android:padding="5dp"
 			android:src="@drawable/content_new" />
-
 	</LinearLayout>
-	
+
 	<com.google.android.gms.common.SignInButton
 		android:id="@+id/button_sign_in"
-		style="@style/SignInButton" />
+		style="@style/SignInButton"
+		android:layout_below="@id/nav"
+		android:layout_centerHorizontal="true" >
+
+	</com.google.android.gms.common.SignInButton>
 
 	<TextView
 		android:id="@+id/whysignin"
 		android:layout_width="200dp"
 		android:layout_height="wrap_content"
-		android:layout_gravity="center"
+		android:layout_below="@id/button_sign_in"
+		android:layout_centerHorizontal="true"
 		android:gravity="center"
 		android:text="@string/whysignin"
 		android:textColor="@color/whysignin" />
@@ -71,8 +76,11 @@
 		android:id="@+id/main_feed"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
+		android:layout_below="@id/whysignin"
 		android:visibility="gone" >
 
 	</ListView>
+	
+	<uk.co.thomasc.wordmaster.view.DialogPanel android:id="@+id/dialog_panel" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_below="@id/nav" />
 
-</LinearLayout>
+</RelativeLayout>
