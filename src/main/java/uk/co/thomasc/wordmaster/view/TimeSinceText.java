@@ -49,7 +49,11 @@ public class TimeSinceText extends RussoText {
 				post(new Runnable() {
 					@Override
 					public void run() {
-						setText(TimeUtil.timeSince(timestamp));
+						if (timestamp != 0) {
+							setText(TimeUtil.timeSince(timestamp));
+						} else {
+							setText("");
+						}
 					}
 				});
 				try {
