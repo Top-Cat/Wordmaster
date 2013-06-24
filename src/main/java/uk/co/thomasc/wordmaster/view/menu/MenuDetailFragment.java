@@ -38,6 +38,8 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener, T
 	private Game game;
 	private String gameid;
 	private EditText input;
+	private RefresherThread refresher;
+	private boolean running = true;
 
 	public MenuDetailFragment() {
 
@@ -55,6 +57,7 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener, T
 	public void onDestroy() {
 		super.onDestroy();
 		game.removeTurnListener(this);
+		running = false;
 	}
 	
 	@Override
@@ -121,6 +124,10 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener, T
 		mPager.setAdapter(swipe);
 		mPager.setOnPageChangeListener(new SwipeListener((ImageView) rootView.findViewById(R.id.indicator)));
 
+		refresher = new RefresherThread();
+		running = true;
+		refresher.start();
+		
 		return rootView;
 	}
 	
@@ -185,5 +192,21 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener, T
 				getView().findViewById(R.id.turn_progress).setVisibility(View.GONE);
 			}
 		});
+	}
+	
+	private class RefresherThread extends Thread {
+		
+		@Override
+		public void run() {
+			while (running) {
+				loadTurns();
+				try {
+					Thread.sleep(30000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
 	}
 }
