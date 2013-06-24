@@ -18,16 +18,20 @@ import com.google.android.gms.common.SignInButton;
 
 import uk.co.thomasc.wordmaster.BaseGame;
 import uk.co.thomasc.wordmaster.R;
+import uk.co.thomasc.wordmaster.api.CreateGameRequestListener;
 import uk.co.thomasc.wordmaster.api.GetMatchesRequestListener;
 import uk.co.thomasc.wordmaster.api.ServerAPI;
 import uk.co.thomasc.wordmaster.objects.Game;
+import uk.co.thomasc.wordmaster.objects.callbacks.GameCreationListener;
 import uk.co.thomasc.wordmaster.util.BaseGameActivity;
 import uk.co.thomasc.wordmaster.view.DialogPanel;
 import uk.co.thomasc.wordmaster.view.create.CreateGameFragment;
 
-public class MenuListFragment extends Fragment implements OnClickListener, GetMatchesRequestListener, OnItemClickListener {
+public class MenuListFragment extends Fragment implements OnClickListener, GetMatchesRequestListener, OnItemClickListener, GameCreationListener {
 
 	public MenuAdapter adapter;
+	
+	private CreateGameFragment createGameFragment;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -54,22 +58,7 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View v, int position, long id) {
-		BaseGame act = (BaseGame) getActivity();
-		act.getSupportFragmentManager().popBackStack("game", 1);
-		Bundle args = new Bundle();
-		args.putString(MenuDetailFragment.ARG_ITEM_ID, adapter.getItem(position).getID());
-		Fragment fragment = act.menuDetail = new MenuDetailFragment();
-		fragment.setArguments(args);
-		FragmentTransaction ft = act.getSupportFragmentManager().beginTransaction();
-		if (!act.wideLayout) {
-			ft.setCustomAnimations(R.anim.slide_right, R.anim.slide_left, R.anim.slide_left_2, R.anim.slide_right_2)
-				.hide(act.menuFragment);
-		} else {
-			ft.setCustomAnimations(R.anim.wide_in, 0, 0, R.anim.wide_out);
-		}
-		ft.addToBackStack("game")
-			.add(R.id.empty, fragment)
-			.commit();
+		goToGame(adapter.getItem(position).getID());
 	}
 
 	@Override
@@ -79,11 +68,12 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 		} else if (v.getId() == R.id.refresh && getView().findViewById(R.id.refresh).getVisibility() == View.VISIBLE) {
 			loadGames();
 		} else if (v.getId() == R.id.startnew) {
-			Fragment fragment = new CreateGameFragment();
+			createGameFragment = new CreateGameFragment();
+			createGameFragment.setGameCreatedListener(this);
 			getActivity().getSupportFragmentManager().beginTransaction()
 				.setCustomAnimations(R.anim.fadein, 0, 0, R.anim.fadeout)
 				.addToBackStack("userpicker")
-				.add(R.id.outer, fragment)
+				.add(R.id.outer, createGameFragment)
 				.commit();
 		}
 	}
@@ -115,13 +105,31 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 		getActivity().runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				// TODO Tell the user their parents have been murdered
 				DialogPanel netError = (DialogPanel) getView().findViewById(R.id.dialog_panel);
 				netError.show();
 				
 				refreshOver();
 			}
 		});
+	}
+	
+	private void goToGame(String gameID) {
+		BaseGame act = (BaseGame) getActivity();
+		act.getSupportFragmentManager().popBackStack("game", 1);
+		Bundle args = new Bundle();
+		args.putString(MenuDetailFragment.ARG_ITEM_ID, gameID);
+		Fragment fragment = act.menuDetail = new MenuDetailFragment();
+		fragment.setArguments(args);
+		FragmentTransaction ft = act.getSupportFragmentManager().beginTransaction();
+		if (!act.wideLayout) {
+			ft.setCustomAnimations(R.anim.slide_right, R.anim.slide_left, R.anim.slide_left_2, R.anim.slide_right_2)
+				.hide(act.menuFragment);
+		} else {
+			ft.setCustomAnimations(R.anim.wide_in, 0, 0, R.anim.wide_out);
+		}
+		ft.addToBackStack("game")
+			.add(R.id.empty, fragment)
+			.commit();
 	}
 
 	private void refreshOver() {
@@ -153,6 +161,38 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 		// Disable UI
 		getView().findViewById(R.id.refresh).setOnClickListener(null);
 		getView().findViewById(R.id.startnew).setOnClickListener(null);
+	}
+
+	@Override
+	public void onCreateGame(String playerID, String opponentID) {
+		// TODO: Hide the CreateGameFragment
+		getActivity().getSupportFragmentManager().beginTransaction()
+			.setCustomAnimations(0, R.anim.fadeout, 0, 0)
+			.remove(createGameFragment)
+			.commit();
+		Game existingGame = Game.getGame(playerID, opponentID);
+		if (existingGame != null) {
+			goToGame(existingGame.getID());
+		} else {
+			// TODO: Create a new game
+			ServerAPI.createGame(playerID, opponentID, (BaseGame) getActivity(), new CreateGameRequestListener() {
+				@Override
+				public void onRequestFailed() {
+					// TODO: Tell the user unicorns died out with the dinosaurs
+				}
+				
+				@Override
+				public void onRequestComplete(final Game game) {
+					getActivity().runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							adapter.add(game);
+						}
+					});
+					goToGame(game.getID());
+				}
+			});
+		}
 	}
 
 }

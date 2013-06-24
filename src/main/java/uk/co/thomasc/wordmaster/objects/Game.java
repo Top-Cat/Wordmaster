@@ -26,6 +26,16 @@ public class Game {
 		}
 	}
 	
+	public static Game getGame(String playerID, String opponentID) {
+		for (Game g : games.values()) {
+			if (g.getPlayer().getPlusID().equals(playerID) &&
+					g.getOpponent().getPlusID().equals(opponentID)) {
+				return g;
+			}
+		}
+		return null;
+	}
+	
 	/* Properties */
 	private String gameID;
 	private User player, opponent;

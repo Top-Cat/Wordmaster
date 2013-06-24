@@ -191,9 +191,8 @@ public class ServerAPI {
 				JSONObject json = ServerAPI.makeRequest("createGame", playerID, opponentID);
 				boolean success = ((Boolean) json.get("success")).booleanValue();
 				if (success) {
-					JSONArray response = (JSONArray) json.get("response");
-					JSONObject gameObject = (JSONObject) response.get(0);
-					String gameID = (String) gameObject.get("gameid");
+					JSONObject response = (JSONObject) json.get("response");
+					String gameID = (String) response.get("gameid");
 					Game game = Game.getGame(gameID, User.getUser(playerID, activityReference), User.getUser(opponentID, activityReference));
 					listener.onRequestComplete(game);
 				} else {
