@@ -95,7 +95,13 @@ public class MenuAdapter extends ArrayAdapter<Game> {
 			}
 		});
 
-		((TimeSinceText) view.findViewById(R.id.time)).setTimestamp(item.getLastUpdateTimestamp());
+		long time = item.getLastUpdateTimestamp();
+		if (time != 0) {
+			view.findViewById(R.id.time).setVisibility(View.VISIBLE);
+			((TimeSinceText) view.findViewById(R.id.time)).setTimestamp(time);
+		} else {
+			view.findViewById(R.id.time).setVisibility(View.GONE);
+		}
 		
 		view.findViewById(R.id.turnindicator).setVisibility(item.isPlayersTurn() || item.needsWord() ? View.VISIBLE : View.GONE);
 
