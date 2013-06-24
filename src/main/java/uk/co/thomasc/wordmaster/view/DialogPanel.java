@@ -12,11 +12,13 @@ import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 public class DialogPanel extends FrameLayout {
 
 	private View container;
 	private static Handler h;
+	private final int displayTime = 10000;
 	
 	public DialogPanel(Context context) {
 		super(context);
@@ -41,7 +43,7 @@ public class DialogPanel extends FrameLayout {
 		container.setVisibility(View.GONE);
 	}
 	
-	public void show() {
+	public void show(Errors error) {
 		if (container.getVisibility() == View.GONE) {
 			container.setVisibility(View.VISIBLE);
 			Animation showAnim = AnimationUtils.loadAnimation(getContext(), R.anim.slide_down);
@@ -52,11 +54,16 @@ public class DialogPanel extends FrameLayout {
 				public void onAnimationRepeat(Animation animation) {}
 				@Override
 				public void onAnimationEnd(Animation animation) {
-					h.sendEmptyMessageDelayed(0, 10000); // Time to show dialog for
+					h.sendEmptyMessageDelayed(0, displayTime); // Time to show dialog for
 				}
 			});
 			container.startAnimation(showAnim);
+		} else {
+			h.removeMessages(0);
+			h.sendEmptyMessageDelayed(0, displayTime);
 		}
+		((TextView) findViewById(R.id.errortxt)).setText(error.getTitle());
+		((TextView) findViewById(R.id.errorhelp)).setText(error.getSubtitle());
 	}
 	
 	private static class TimerHandler extends Handler {

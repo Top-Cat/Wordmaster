@@ -25,6 +25,7 @@ import uk.co.thomasc.wordmaster.objects.Game;
 import uk.co.thomasc.wordmaster.objects.callbacks.GameCreationListener;
 import uk.co.thomasc.wordmaster.util.BaseGameActivity;
 import uk.co.thomasc.wordmaster.view.DialogPanel;
+import uk.co.thomasc.wordmaster.view.Errors;
 import uk.co.thomasc.wordmaster.view.create.CreateGameFragment;
 
 public class MenuListFragment extends Fragment implements OnClickListener, GetMatchesRequestListener, OnItemClickListener, GameCreationListener {
@@ -106,7 +107,7 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 			@Override
 			public void run() {
 				DialogPanel netError = (DialogPanel) getView().findViewById(R.id.dialog_panel);
-				netError.show();
+				netError.show(Errors.NETWORK);
 				
 				refreshOver();
 			}
