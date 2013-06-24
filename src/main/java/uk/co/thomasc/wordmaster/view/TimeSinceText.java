@@ -55,7 +55,7 @@ public class TimeSinceText extends RussoText {
 				try {
 					Thread.sleep(TimeUtil.sleepTime(timestamp));
 				} catch (InterruptedException e) {
-					e.printStackTrace();
+					// Ignore this exception, it's used to refresh the text
 				}
 			}
 		}
@@ -64,6 +64,7 @@ public class TimeSinceText extends RussoText {
 
 	public void setTimestamp(long lastUpdateTimestamp) {
 		this.timestamp = lastUpdateTimestamp;
+		thread.interrupt();
 	}
 	
 }
