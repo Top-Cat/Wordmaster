@@ -78,7 +78,7 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 		}
 	}
 
-	private void loadGames() {
+	public void loadGames() {
 		//Change UI
 		getView().findViewById(R.id.refresh).setVisibility(View.GONE);
 		getView().findViewById(R.id.refresh_progress).setVisibility(View.VISIBLE);

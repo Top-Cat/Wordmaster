@@ -64,6 +64,7 @@ public class BaseGame extends BaseGameActivity {
 		if (menuDetail != null && topId.equals("game")) {
 			menuDetail.hideKeyboard();
 			menuDetail = null;
+			menuFragment.loadGames();
 		}
 		if (topId.equals("top")) {
 			finish();
