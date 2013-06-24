@@ -11,7 +11,7 @@
 	<color name="hiddenletter">#FFAAAAAA</color>
 	<color name="strike">#FF888888</color>
 	
-	<color name="network_error_bg">#FFE56969</color>
+	<color name="network_error_bg">#FF982525</color>
 	<color name="network_error_txt">#FFFFFFFF</color>
 	
 	<color name="menu_header">#FFCCCCCC</color>
