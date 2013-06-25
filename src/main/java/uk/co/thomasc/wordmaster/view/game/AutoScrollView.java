@@ -2,9 +2,8 @@ package uk.co.thomasc.wordmaster.view.game;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.widget.ListView;
 
-public class AutoScrollView extends ListView {
+public class AutoScrollView extends PullToRefreshListView {
 
 	public AutoScrollView(Context context) {
 		super(context);
