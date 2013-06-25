@@ -21,6 +21,10 @@
 	<string name="network_error_help">Please check your data connection</string>
 	<string name="turn_error">It\'s not your turn!</string>
 	<string name="turn_error_help">Wait for your opponent to take their turn.</string>
+	<string name="word_error">Not a word</string>
+	<string name="word_error_help">CAKE is not in the WordMaster dictionary.</string>
+	<string name="server_error">Server Error</string>
+	<string name="server_error_help">Something went wrong. Try again in a moment or two.</string>
 	
 	<string name="default_score">0</string>
 	<string name="default_turn">0</string>

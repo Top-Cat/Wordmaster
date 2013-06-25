@@ -4,7 +4,9 @@ import uk.co.thomasc.wordmaster.R;
 
 public enum Errors {
 	NETWORK(R.string.network_error, R.string.network_error_help),
-	TURN(R.string.turn_error, R.string.turn_error_help)
+	TURN(R.string.turn_error, R.string.turn_error_help),
+	WORD(R.string.word_error, R.string.word_error_help),
+	SERVER(R.string.server_error, R.string.server_error_help)
 	;
 	
 	private int title;

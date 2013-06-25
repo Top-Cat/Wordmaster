@@ -66,6 +66,14 @@ public class DialogPanel extends FrameLayout {
 		((TextView) findViewById(R.id.errorhelp)).setText(error.getSubtitle());
 	}
 	
+	public void setTitle(String title) {
+		((TextView) findViewById(R.id.errortxt)).setText(title);
+	}
+	
+	public void setSubtitle(String subtitle) {
+		((TextView) findViewById(R.id.errorhelp)).setText(subtitle);
+	}
+	
 	private static class TimerHandler extends Handler {
 		private DialogPanel dialogPanel;
 		

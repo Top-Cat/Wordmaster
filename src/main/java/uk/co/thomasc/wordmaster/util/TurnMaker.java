@@ -15,6 +15,7 @@ import uk.co.thomasc.wordmaster.view.Errors;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
+import android.widget.TextView;
 
 public class TurnMaker implements OnClickListener, TakeTurnRequestListener, GetTurnsRequestListener {
 
@@ -60,11 +61,22 @@ public class TurnMaker implements OnClickListener, TakeTurnRequestListener, GetT
 		} else {
 			if (validWord) {
 				listener.stopSpinner();
-				// TODO: Tell the user seal bars aren't tasty
+				activity.runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						errorMessage.show(Errors.SERVER);
+					}
+				});
 			} else {
 				listener.stopSpinner();
-				System.out.println("That's not a word.");
-				// TODO: Tell the user they need a new dictionary
+				activity.runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						errorMessage.show(Errors.WORD);
+						final String guess = input.getText().toString();
+						errorMessage.setSubtitle(guess + " is not in the WordMaster dictionary.");
+					}
+				});
 			}
 		}
 	}
@@ -88,7 +100,7 @@ public class TurnMaker implements OnClickListener, TakeTurnRequestListener, GetT
 	@Override
 	public void onRequestFailed() {
 		listener.stopSpinner();
-		// TODO: Tell the user their soul was sold to satan
+		errorMessage.show(Errors.NETWORK);
 	}
 
 }
