@@ -1,6 +1,7 @@
 package uk.co.thomasc.wordmaster.view.menu;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import uk.co.thomasc.wordmaster.BaseGame;
 import uk.co.thomasc.wordmaster.R;
@@ -142,17 +143,10 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener, T
 			}
 			
 			@Override
-			public void onRequestComplete(Turn[] turns) {
+			public void onRequestComplete(List<Turn> turns) {
 				ArrayList<Turn> gameTurns = game.getTurns();
 				for (Turn turn : turns) {
-					boolean found = false;
-					for (Turn t : gameTurns) {
-						if (t.getID() == turn.getID()) {
-							found = true;
-							break;
-						}
-					}
-					if (!found) {
+					if (!gameTurns.contains(turn)) {
 						game.addTurn(turn);
 					}
 				}

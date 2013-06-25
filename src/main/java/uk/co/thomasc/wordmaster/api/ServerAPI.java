@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -82,7 +84,7 @@ public class ServerAPI {
 			@Override
 			public void run() {
 				JSONObject json = ServerAPI.makeRequest("getTurns", gameID);
-				Turn[] turns = ServerAPI.getTurns(json, activityReference);
+				List<Turn> turns = ServerAPI.getTurns(json, activityReference);
 				if (turns != null) {
 					listener.onRequestComplete(turns);
 				} else {
@@ -109,7 +111,7 @@ public class ServerAPI {
 			@Override
 			public void run() {
 				JSONObject json = ServerAPI.makeRequest("getTurns", gameID, String.valueOf(turnID), Integer.toString(number));
-				Turn[] turns = ServerAPI.getTurns(json, activityReference);
+				List<Turn> turns = ServerAPI.getTurns(json, activityReference);
 				if (turns != null) {
 					listener.onRequestComplete(turns);
 				} else {
@@ -120,11 +122,11 @@ public class ServerAPI {
 		t.start();
 	}
 
-	private static Turn[] getTurns(JSONObject json, BaseGame activityReference) {
+	private static List<Turn> getTurns(JSONObject json, BaseGame activityReference) {
 		boolean success = ((Boolean) json.get("success")).booleanValue();
 		if (success) {
 			JSONArray response = (JSONArray) json.get("response");
-			Turn[] turns = new Turn[response.size()];
+			List<Turn> turns = new ArrayList<Turn>();
 			for (int i = 0; i < response.size(); i++) {
 				JSONObject turnObject = (JSONObject) response.get(i);
 				int id = ((Long) turnObject.get("turnid")).intValue();
@@ -134,14 +136,16 @@ public class ServerAPI {
 				long when = (Long) turnObject.get("when");
 				int correct = ((Long) turnObject.get("correct")).intValue();
 				int displaced = ((Long) turnObject.get("displaced")).intValue();
-				Turn turn;
-				if (correct == 4) {
-					String opponentWord = (String) turnObject.get("oppword");
-					turn = new Turn(id, num, new Date(when), User.getUser(playerID, activityReference), guess, correct, displaced, opponentWord);
-				} else {
-					turn = new Turn(id, num, new Date(when), User.getUser(playerID, activityReference), guess, correct, displaced);
+				if (num > 0 || activityReference.getUserId().equals(playerID)) {
+					Turn turn;
+					if (correct == 4) {
+						String opponentWord = (String) turnObject.get("oppword");
+						turn = new Turn(id, num, new Date(when), User.getUser(playerID, activityReference), guess, correct, displaced, opponentWord);
+					} else {
+						turn = new Turn(id, num, new Date(when), User.getUser(playerID, activityReference), guess, correct, displaced);
+					}
+					turns.add(turn);
 				}
-				turns[i] = turn;
 			}
 			return turns;
 		} else {

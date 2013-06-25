@@ -1,5 +1,7 @@
 package uk.co.thomasc.wordmaster.util;
 
+import java.util.List;
+
 import uk.co.thomasc.wordmaster.BaseGame;
 import uk.co.thomasc.wordmaster.R;
 import uk.co.thomasc.wordmaster.api.GetTurnsRequestListener;
@@ -68,7 +70,7 @@ public class TurnMaker implements OnClickListener, TakeTurnRequestListener, GetT
 	}
 
 	@Override
-	public void onRequestComplete(Turn[] turns) {
+	public void onRequestComplete(List<Turn> turns) {
 		for (Turn turn : turns) {
 			game.addTurn(turn);
 		}

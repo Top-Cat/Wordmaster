@@ -66,4 +66,14 @@ public class Turn {
 	public String getOpponentWord() {
 		return opponentWord;
 	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof Turn)) {
+			return false;
+		}
+		Turn other = (Turn) o;
+		return other.getID() == getID();
+	}
+	
 }

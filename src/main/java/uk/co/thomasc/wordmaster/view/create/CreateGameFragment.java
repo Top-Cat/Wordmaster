@@ -2,7 +2,6 @@ package uk.co.thomasc.wordmaster.view.create;
 
 import uk.co.thomasc.wordmaster.BaseGame;
 import uk.co.thomasc.wordmaster.R;
-import uk.co.thomasc.wordmaster.objects.Game;
 import uk.co.thomasc.wordmaster.objects.callbacks.GameCreationListener;
 import uk.co.thomasc.wordmaster.util.BaseGameActivity;
 import android.os.Bundle;
