@@ -1,0 +1,23 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent" >
+
+	<ImageView
+		android:id="@+id/itembg"
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		android:layout_gravity="bottom"
+		android:contentDescription="@string/itembg"
+		android:src="@drawable/itembg"
+		android:state_pressed="true" />
+
+	<uk.co.thomasc.wordmaster.view.RussoText
+	    android:id="@+id/guess"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_margin="10dp"
+	    android:gravity="center"
+	    android:text="@string/default_opp_guess"
+	    android:textColor="@color/maintext" />
+	
+</FrameLayout>

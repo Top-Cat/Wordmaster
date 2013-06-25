@@ -54,6 +54,9 @@ public class GameAdapter extends ArrayAdapter<Turn> {
 		boolean isPlayer = (user.getPlusID().equals(((BaseGame) act).getUserId()));
 		final boolean winningTurn = (item.getCorrectLetters() == 4);
 		int viewId = isPlayer ? (winningTurn ? R.layout.game_row_win : R.layout.game_row_big) : (winningTurn ? R.layout.game_row_lose : R.layout.game_row_small);
+		if (item.getTurnNum() == 0) {
+			viewId = R.layout.game_row_new_round;
+		}
 		
 		if (view == null || view.getId() != viewId) {
 			LayoutInflater vi = (LayoutInflater) act.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -61,7 +64,11 @@ public class GameAdapter extends ArrayAdapter<Turn> {
 		}
 		
 		if (isPlayer) {
-			((TextView) view.findViewById(R.id.guess)).setText(item.getGuess().toUpperCase(Locale.ENGLISH));
+			if (item.getTurnNum() == 0) {
+				((TextView) view.findViewById(R.id.guess)).setText("Your word for this round is " + item.getGuess().toUpperCase(Locale.ENGLISH));
+			} else {
+				((TextView) view.findViewById(R.id.guess)).setText(item.getGuess().toUpperCase(Locale.ENGLISH));
+			}
 		} else {
 			final TextView txtview = (TextView) view.findViewById(R.id.guess);
 			user.listenForLoad(new NameLoadedListener() {
@@ -78,27 +85,29 @@ public class GameAdapter extends ArrayAdapter<Turn> {
 			});
 		}
 		
-		((TimeSinceText) view.findViewById(R.id.time)).setTimestamp(item.getUnixTimestamp());
-		
-		int goldPegs = item.getCorrectLetters();
-		int silverPegs = item.getDisplacedLetters();
-		
-		Resources res = act.getResources();
-		Drawable gold = res.getDrawable(R.drawable.goldpeg);
-		Drawable silver = res.getDrawable(R.drawable.silverpeg);
-		Drawable white = res.getDrawable(R.drawable.whitepeg);
-		
-		if (! winningTurn) {
-			int[] pegs = { R.id.peg0, R.id.peg1, R.id.peg2, R.id.peg3 };
-			for (int peg : pegs) {
-				if (goldPegs > 0) {
-					((ImageView) view.findViewById(peg)).setImageDrawable(gold);
-					goldPegs --;
-				} else if (silverPegs > 0) {
-					((ImageView) view.findViewById(peg)).setImageDrawable(silver);
-					silverPegs --;
-				} else {
-					((ImageView) view.findViewById(peg)).setImageDrawable(white);
+		if (item.getTurnNum() != 0) {
+			((TimeSinceText) view.findViewById(R.id.time)).setTimestamp(item.getUnixTimestamp());
+			
+			int goldPegs = item.getCorrectLetters();
+			int silverPegs = item.getDisplacedLetters();
+			
+			Resources res = act.getResources();
+			Drawable gold = res.getDrawable(R.drawable.goldpeg);
+			Drawable silver = res.getDrawable(R.drawable.silverpeg);
+			Drawable white = res.getDrawable(R.drawable.whitepeg);
+			
+			if (! winningTurn) {
+				int[] pegs = { R.id.peg0, R.id.peg1, R.id.peg2, R.id.peg3 };
+				for (int peg : pegs) {
+					if (goldPegs > 0) {
+						((ImageView) view.findViewById(peg)).setImageDrawable(gold);
+						goldPegs --;
+					} else if (silverPegs > 0) {
+						((ImageView) view.findViewById(peg)).setImageDrawable(silver);
+						silverPegs --;
+					} else {
+						((ImageView) view.findViewById(peg)).setImageDrawable(white);
+					}
 				}
 			}
 		}
