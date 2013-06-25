@@ -44,21 +44,21 @@
 		android:layout_gravity="center"
 		android:gravity="center"
 		android:src="@drawable/ic_pulltorefresh_arrow"
-		/>
+		android:contentDescription="@string/pull_to_refresh_pull_label" />
 
-	<TextView
+	<uk.co.thomasc.wordmaster.view.RussoText
 		android:id="@+id/pull_to_refresh_text"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:layout_gravity="center"
 		android:gravity="center"
 		android:paddingTop="5dip"
+		android:layout_marginLeft="30dip"
 		android:text="@string/pull_to_refresh_pull_label"
-		android:textAppearance="?android:attr/textAppearanceMedium"
 		android:textColor="@color/maintext"
-		android:textStyle="bold" />
+		android:textSize="16sp" />
 
-	<TextView
+	<uk.co.thomasc.wordmaster.view.RussoText
 		android:id="@+id/pull_to_refresh_updated_at"
 		android:layout_below="@+id/pull_to_refresh_text"
 		android:visibility="gone"
