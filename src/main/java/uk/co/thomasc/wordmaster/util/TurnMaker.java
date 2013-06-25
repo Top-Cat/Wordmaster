@@ -8,7 +8,8 @@ import uk.co.thomasc.wordmaster.api.TakeTurnRequestListener;
 import uk.co.thomasc.wordmaster.api.TakeTurnSpinnerListener;
 import uk.co.thomasc.wordmaster.objects.Game;
 import uk.co.thomasc.wordmaster.objects.Turn;
-
+import uk.co.thomasc.wordmaster.view.DialogPanel;
+import uk.co.thomasc.wordmaster.view.Errors;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
@@ -18,13 +19,15 @@ public class TurnMaker implements OnClickListener, TakeTurnRequestListener, GetT
 	private Game game;
 	private BaseGame activity;
 	private EditText input;
+	private DialogPanel errorMessage;
 	private TakeTurnSpinnerListener listener;
 	
 	public TurnMaker(Game game, BaseGame activity, View rootView, TakeTurnSpinnerListener listener) {
 		this.game = game;
 		this.activity = activity;
 		this.listener = listener;
-		input = (EditText) rootView.findViewById(R.id.editText1);
+		input = (EditText) rootView.findViewById(R.id.guess_input);
+		errorMessage = (DialogPanel) rootView.findViewById(R.id.errorMessage);
 	}
 	
 	@Override
@@ -36,8 +39,7 @@ public class TurnMaker implements OnClickListener, TakeTurnRequestListener, GetT
 				ServerAPI.takeTurn(game.getPlayer().getPlusID(), game.getID(), guess, this);
 			}
 		} else {
-			// TODO: Should probably tell user off for trying to cheat
-			System.out.println("It's not your turn!");
+			errorMessage.show(Errors.TURN);
 		}
 	}
 

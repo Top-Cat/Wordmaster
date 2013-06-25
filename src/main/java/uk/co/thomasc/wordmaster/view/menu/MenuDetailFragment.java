@@ -112,7 +112,7 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener, T
 		Drawable guessEnabled = res.getDrawable(R.drawable.guess);
 		Drawable guessDisabled = res.getDrawable(R.drawable.guess_disabled);
 
-		input = (EditText) rootView.findViewById(R.id.editText1);
+		input = (EditText) rootView.findViewById(R.id.guess_input);
 		input.addTextChangedListener(new CapsLockLimiter(input, rootView, guessEnabled, guessDisabled));
 		
 		((ImageView) rootView.findViewById(R.id.guess_button)).setOnClickListener(new TurnMaker(game, (BaseGame) getActivity(), rootView, this));

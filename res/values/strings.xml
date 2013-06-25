@@ -19,6 +19,8 @@
 	
 	<string name="network_error">Network Unavailable</string>
 	<string name="network_error_help">Please check your data connection</string>
+	<string name="turn_error">It\'s not your turn!</string>
+	<string name="turn_error_help">Wait for your opponent to take their turn.</string>
 	
 	<string name="default_score">0</string>
 	<string name="default_turn">0</string>
