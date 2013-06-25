@@ -33,6 +33,7 @@
 	<string name="default_menu_text">vs Adam</string>
 	<string name="default_opp_guess">Adam guessed DUCT</string>
 	<string name="default_opp_guess_win">Adam guessed DUCT\nAdam\'s word was FEET</string>
+	<string name="default_row_word">Your word is DUCT</string>
 	
 	<string name="whysignin">Sign in with Google to begin playing with your friends.</string>
 	<string name="itembg">List Item Background</string>
