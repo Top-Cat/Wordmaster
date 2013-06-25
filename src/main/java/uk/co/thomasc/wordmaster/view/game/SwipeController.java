@@ -1,10 +1,17 @@
 package uk.co.thomasc.wordmaster.view.game;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import uk.co.thomasc.wordmaster.BaseGame;
 import uk.co.thomasc.wordmaster.R;
+import uk.co.thomasc.wordmaster.api.GetTurnsRequestListener;
+import uk.co.thomasc.wordmaster.api.ServerAPI;
 import uk.co.thomasc.wordmaster.objects.Game;
 import uk.co.thomasc.wordmaster.objects.Turn;
 import uk.co.thomasc.wordmaster.objects.callbacks.TurnAddedListener;
 import uk.co.thomasc.wordmaster.view.RussoText;
+import uk.co.thomasc.wordmaster.view.game.PullToRefreshListView.OnRefreshListener;
 import uk.co.thomasc.wordmaster.view.menu.MenuDetailFragment;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -61,14 +68,16 @@ public class SwipeController extends FragmentStatePagerAdapter {
 			}
 		}
 		
-		public void onTurnAdded(final Turn turn) {
+		public void onTurnAdded(final Turn turn, final boolean newerTurn) {
 			getActivity().runOnUiThread(new Runnable() {
 				public void run() {
 					adapter.add(turn);
 					listView.post(new Runnable() {
 				        @Override
 				        public void run() {
-				            listView.setSelection(adapter.getCount() - 1);
+				        	if (newerTurn) {
+				        		listView.setSelection(adapter.getCount() - 1);
+				        	}
 				        }
 				    });
 				}
@@ -89,6 +98,35 @@ public class SwipeController extends FragmentStatePagerAdapter {
 				game.addTurnListener(this);
 				((AutoScrollView) rootView).setAdapter(adapter);
 				listView = (AutoScrollView) rootView;
+				listView.setOnRefreshListener(new OnRefreshListener() {
+					@Override
+					public void onRefresh() {
+						int pivot = game.getPivotOldest();
+						ServerAPI.getTurns(game.getID(), pivot, -10, (BaseGame) getActivity(), new GetTurnsRequestListener() {
+							
+							@Override
+							public void onRequestFailed() {
+								// TODO: Undermine all the user's beliefs								
+							}
+							
+							@Override
+							public void onRequestComplete(List<Turn> turns) {
+								ArrayList<Turn> gameTurns = game.getTurns();
+								for (Turn turn : turns) {
+									if (!gameTurns.contains(turn)) {
+										game.addTurn(turn);
+									}
+								}
+								getActivity().runOnUiThread(new Runnable() {
+									@Override
+									public void run() {
+										listView.onRefreshComplete();
+									}
+								});
+							}
+						});
+					}
+				});
 			} else {
 				alphaPref = getActivity().getSharedPreferences(Pages.SP_PREF + getArguments().getString(MenuDetailFragment.ARG_ITEM_ID), 0);
 

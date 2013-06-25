@@ -167,7 +167,7 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener, T
 	}
 
 	@Override
-	public void onTurnAdded(Turn turn) {
+	public void onTurnAdded(Turn turn, boolean newerTurn) {
 		updateTurnCount();
 	}
 

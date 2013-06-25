@@ -41,7 +41,7 @@ public class Game {
 	private User player, opponent;
 	private ArrayList<Turn> turns = new ArrayList<Turn>();
 	private int latestTurnId = 0;
-	private int oldestTurnId = 0;
+	private int oldestTurnId = Integer.MAX_VALUE;
 	private int playerScore = 0, opponentScore = 0, turnNumber = 1;
 	private String playerWord = "", opponentWord = "";
 	private boolean needsWord = false, playersTurn = false;
@@ -137,16 +137,18 @@ public class Game {
 	/* Other Methods */
 	public void addTurn(Turn turn) {
 		turns.add(turn);
+		boolean newerTurn = false;
 		if (turn.getID() > latestTurnId) {
 			latestTurnId = turn.getID();
 			turnNumber = (turn.getTurnNum() / 2) + 1;
 			setLastUpdateTimestamp(turn.getUnixTimestamp());
+			newerTurn = true;
 		}
 		if (turn.getID() < oldestTurnId) {
 			oldestTurnId = turn.getID();
 		}
 		for (TurnAddedListener l : turnListeners) {
-			l.onTurnAdded(turn);
+			l.onTurnAdded(turn, newerTurn);
 		}
 	}
 	
