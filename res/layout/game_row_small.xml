@@ -17,24 +17,24 @@
 		android:padding="5dp" >
 
 		<uk.co.thomasc.wordmaster.view.TimeSinceText
-		    android:id="@+id/time"
-		    android:layout_width="0dp"
-		    android:layout_height="fill_parent"
-		    android:layout_weight="0.2"
-		    android:gravity="left|center"
-		    android:text="@string/default_time"
-		    android:textColor="@color/maintext" />
+			android:id="@+id/time"
+			android:layout_width="0dp"
+			android:layout_height="fill_parent"
+			android:layout_weight="0.2"
+			android:gravity="left|center"
+			android:text="@string/default_time"
+			android:textColor="@color/maintext" />
 
 		<uk.co.thomasc.wordmaster.view.RussoText
-		    android:id="@+id/guess"
-		    android:layout_width="0dp"
-		    android:layout_height="wrap_content"
-		    android:layout_marginRight="10dp"
-		    android:layout_weight="0.76"
-		    android:gravity="center|left"
-		    android:text="@string/default_opp_guess"
-		    android:textColor="@color/maintext"
-		    android:textSize="12sp" />
+			android:id="@+id/guess"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_marginRight="10dp"
+			android:layout_weight="0.76"
+			android:gravity="center|left"
+			android:text="@string/default_opp_guess"
+			android:textColor="@color/maintext"
+			android:textSize="12sp" />
 
 		<ImageView
 			android:id="@+id/peg0"

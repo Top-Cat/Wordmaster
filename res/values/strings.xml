@@ -27,8 +27,8 @@
 	<string name="server_error_help">Something went wrong. Try again in a moment or two.</string>
 	
 	<string name="pull_to_refresh_pull_label">Pull to load history...</string>
-    <string name="pull_to_refresh_release_label">Release to load history...</string>
-    <string name="pull_to_refresh_refreshing_label">Loading...</string>
+	<string name="pull_to_refresh_release_label">Release to load history...</string>
+	<string name="pull_to_refresh_refreshing_label">Loading...</string>
 	
 	<string name="default_score">0</string>
 	<string name="default_turn">0</string>

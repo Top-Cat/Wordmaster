@@ -3,13 +3,13 @@
 	android:layout_height="match_parent" >
 
 	<ImageView
-	    android:id="@+id/itembg"
-	    android:layout_width="fill_parent"
-	    android:layout_height="fill_parent"
-	    android:layout_gravity="bottom"
-	    android:contentDescription="@string/itembg"
-	    android:src="@drawable/gameendbg"
-	    android:state_pressed="true" />
+		android:id="@+id/itembg"
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		android:layout_gravity="bottom"
+		android:contentDescription="@string/itembg"
+		android:src="@drawable/gameendbg"
+		android:state_pressed="true" />
 
 	<LinearLayout
 		android:layout_width="fill_parent"
@@ -26,24 +26,24 @@
 			android:textColor="@color/maintext" />
 
 		<uk.co.thomasc.wordmaster.view.RussoText
-		    android:id="@+id/guess"
-		    android:layout_width="0dp"
-		    android:layout_height="fill_parent"
-		    android:layout_marginRight="10dp"
-		    android:layout_weight="0.8"
-		    android:gravity="center|left"
-		    android:text="@string/default_opp_guess_win"
-		    android:textColor="@color/maintext" />
+			android:id="@+id/guess"
+			android:layout_width="0dp"
+			android:layout_height="fill_parent"
+			android:layout_marginRight="10dp"
+			android:layout_weight="0.8"
+			android:gravity="center|left"
+			android:text="@string/default_opp_guess_win"
+			android:textColor="@color/maintext" />
 
 		<ImageView
-		    android:id="@+id/crown"
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-		    android:layout_marginLeft="20dp"
-		    android:layout_marginRight="5dp"
-		    android:layout_marginTop="5dp"
-		    android:contentDescription="@string/crown"
-		    android:src="@drawable/crown" />
+			android:id="@+id/crown"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginLeft="20dp"
+			android:layout_marginRight="5dp"
+			android:layout_marginTop="5dp"
+			android:contentDescription="@string/crown"
+			android:src="@drawable/crown" />
 
 	</LinearLayout>
 

@@ -12,16 +12,16 @@
 		android:state_pressed="true" />
 
 	<uk.co.thomasc.wordmaster.view.RussoText
-	    android:id="@+id/guess"
-	    android:layout_width="fill_parent"
-	    android:layout_height="wrap_content"
-	    android:layout_marginBottom="5dp"
-	    android:layout_marginLeft="60dp"
-	    android:layout_marginRight="10dp"
-	    android:layout_marginTop="5dp"
-	    android:gravity="center|left"
-	    android:text="@string/default_row_word"
-	    android:textColor="@color/maintext"
-	    android:textSize="14sp" />
+		android:id="@+id/guess"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginBottom="5dp"
+		android:layout_marginLeft="60dp"
+		android:layout_marginRight="10dp"
+		android:layout_marginTop="5dp"
+		android:gravity="center|left"
+		android:text="@string/default_row_word"
+		android:textColor="@color/maintext"
+		android:textSize="14sp" />
 	
 </FrameLayout>
