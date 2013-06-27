@@ -54,6 +54,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
 	private float lastY = -1;
 	private int mHeight = -1;
 	private float topPadding = -1;
+	private int footerHeight = 0;
 
 	private boolean mBounceHack;
 	private TextView mFooterView;
@@ -147,19 +148,26 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
 	 */
 	private void adaptFooterHeight() {
 		int itemHeight = getTotalItemHeight();
-		int footerAndHeaderSize = mFooterView.getHeight() + mRefreshViewHeight - mRefreshOriginalTopPadding;
+		int footerAndHeaderSize = footerHeight + mRefreshViewHeight - mRefreshOriginalTopPadding;
 		int actualItemsSize = itemHeight - footerAndHeaderSize;
 		if (mHeight < actualItemsSize) {
 			mFooterView.setHeight(0);
 		} else {
 			int h = mHeight - actualItemsSize;
+			footerHeight = h;
 			mFooterView.setHeight(h);
 		}
+		scrollToBottom();
+		mFooterView.forceLayout();
 	}
 	
 	@Override
 	public void onSizeChanged(int w, int h, int oldw, int oldh) {
 		mHeight = -1;
+		scrollToBottom();
+	}
+	
+	private void scrollToBottom() {
 		post(new Runnable() {
 			@Override
 			public void run() {
@@ -344,6 +352,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
 		if (mCurrentScrollState == OnScrollListener.SCROLL_STATE_TOUCH_SCROLL && mRefreshState != PullToRefreshListView.REFRESHING) {
 			if (firstVisibleItem == 0) {
 				mRefreshViewImage.setVisibility(View.VISIBLE);
+				mRefreshViewText.setText(R.string.pull_to_refresh_pull_label);
 				if ((mRefreshView.getBottom() >= mRefreshViewHeight + 0 || mRefreshView.getTop() >= 0) && mRefreshState != PullToRefreshListView.RELEASE_TO_REFRESH) {
 					mRefreshViewText.setText(R.string.pull_to_refresh_release_label);
 					mRefreshViewImage.clearAnimation();
