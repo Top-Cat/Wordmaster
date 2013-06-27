@@ -15,7 +15,6 @@ import uk.co.thomasc.wordmaster.view.Errors;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
-import android.widget.TextView;
 
 public class TurnMaker implements OnClickListener, TakeTurnRequestListener, GetTurnsRequestListener {
 

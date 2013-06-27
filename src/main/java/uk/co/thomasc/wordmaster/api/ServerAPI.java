@@ -60,12 +60,10 @@ public class ServerAPI {
 							games[i] = game;
 						}
 						listener.onRequestComplete(games);
-					} else {
-						listener.onRequestFailed();
+						return;
 					}
-				} else {
-					listener.onRequestFailed();
 				}
+				listener.onRequestFailed();
 			}
 		};
 		t.start();
@@ -84,12 +82,14 @@ public class ServerAPI {
 			@Override
 			public void run() {
 				JSONObject json = ServerAPI.makeRequest("getTurns", gameID);
-				List<Turn> turns = ServerAPI.getTurns(json, activityReference);
-				if (turns != null) {
-					listener.onRequestComplete(turns);
-				} else {
-					listener.onRequestFailed();
+				if (json != null) {
+					List<Turn> turns = ServerAPI.getTurns(json, activityReference);
+					if (turns != null) {
+						listener.onRequestComplete(turns);
+						return;
+					}
 				}
+				listener.onRequestFailed();
 			}
 		};
 		t.start();
@@ -111,12 +111,14 @@ public class ServerAPI {
 			@Override
 			public void run() {
 				JSONObject json = ServerAPI.makeRequest("getTurns", gameID, String.valueOf(turnID), Integer.toString(number));
-				List<Turn> turns = ServerAPI.getTurns(json, activityReference);
-				if (turns != null) {
-					listener.onRequestComplete(turns);
-				} else {
-					listener.onRequestFailed();
+				if (json != null) {
+					List<Turn> turns = ServerAPI.getTurns(json, activityReference);
+					if (turns != null) {
+						listener.onRequestComplete(turns);
+						return;
+					}
 				}
+				listener.onRequestFailed();
 			}
 		};
 		t.start();

@@ -58,7 +58,7 @@ public class SwipeController extends FragmentStatePagerAdapter {
 		private SharedPreferences alphaPref;
 		private GameAdapter adapter;
 		private Game game;
-		private AutoScrollView listView;
+		private PullToRefreshListView listView;
 		
 		@Override
 		public void onDestroy() {
@@ -72,14 +72,14 @@ public class SwipeController extends FragmentStatePagerAdapter {
 			getActivity().runOnUiThread(new Runnable() {
 				public void run() {
 					adapter.add(turn);
-					listView.post(new Runnable() {
-				        @Override
-				        public void run() {
-				        	if (newerTurn) {
-				        		listView.setSelection(adapter.getCount() - 1);
-				        	}
-				        }
-				    });
+					if (newerTurn) {
+						listView.post(new Runnable() {
+							@Override
+							public void run() {
+								listView.setSelection(adapter.getCount() - 1);
+							}
+						});
+					}
 				}
 			});
 		}
@@ -88,7 +88,7 @@ public class SwipeController extends FragmentStatePagerAdapter {
 		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 			View rootView;
 			if (getArguments().getBoolean(Pages.ARG_OBJECT)) {
-				rootView = new AutoScrollView(getActivity());
+				rootView = new PullToRefreshListView(getActivity());
 				adapter = new GameAdapter(getActivity());
 				
 				game = Game.getGame(gid);
@@ -96,8 +96,8 @@ public class SwipeController extends FragmentStatePagerAdapter {
 					adapter.add(t);
 				}
 				game.addTurnListener(this);
-				((AutoScrollView) rootView).setAdapter(adapter);
-				listView = (AutoScrollView) rootView;
+				((PullToRefreshListView) rootView).setAdapter(adapter);
+				listView = (PullToRefreshListView) rootView;
 				listView.setOnRefreshListener(new OnRefreshListener() {
 					@Override
 					public void onRefresh() {
