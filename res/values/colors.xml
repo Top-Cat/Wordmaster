@@ -6,6 +6,9 @@
 	<color name="footer_bar">#FFB3B3B3</color>
 	<color name="footer_text">#FF000000</color>
 	
+	<color name="setword_bg">#FF333333</color>
+	<color name="setword_text">#FFFFFFFF</color>
+	
 	<color name="mainbg">#FFFFFFFF</color>
 	<color name="maintext">#FF000000</color>
 	<color name="hiddenletter">#FFAAAAAA</color>

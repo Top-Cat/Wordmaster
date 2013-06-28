@@ -148,6 +148,8 @@ public class Game {
 			turnNumber = (turn.getTurnNum() / 2) + 1;
 			setLastUpdateTimestamp(turn.getUnixTimestamp());
 			newerTurn = true;
+			
+			setNeedsWord(turn.getCorrectLetters() == 4);
 		}
 		if (turn.getID() < oldestTurnId) {
 			oldestTurnId = turn.getID();

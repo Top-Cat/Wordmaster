@@ -6,17 +6,19 @@ import uk.co.thomasc.wordmaster.BaseGame;
 import uk.co.thomasc.wordmaster.R;
 import uk.co.thomasc.wordmaster.api.GetTurnsRequestListener;
 import uk.co.thomasc.wordmaster.api.ServerAPI;
+import uk.co.thomasc.wordmaster.api.SetWordRequestListener;
 import uk.co.thomasc.wordmaster.api.TakeTurnRequestListener;
 import uk.co.thomasc.wordmaster.api.TakeTurnSpinnerListener;
 import uk.co.thomasc.wordmaster.objects.Game;
 import uk.co.thomasc.wordmaster.objects.Turn;
 import uk.co.thomasc.wordmaster.view.DialogPanel;
 import uk.co.thomasc.wordmaster.view.Errors;
+
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
 
-public class TurnMaker implements OnClickListener, TakeTurnRequestListener, GetTurnsRequestListener {
+public class TurnMaker implements OnClickListener, TakeTurnRequestListener, GetTurnsRequestListener, SetWordRequestListener {
 
 	private Game game;
 	private BaseGame activity;
@@ -34,14 +36,16 @@ public class TurnMaker implements OnClickListener, TakeTurnRequestListener, GetT
 	
 	@Override
 	public void onClick(View v) {
-		if (game.isPlayersTurn()) {
-			String guess = input.getText().toString();
-			if (guess.length() == 4) {
+		String guess = input.getText().toString();
+		if (guess.length() == 4) {
+			if (game.needsWord()) {
+				ServerAPI.setWord(game.getPlayer().getPlusID(), game.getID(), guess, this);
+			} else if (game.isPlayersTurn()) {
 				listener.startSpinner();
 				ServerAPI.takeTurn(game.getPlayer().getPlusID(), game.getID(), guess, this);
+			} else {
+				errorMessage.show(Errors.TURN);
 			}
-		} else {
-			errorMessage.show(Errors.TURN);
 		}
 	}
 

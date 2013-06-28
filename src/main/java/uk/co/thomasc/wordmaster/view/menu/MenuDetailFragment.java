@@ -23,6 +23,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +32,7 @@ import android.view.WindowManager.LayoutParams;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class MenuDetailFragment extends Fragment implements TurnAddedListener, TakeTurnSpinnerListener {
@@ -109,6 +111,11 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener, T
 			((TextView) rootView.findViewById(R.id.playerscore)).setText(Integer.toString(game.getPlayerScore()));
 			((TextView) rootView.findViewById(R.id.oppscore)).setText(Integer.toString(game.getOpponentScore()));
 			
+			if (game.needsWord()) {
+				RelativeLayout footer = (RelativeLayout) rootView.findViewById(R.id.footer);
+				footer.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 70, getResources().getDisplayMetrics());
+			}
+			
 			loadTurns();
 			game.addTurnListener(this);
 			
@@ -178,6 +185,9 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener, T
 	@Override
 	public void onTurnAdded(Turn turn, boolean newerTurn) {
 		updateTurnCount();
+		
+		RelativeLayout footer = (RelativeLayout) getView().findViewById(R.id.footer);
+		footer.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, game.needsWord() ? 70 : 50, getResources().getDisplayMetrics());
 	}
 
 	@Override
