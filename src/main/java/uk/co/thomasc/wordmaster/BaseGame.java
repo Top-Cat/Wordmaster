@@ -1,8 +1,11 @@
 package uk.co.thomasc.wordmaster;
 
+import java.util.ArrayList;
+
 import uk.co.thomasc.wordmaster.iab.IabHelper;
 import uk.co.thomasc.wordmaster.iab.IabHelper.OnIabPurchaseFinishedListener;
 import uk.co.thomasc.wordmaster.iab.IabHelper.OnIabSetupFinishedListener;
+import uk.co.thomasc.wordmaster.iab.IabHelper.QueryInventoryFinishedListener;
 import uk.co.thomasc.wordmaster.iab.IabResult;
 import uk.co.thomasc.wordmaster.iab.Purchase;
 import uk.co.thomasc.wordmaster.objects.Game;
@@ -37,7 +40,7 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 	private String userId;
 	
 	public static IabHelper mHelper;
-	public static String upgradeSKU = "";
+	public static String upgradeSKU = "wordmaster_upgrade";
 	// TODO: Create the upgrade IAP in developer console and get SKU
 	
 	@Override
@@ -94,6 +97,12 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 			getSupportFragmentManager().popBackStack("upgrade", 1);
 			// TODO: Do some upgradey stuff
 		}
+	}
+	
+	public void queryInventory(QueryInventoryFinishedListener listener) {
+		ArrayList<String> additionalSkuList = new ArrayList<String>();
+		additionalSkuList.add(upgradeSKU);
+		mHelper.queryInventoryAsync(true, additionalSkuList, listener);
 	}
 	
 	@Override

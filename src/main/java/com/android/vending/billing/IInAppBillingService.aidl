@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.co.thomasc.wordmaster.iab;
+package com.android.vending.billing;
 
 import android.os.Bundle;
 

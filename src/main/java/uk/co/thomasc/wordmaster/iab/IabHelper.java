@@ -34,7 +34,7 @@ import android.os.RemoteException;
 import android.text.TextUtils;
 import android.util.Log;
 
-import uk.co.thomasc.wordmaster.iab.Security;
+import com.android.vending.billing.IInAppBillingService;
 
 /**
  * Provides convenience methods for in-app billing. You can create one instance of this
