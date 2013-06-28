@@ -62,7 +62,7 @@ public class User {
 	private User(Person person, BaseGameActivity activityReference) {
 		plusID = person.getId();
 		name = person.getDisplayName();
-		loadImage(person);
+		loadImage(person, activityReference);
 	}
 
 	private User(String plusID, BaseGameActivity activityReference) {
@@ -70,13 +70,13 @@ public class User {
 		loadName(activityReference);
 	}
 	
-	private void loadName(BaseGameActivity activityReference) {
+	private void loadName(final BaseGameActivity activityReference) {
 		if (connected) {
 			activityReference.getPlusClient().loadPerson(new OnPersonLoadedListener() {
 				@Override
 				public void onPersonLoaded(ConnectionResult result, Person person) {
 					name = person.getDisplayName();
-					loadImage(person);
+					loadImage(person, activityReference);
 	
 					for (NameLoadedListener listener : userListeners) {
 						listener.onNameLoaded(name);
@@ -87,24 +87,37 @@ public class User {
 		}
 	}
 
-	private void loadImage(Person person) {
+	private void loadImage(final Person person, final BaseGameActivity activityReference) {
 		final String avatarUri = person.getImage().getUrl();
 
 		new Thread() {
 			@Override
 			public void run() {
-				try {
-					URL url = new URL(avatarUri);
-					HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-					conn.connect();
-					drawable = Drawable.createFromStream(conn.getInputStream(), "player avatar");
-
-					for (ImageLoadedListener listener : imageListeners) {
-						listener.onImageLoaded(drawable);
+				int delay = 500;
+				while (drawable == null) {
+					try {
+						URL url = new URL(avatarUri);
+						HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+						conn.connect();
+						drawable = Drawable.createFromStream(conn.getInputStream(), "player avatar");
+	
+						for (ImageLoadedListener listener : imageListeners) {
+							listener.onImageLoaded(drawable);
+						}
+						imageListeners.clear();
+						return;
+					} catch (IOException e) {
+						//No internet :<
+						System.out.println("Failed to download avatar for " + person.getId());
 					}
-					imageListeners.clear();
-				} catch (IOException e) {
-					e.printStackTrace();
+					try {
+						Thread.sleep(delay);
+						if (delay < 30000) {
+							delay *= 2;
+						}
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		}.start();
