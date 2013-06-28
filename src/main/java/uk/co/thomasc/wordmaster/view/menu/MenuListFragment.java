@@ -1,5 +1,17 @@
 package uk.co.thomasc.wordmaster.view.menu;
 
+import uk.co.thomasc.wordmaster.BaseGame;
+import uk.co.thomasc.wordmaster.R;
+import uk.co.thomasc.wordmaster.api.CreateGameRequestListener;
+import uk.co.thomasc.wordmaster.api.GetMatchesRequestListener;
+import uk.co.thomasc.wordmaster.api.ServerAPI;
+import uk.co.thomasc.wordmaster.objects.Game;
+import uk.co.thomasc.wordmaster.objects.callbacks.GameCreationListener;
+import uk.co.thomasc.wordmaster.util.BaseGameActivity;
+import uk.co.thomasc.wordmaster.view.DialogPanel;
+import uk.co.thomasc.wordmaster.view.Errors;
+import uk.co.thomasc.wordmaster.view.create.CreateGameFragment;
+import uk.co.thomasc.wordmaster.view.upgrade.UpgradeFragment;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -15,18 +27,6 @@ import android.widget.ListView;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.SignInButton;
-
-import uk.co.thomasc.wordmaster.BaseGame;
-import uk.co.thomasc.wordmaster.R;
-import uk.co.thomasc.wordmaster.api.CreateGameRequestListener;
-import uk.co.thomasc.wordmaster.api.GetMatchesRequestListener;
-import uk.co.thomasc.wordmaster.api.ServerAPI;
-import uk.co.thomasc.wordmaster.objects.Game;
-import uk.co.thomasc.wordmaster.objects.callbacks.GameCreationListener;
-import uk.co.thomasc.wordmaster.util.BaseGameActivity;
-import uk.co.thomasc.wordmaster.view.DialogPanel;
-import uk.co.thomasc.wordmaster.view.Errors;
-import uk.co.thomasc.wordmaster.view.create.CreateGameFragment;
 
 public class MenuListFragment extends Fragment implements OnClickListener, GetMatchesRequestListener, OnItemClickListener, GameCreationListener {
 
@@ -197,8 +197,17 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 		} else {
 			ServerAPI.createGame(playerID, opponentID, (BaseGame) getActivity(), new CreateGameRequestListener() {
 				@Override
-				public void onRequestFailed() {
-					// TODO: Tell the user unicorns died out with the dinosaurs
+				public void onRequestFailed(boolean hasPaid) {
+					if (hasPaid) {
+						// TODO: Tell the user unicorns died out with the dinosaurs
+					} else {
+						UpgradeFragment fragment = new UpgradeFragment();
+						FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+						ft.setCustomAnimations(R.anim.fadein, 0, 0, R.anim.fadeout);
+						ft.addToBackStack("upgrade")
+							.add(R.id.outer, fragment)
+							.commit();
+					}
 				}
 				
 				@Override

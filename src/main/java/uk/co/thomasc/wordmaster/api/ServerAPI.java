@@ -196,13 +196,14 @@ public class ServerAPI {
 			public void run() {
 				JSONObject json = ServerAPI.makeRequest("createGame", playerID, opponentID);
 				boolean success = ((Boolean) json.get("success")).booleanValue();
+				JSONObject response = (JSONObject) json.get("response");
 				if (success) {
-					JSONObject response = (JSONObject) json.get("response");
 					String gameID = (String) response.get("gameid");
 					Game game = Game.getGame(gameID, User.getUser(playerID, activityReference), User.getUser(opponentID, activityReference));
 					listener.onRequestComplete(game);
 				} else {
-					listener.onRequestFailed();
+					boolean hasPaid = (Boolean) response.get("haspaid");
+					listener.onRequestFailed(hasPaid);
 				}
 			}
 		};

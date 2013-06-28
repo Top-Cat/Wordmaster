@@ -59,7 +59,6 @@
 		style="@style/SignInButton"
 		android:layout_below="@id/nav"
 		android:layout_centerHorizontal="true" >
-
 	</com.google.android.gms.common.SignInButton>
 
 	<TextView
@@ -78,9 +77,12 @@
 		android:layout_height="wrap_content"
 		android:layout_below="@id/whysignin"
 		android:visibility="gone" >
-
 	</ListView>
-	
-	<uk.co.thomasc.wordmaster.view.DialogPanel android:id="@+id/dialog_panel" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_below="@id/nav" />
+
+	<uk.co.thomasc.wordmaster.view.DialogPanel
+		android:id="@+id/dialog_panel"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/nav" />
 
 </RelativeLayout>

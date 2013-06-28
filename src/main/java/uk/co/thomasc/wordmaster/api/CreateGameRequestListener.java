@@ -6,5 +6,5 @@ public interface CreateGameRequestListener {
 
 	public void onRequestComplete(Game game);
 
-	public void onRequestFailed();
+	public void onRequestFailed(boolean hasPaid);
 }
