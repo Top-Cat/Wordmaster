@@ -18,7 +18,7 @@ public class DialogPanel extends FrameLayout {
 
 	private View container;
 	private static Handler h;
-	private final int displayTime = 10000;
+	private final int displayTime = 5000;
 	
 	public DialogPanel(Context context) {
 		super(context);
