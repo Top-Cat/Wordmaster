@@ -7,8 +7,13 @@
 		android:minSdkVersion="8"
 		android:targetSdkVersion="17" />
 	
-	<uses-permission android:name="android.permission.INTERNET"></uses-permission>
-	<uses-permission android:name="com.android.vending.BILLING"></uses-permission>
+	<uses-permission android:name="android.permission.INTERNET" />
+	<uses-permission android:name="com.android.vending.BILLING" />
+	<uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+	<uses-permission android:name="android.permission.GET_ACCOUNTS" />
+	
+	<permission android:name="uk.co.thomasc.wordmaster.gcm.permission.C2D_MESSAGE" android:protectionLevel="signature" />
+	<uses-permission android:name="uk.co.thomasc.wordmaster.gcm.permission.C2D_MESSAGE" />
 
 	<application
 		android:allowBackup="true"
@@ -25,14 +30,12 @@
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
-		<activity
-            android:name="uk.co.thomasc.wordmaster.PlayActivity"
-            android:label="@string/game_screen"
-            android:parentActivityName=".CircleListActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".BaseGame" />
-        </activity>
+		<receiver android:name=".TurnReceiver" android:permission="com.google.android.c2dm.permission.SEND">
+		    <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <category android:name="uk.co.thomasc.wordmaster.gcm" />
+            </intent-filter>
+		</receiver>
 		<meta-data android:name="com.google.android.gms.games.APP_ID" android:value="@string/app_id" />
 		
 	</application>

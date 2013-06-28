@@ -2,6 +2,7 @@ package uk.co.thomasc.wordmaster;
 
 import java.util.ArrayList;
 
+import uk.co.thomasc.wordmaster.gcm.RegisterThread;
 import uk.co.thomasc.wordmaster.iab.IabHelper;
 import uk.co.thomasc.wordmaster.iab.IabHelper.OnIabPurchaseFinishedListener;
 import uk.co.thomasc.wordmaster.iab.IabHelper.OnIabSetupFinishedListener;
@@ -16,6 +17,7 @@ import uk.co.thomasc.wordmaster.view.create.PersonAdapter;
 import uk.co.thomasc.wordmaster.view.game.GameAdapter;
 import uk.co.thomasc.wordmaster.view.menu.MenuDetailFragment;
 import uk.co.thomasc.wordmaster.view.menu.MenuListFragment;
+
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Typeface;
@@ -127,6 +129,7 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 		if (gameAdapter != null) {
 			gameAdapter.notifyDataSetChanged();
 		}
+		new RegisterThread(this).start();
 	}
 
 	@Override
