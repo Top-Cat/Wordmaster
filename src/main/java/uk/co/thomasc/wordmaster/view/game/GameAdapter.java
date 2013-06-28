@@ -73,7 +73,7 @@ public class GameAdapter extends ArrayAdapter<Turn> {
 						String firstName = name.substring(0, name.indexOf(' '));
 						if (winningTurn) {
 							txtview.setText(firstName + " guessed " + item.getGuess().toUpperCase(Locale.ENGLISH) +
-									"\n" + firstName + "'s word was " + item.getOpponentWord().toLowerCase(Locale.ENGLISH));
+									"\n" + firstName + "'s word was " + item.getOpponentWord().toUpperCase(Locale.ENGLISH));
 						} else {
 							txtview.setText(firstName + " guessed " + item.getGuess().toUpperCase(Locale.ENGLISH));
 						}
