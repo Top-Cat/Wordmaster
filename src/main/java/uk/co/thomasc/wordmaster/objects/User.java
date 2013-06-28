@@ -21,6 +21,7 @@ import uk.co.thomasc.wordmaster.util.BaseGameActivity;
 public class User {
 
 	private static Map<String, User> users = new HashMap<String, User>();
+	private static boolean connected = false;
 
 	public static User getUser(Person player, BaseGameActivity activityReference) {
 		if (User.users.containsKey(player.getId())) {
@@ -41,6 +42,15 @@ public class User {
 			return user;
 		}
 	}
+	
+	public static void onPlusConnected(BaseGameActivity activityReference) {
+		connected = true;
+		for (User user : users.values()) {
+			if (user.name == null) {
+				user.loadName(activityReference);
+			}
+		}
+	}
 
 	/* Properties */
 	private String plusID;
@@ -57,18 +67,24 @@ public class User {
 
 	private User(String plusID, BaseGameActivity activityReference) {
 		this.plusID = plusID;
-		activityReference.getPlusClient().loadPerson(new OnPersonLoadedListener() {
-			@Override
-			public void onPersonLoaded(ConnectionResult result, Person person) {
-				name = person.getDisplayName();
-				loadImage(person);
-
-				for (NameLoadedListener listener : userListeners) {
-					listener.onNameLoaded(name);
+		loadName(activityReference);
+	}
+	
+	private void loadName(BaseGameActivity activityReference) {
+		if (connected) {
+			activityReference.getPlusClient().loadPerson(new OnPersonLoadedListener() {
+				@Override
+				public void onPersonLoaded(ConnectionResult result, Person person) {
+					name = person.getDisplayName();
+					loadImage(person);
+	
+					for (NameLoadedListener listener : userListeners) {
+						listener.onNameLoaded(name);
+					}
+					userListeners.clear();
 				}
-				userListeners.clear();
-			}
-		}, plusID);
+			}, plusID);
+		}
 	}
 
 	private void loadImage(Person person) {

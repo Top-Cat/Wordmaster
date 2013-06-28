@@ -3,6 +3,9 @@ package uk.co.thomasc.wordmaster.objects;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import android.os.Bundle;
+
+import uk.co.thomasc.wordmaster.BaseGame;
 import uk.co.thomasc.wordmaster.objects.callbacks.TurnAddedListener;
 
 public class Game {
@@ -15,7 +18,7 @@ public class Game {
 		}
 		return null;
 	}
-	
+
 	public static Game getGame(String id, User player, User opponent) {
 		if (games.containsKey(id)) {
 			return games.get(id);
@@ -166,6 +169,35 @@ public class Game {
 	
 	public int getPivotOldest() {
 		return oldestTurnId;
+	}
+
+	public static void saveState(Bundle outState) {
+		for (String gameid : games.keySet()) {
+			outState.putBundle(gameid, games.get(gameid).toBundle());
+		}
+		outState.putStringArray("games", games.keySet().toArray(new String[games.size()]));
+	}
+	
+	public static void restoreState(Bundle inState, BaseGame activityReference) {
+		String[] gameids = inState.getStringArray("games");
+		for (String gameid : gameids) {
+			Bundle gameData = inState.getBundle(gameid);
+			Game game = Game.getGame(gameid, User.getUser(gameData.getString("playerid"), activityReference), User.getUser(gameData.getString("opponentid"), activityReference));
+			game.setPlayersTurn(gameData.getBoolean("playersturn"));
+			game.setNeedsWord(gameData.getBoolean("needsword"));
+			game.setScore(gameData.getInt("playerscore"), gameData.getInt("opponentscore"));
+		}
+	}
+	
+	public Bundle toBundle() {
+		Bundle bundle = new Bundle();
+		bundle.putString("playerid", player.getPlusID());
+		bundle.putString("opponentid", opponent.getPlusID());
+		bundle.putBoolean("playersturn", playersTurn);
+		bundle.putBoolean("needsword", needsWord);
+		bundle.putInt("playerscore", playerScore);
+		bundle.putInt("opponentscore", opponentScore);
+		return bundle;
 	}
 
 }

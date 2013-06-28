@@ -67,7 +67,7 @@ public class SwipeController extends FragmentStatePagerAdapter {
 				game.removeTurnListener(this);
 			}
 		}
-		
+
 		public void onTurnAdded(final Turn turn, final boolean newerTurn) {
 			getActivity().runOnUiThread(new Runnable() {
 				public void run() {
@@ -89,7 +89,7 @@ public class SwipeController extends FragmentStatePagerAdapter {
 			View rootView;
 			if (getArguments().getBoolean(Pages.ARG_OBJECT)) {
 				rootView = new PullToRefreshListView(getActivity());
-				adapter = new GameAdapter(getActivity());
+				((BaseGame) getActivity()).gameAdapter = adapter = new GameAdapter(getActivity());
 				
 				game = Game.getGame(gid);
 				for (Turn t : game.getTurns()) {

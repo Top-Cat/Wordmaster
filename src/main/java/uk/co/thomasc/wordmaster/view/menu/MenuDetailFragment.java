@@ -76,58 +76,67 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener, T
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		final View rootView = inflater.inflate(R.layout.game_screen, container, false);
-
+		
+		((BaseGame) getActivity()).menuDetail = this;
+		
 		game = Game.getGame(gameid);
+		if (game != null) {
 		
-		game.getPlayer().listenForImage(new ImageLoadedListener() {
-			@Override
-			public void onImageLoaded(final Drawable image) {
-				getActivity().runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						((ImageView) rootView.findViewById(R.id.playerAvatar)).setImageDrawable(image);
-					}
-				});
-			}
-		});
-		game.getOpponent().listenForImage(new ImageLoadedListener() {
-			@Override
-			public void onImageLoaded(final Drawable image) {
-				getActivity().runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						((ImageView) rootView.findViewById(R.id.oppAvatar)).setImageDrawable(image);
-					}
-				});
-			}
-		});
+			game.getPlayer().listenForImage(new ImageLoadedListener() {
+				@Override
+				public void onImageLoaded(final Drawable image) {
+					getActivity().runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							((ImageView) rootView.findViewById(R.id.playerAvatar)).setImageDrawable(image);
+						}
+					});
+				}
+			});
+			game.getOpponent().listenForImage(new ImageLoadedListener() {
+				@Override
+				public void onImageLoaded(final Drawable image) {
+					getActivity().runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							((ImageView) rootView.findViewById(R.id.oppAvatar)).setImageDrawable(image);
+						}
+					});
+				}
+			});
+			
+			((TextView) rootView.findViewById(R.id.turn)).setText(Integer.toString(game.getTurnNumber()));
+			((TextView) rootView.findViewById(R.id.playerscore)).setText(Integer.toString(game.getPlayerScore()));
+			((TextView) rootView.findViewById(R.id.oppscore)).setText(Integer.toString(game.getOpponentScore()));
+			
+			loadTurns();
+			game.addTurnListener(this);
+			
+			Resources res = getActivity().getResources();
+			Drawable guessEnabled = res.getDrawable(R.drawable.guess);
+			Drawable guessDisabled = res.getDrawable(R.drawable.guess_disabled);
+	
+			input = (EditText) rootView.findViewById(R.id.guess_input);
+			input.addTextChangedListener(new CapsLockLimiter(input, rootView, guessEnabled, guessDisabled));
+			
+			((ImageView) rootView.findViewById(R.id.guess_button)).setOnClickListener(new TurnMaker(game, (BaseGame) getActivity(), rootView, this));
+	
+			((GameLayout) rootView.findViewById(R.id.screen_game)).setActivity(getActivity());
+	
+			SwipeController swipe = new SwipeController(getActivity().getSupportFragmentManager(), gameid);
+			ViewPager mPager = (ViewPager) rootView.findViewById(R.id.pager);
+			mPager.setAdapter(swipe);
+			mPager.setOnPageChangeListener(new SwipeListener((ImageView) rootView.findViewById(R.id.indicator)));
+	
+			refresher = new RefresherThread();
+			running = true;
+			refresher.start();
 		
-		((TextView) rootView.findViewById(R.id.turn)).setText(Integer.toString(game.getTurnNumber()));
-		((TextView) rootView.findViewById(R.id.playerscore)).setText(Integer.toString(game.getPlayerScore()));
-		((TextView) rootView.findViewById(R.id.oppscore)).setText(Integer.toString(game.getOpponentScore()));
-		
-		loadTurns();
-		game.addTurnListener(this);
-		
-		Resources res = getActivity().getResources();
-		Drawable guessEnabled = res.getDrawable(R.drawable.guess);
-		Drawable guessDisabled = res.getDrawable(R.drawable.guess_disabled);
-
-		input = (EditText) rootView.findViewById(R.id.guess_input);
-		input.addTextChangedListener(new CapsLockLimiter(input, rootView, guessEnabled, guessDisabled));
-		
-		((ImageView) rootView.findViewById(R.id.guess_button)).setOnClickListener(new TurnMaker(game, (BaseGame) getActivity(), rootView, this));
-
-		((GameLayout) rootView.findViewById(R.id.screen_game)).setActivity(getActivity());
-
-		SwipeController swipe = new SwipeController(getActivity().getSupportFragmentManager(), gameid);
-		ViewPager mPager = (ViewPager) rootView.findViewById(R.id.pager);
-		mPager.setAdapter(swipe);
-		mPager.setOnPageChangeListener(new SwipeListener((ImageView) rootView.findViewById(R.id.indicator)));
-
-		refresher = new RefresherThread();
-		running = true;
-		refresher.start();
+		} else {
+			
+			getActivity().getSupportFragmentManager().popBackStack("top", 0);
+			
+		}
 		
 		return rootView;
 	}

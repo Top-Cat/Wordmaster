@@ -123,7 +123,7 @@ public abstract class BaseGameActivity extends FragmentActivity implements GameH
 		return mHelper.getPlusClient();
 	}
 
-	protected boolean isSignedIn() {
+	public boolean isSignedIn() {
 		return mHelper.isSignedIn();
 	}
 
@@ -170,10 +170,6 @@ public abstract class BaseGameActivity extends FragmentActivity implements GameH
 	protected void setSignInMessages(String signingInMessage, String signingOutMessage) {
 		mHelper.setSigningInMessage(signingInMessage);
 		mHelper.setSigningOutMessage(signingOutMessage);
-	}
-
-	public String getUserId() {
-		return getGamesClient().getCurrentPlayer().getPlayerId();
 	}
 
 }

@@ -37,6 +37,8 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.menu_screen, container, false);
+		
+		((BaseGame) getActivity()).menuFragment = this;
 
 		SignInButton button = (SignInButton) v.findViewById(R.id.button_sign_in);
 		button.setSize(SignInButton.SIZE_WIDE); // I commend anyone who can do this in XML
@@ -45,13 +47,31 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 		ListView list = (ListView) v.findViewById(R.id.main_feed);
 		list.setAdapter(adapter);
 		list.setOnItemClickListener(this);
-
-		int services = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getActivity());
-		if (services == ConnectionResult.SUCCESS) {
-			button.setOnClickListener(this);
+		
+		if (savedInstanceState != null) {
+			BaseGame act = (BaseGame) getActivity();
+			if (!act.wideLayout) {
+				// Check to see if a game is open
+				for (int i = 0; i < act.getSupportFragmentManager().getBackStackEntryCount(); i++) {
+					if (act.getSupportFragmentManager().getBackStackEntryAt(i).getName().equals("game")) {
+						// WE NEED TO HIDE!
+						act.getSupportFragmentManager().beginTransaction().hide(this).commit();
+						break;
+					}
+				}
+			}
+		}
+		
+		if (((BaseGame) getActivity()).isSignedIn()) {
+			onSignInSucceeded();
 		} else {
-			Dialog dialog = GooglePlayServicesUtil.getErrorDialog(services, getActivity(), 1);
-			dialog.show();
+			int services = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getActivity());
+			if (services == ConnectionResult.SUCCESS) {
+				button.setOnClickListener(this);
+			} else {
+				Dialog dialog = GooglePlayServicesUtil.getErrorDialog(services, getActivity(), 1);
+				dialog.show();
+			}
 		}
 
 		return v;
@@ -65,7 +85,11 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 	@Override
 	public void onClick(View v) {
 		if (v.getId() == R.id.button_sign_in) {
-			((BaseGameActivity) getActivity()).beginUserInitiatedSignIn();
+			if (((BaseGame) getActivity()).isSignedIn()) {
+				onSignInSucceeded();
+			} else {
+				((BaseGameActivity) getActivity()).beginUserInitiatedSignIn();
+			}
 		} else if (v.getId() == R.id.refresh && getView().findViewById(R.id.refresh).getVisibility() == View.VISIBLE) {
 			loadGames();
 		} else if (v.getId() == R.id.startnew) {
@@ -84,7 +108,7 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 		getView().findViewById(R.id.refresh).setVisibility(View.GONE);
 		getView().findViewById(R.id.refresh_progress).setVisibility(View.VISIBLE);
 		
-		ServerAPI.getMatches(((BaseGameActivity) getActivity()).getUserId(), (BaseGame) getActivity(), this);
+		ServerAPI.getMatches(((BaseGame) getActivity()).getUserId(), (BaseGame) getActivity(), this);
 	}
 
 	@Override
@@ -119,12 +143,12 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 		act.getSupportFragmentManager().popBackStack("game", 1);
 		Bundle args = new Bundle();
 		args.putString(MenuDetailFragment.ARG_ITEM_ID, gameID);
-		Fragment fragment = act.menuDetail = new MenuDetailFragment();
+		Fragment fragment = new MenuDetailFragment();
 		fragment.setArguments(args);
 		FragmentTransaction ft = act.getSupportFragmentManager().beginTransaction();
 		if (!act.wideLayout) {
 			ft.setCustomAnimations(R.anim.slide_right, R.anim.slide_left, R.anim.slide_left_2, R.anim.slide_right_2)
-				.hide(act.menuFragment);
+				.hide(this);
 		} else {
 			ft.setCustomAnimations(R.anim.wide_in, 0, 0, R.anim.wide_out);
 		}

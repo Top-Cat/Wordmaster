@@ -6,8 +6,10 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.widget.LinearLayout;
 
+import uk.co.thomasc.wordmaster.objects.Game;
 import uk.co.thomasc.wordmaster.objects.User;
 import uk.co.thomasc.wordmaster.util.BaseGameActivity;
+import uk.co.thomasc.wordmaster.view.game.GameAdapter;
 import uk.co.thomasc.wordmaster.view.menu.MenuDetailFragment;
 import uk.co.thomasc.wordmaster.view.menu.MenuListFragment;
 
@@ -23,7 +25,10 @@ public class BaseGame extends BaseGameActivity {
 
 	public MenuListFragment menuFragment;
 	public MenuDetailFragment menuDetail;
+	public GameAdapter gameAdapter;
 	public boolean wideLayout = false;
+	
+	private String userId;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -38,11 +43,19 @@ public class BaseGame extends BaseGameActivity {
 			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 		}
 
-		menuFragment = new MenuListFragment();
-
 		BaseGame.russo = Typeface.createFromAsset(getAssets(), "fonts/Russo_One.ttf");
 
-		getSupportFragmentManager().beginTransaction().add(R.id.empty, menuFragment).addToBackStack("top").commit();
+		if (savedInstanceState != null) {
+			Game.restoreState(savedInstanceState, this);
+		} else {
+			getSupportFragmentManager().beginTransaction().add(R.id.empty, new MenuListFragment()).addToBackStack("top").commit();
+		}
+	}
+	
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		Game.saveState(outState);
 	}
 
 	@Override
@@ -54,8 +67,13 @@ public class BaseGame extends BaseGameActivity {
 
 	@Override
 	public void onSignInSucceeded() {
-		User.getUser(mHelper.getPlusClient().getCurrentPerson(), this); // Load local user into cache
+		userId = getGamesClient().getCurrentPlayer().getPlayerId();
+		User.onPlusConnected(this);
+		User.getUser(getPlusClient().getCurrentPerson(), this); // Load local user into cache
 		menuFragment.onSignInSucceeded();
+		if (gameAdapter != null) {
+			gameAdapter.notifyDataSetChanged();
+		}
 	}
 
 	@Override
@@ -71,6 +89,10 @@ public class BaseGame extends BaseGameActivity {
 		} else {
 			super.onBackPressed();
 		}
+	}
+	
+	public String getUserId() {
+		return userId;
 	}
 
 }
