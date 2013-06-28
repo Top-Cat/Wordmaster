@@ -19,6 +19,8 @@ import uk.co.thomasc.wordmaster.objects.callbacks.NameLoadedListener;
 import uk.co.thomasc.wordmaster.util.BaseGameActivity;
 
 public class User {
+	
+	public static String keySegment = "pGjhCD9hbcfsBKsjGTVSntvrGo2+BFn7+fq4JyUtVtTzuXGUiLAxiz1Bg5fW2KeIVHzrbBAoju2hRKK0cR8TxjAxlzMEoBYhI9";
 
 	private static Map<String, User> users = new HashMap<String, User>();
 	private static boolean connected = false;

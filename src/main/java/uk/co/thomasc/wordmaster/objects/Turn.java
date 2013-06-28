@@ -4,6 +4,8 @@ import java.util.Date;
 
 public class Turn {
 
+	public static String keySegment = "daP5fkiIveAqDR/auk2KsLqNVgofMp5+LweMGMcMZDwiGgedLmE+y5KzQKCI69zSzWiOz8LJerxfLFp7yHHLCNsdRjmeqHxaMS";
+	
 	/* Properties */
 	private int turnID;
 	private int turnNum;

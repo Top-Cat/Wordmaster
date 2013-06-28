@@ -10,6 +10,8 @@ import uk.co.thomasc.wordmaster.objects.callbacks.TurnAddedListener;
 
 public class Game {
 
+	public static String keySegment = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApAOqKoj3zH7ADRMM9zHZkUegL8xRAoD8Qb7tl7Xz94T99y7qFiphoZ";
+	
 	public static HashMap<String, Game> games = new HashMap<String, Game>();
 	
 	public static Game getGame(String id) {

@@ -1,12 +1,13 @@
 package uk.co.thomasc.wordmaster.view.upgrade;
 
+import uk.co.thomasc.wordmaster.BaseGame;
 import uk.co.thomasc.wordmaster.R;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 
 public class UpgradeFragment extends Fragment implements OnClickListener {
 
@@ -28,7 +29,7 @@ public class UpgradeFragment extends Fragment implements OnClickListener {
 	@Override
 	public void onClick(View v) {
 		if (v.getId() == R.id.buy_upgrade) {
-			
+			((BaseGame) getActivity()).buyUpgrade();
 		} else if (v.getId() == R.id.cancel_upgrade) {
 			getActivity().getSupportFragmentManager().popBackStack("upgrade", 1);
 		}
