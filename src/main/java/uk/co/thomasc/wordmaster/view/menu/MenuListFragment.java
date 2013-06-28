@@ -190,16 +190,11 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 
 	@Override
 	public void onCreateGame(String playerID, String opponentID) {
-		// TODO: Hide the CreateGameFragment
-		getActivity().getSupportFragmentManager().beginTransaction()
-			.setCustomAnimations(0, R.anim.fadeout, 0, 0)
-			.remove(createGameFragment)
-			.commit();
+		getActivity().getSupportFragmentManager().popBackStack("userpicker", 1);
 		Game existingGame = Game.getGame(playerID, opponentID);
 		if (existingGame != null) {
 			goToGame(existingGame.getID());
 		} else {
-			// TODO: Create a new game
 			ServerAPI.createGame(playerID, opponentID, (BaseGame) getActivity(), new CreateGameRequestListener() {
 				@Override
 				public void onRequestFailed() {
