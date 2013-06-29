@@ -69,7 +69,6 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 			getSupportFragmentManager().beginTransaction().add(R.id.empty, new MenuListFragment()).addToBackStack("top").commit();
 		}
 		
-		TurnReceiver.resetNotifications(this);
 		checkIntent(getIntent());
 		
 		String base64PublicKey = Game.keySegment + Turn.keySegment + User.keySegment + PersonAdapter.keySegment;
@@ -91,6 +90,8 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 	}
 	
 	private void checkIntent(Intent intent) {
+		TurnReceiver.resetNotifications(this);
+		
 		Bundle extras = intent.getExtras();
 		if (extras != null && extras.containsKey("gameid")) {
 			String gameid = extras.getString("gameid");
