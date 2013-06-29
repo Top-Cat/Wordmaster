@@ -124,6 +124,7 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 				
 				String gameid = ((BaseGame) getActivity()).goToGameId;
 				if (gameid.length() > 0) {
+					((BaseGame) getActivity()).goToGameId = "";
 					goToGame(gameid);
 				}
 			}
