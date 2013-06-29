@@ -81,7 +81,9 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 				if (! result.isSuccess()) {
 					// TODO: IAB is broken, do something
 				} else {
-					consumeTestUpgrade();
+					// for testing purposes, tell google play we've consumed the upgrade SKUs
+					consumeUpgrades();
+					// TODO: Get rid of this before release!
 				}
 			}
 		});
@@ -132,14 +134,19 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 		mHelper.launchPurchaseFlow(this, upgradeSKU, 1902, this, userId);
 	}
 	
-	public void consumeTestUpgrade() {
+	public void consumeUpgrades() {
 		mHelper.queryInventoryAsync(new QueryInventoryFinishedListener() {
 			@Override
 			public void onQueryInventoryFinished(IabResult result, Inventory inv) {
 				System.out.println("Got the inventory");
+				ArrayList<Purchase> purchases = new ArrayList<Purchase>();
 				if (inv.hasPurchase(testSKU)) {
-					mHelper.consumeAsync(inv.getPurchase(testSKU), null);
+					purchases.add(inv.getPurchase(testSKU));
 				}
+				if (inv.hasPurchase(upgradeSKU)) {
+					purchases.add(inv.getPurchase(upgradeSKU));
+				}
+				mHelper.consumeAsync(purchases, null);
 			}
 		});
 	}
@@ -156,7 +163,7 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 		} else {
 			System.out.println("Upgrade purchased! Token: " + info.getToken());
 			getSupportFragmentManager().popBackStack("upgrade", 1);
-		//	ServerAPI.upgradePurchased(info.getToken());
+			ServerAPI.upgradePurchased(info.getToken());
 		}
 	}
 	
