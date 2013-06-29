@@ -234,6 +234,16 @@ public class ServerAPI {
 		};
 		t.start();
 	}
+	
+	public static void registerGCM(final String playerID, final String regid) {
+		Thread t = new Thread() {
+			@Override
+			public void run() {
+				ServerAPI.makeRequest("registerGCM", playerID, regid);
+			}
+		};
+		t.start();
+	}
 
 	private static JSONObject makeRequest(String iface, String param1, String param2, String param3) {
 		return ServerAPI.makeRequest(ServerAPI.BASE_URL + iface + "/" + param1 + "/" + param2 + "/" + param3);

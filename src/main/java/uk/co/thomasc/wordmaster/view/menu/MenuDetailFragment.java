@@ -59,7 +59,9 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener, T
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		game.removeTurnListener(this);
+		if (game != null) {
+			game.removeTurnListener(this);
+		}
 		running = false;
 	}
 	
@@ -150,7 +152,7 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener, T
 	
 	
 	
-	private void loadTurns() {
+	public void loadTurns() {
 		ServerAPI.getTurns(gameid, (BaseGame) getActivity(), new GetTurnsRequestListener() {
 			
 			@Override

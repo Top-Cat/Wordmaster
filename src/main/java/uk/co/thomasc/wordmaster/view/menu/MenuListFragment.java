@@ -121,6 +121,11 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 					adapter.add(game);
 				}
 				refreshOver();
+				
+				String gameid = ((BaseGame) getActivity()).goToGameId;
+				if (gameid.length() > 0) {
+					goToGame(gameid);
+				}
 			}
 		});
 	}
@@ -138,7 +143,7 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 		});
 	}
 	
-	private void goToGame(String gameID) {
+	public void goToGame(String gameID) {
 		BaseGame act = (BaseGame) getActivity();
 		act.getSupportFragmentManager().popBackStack("game", 1);
 		Bundle args = new Bundle();

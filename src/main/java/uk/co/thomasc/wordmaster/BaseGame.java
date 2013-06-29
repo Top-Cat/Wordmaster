@@ -3,6 +3,7 @@ package uk.co.thomasc.wordmaster;
 import java.util.ArrayList;
 
 import uk.co.thomasc.wordmaster.gcm.RegisterThread;
+import uk.co.thomasc.wordmaster.gcm.TurnReceiver;
 import uk.co.thomasc.wordmaster.iab.IabHelper;
 import uk.co.thomasc.wordmaster.iab.IabHelper.OnIabPurchaseFinishedListener;
 import uk.co.thomasc.wordmaster.iab.IabHelper.OnIabSetupFinishedListener;
@@ -18,6 +19,7 @@ import uk.co.thomasc.wordmaster.view.game.GameAdapter;
 import uk.co.thomasc.wordmaster.view.menu.MenuDetailFragment;
 import uk.co.thomasc.wordmaster.view.menu.MenuListFragment;
 
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Typeface;
@@ -39,7 +41,8 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 	public GameAdapter gameAdapter;
 	public boolean wideLayout = false;
 	
-	private String userId;
+	private String userId = "";
+	public String goToGameId = "";
 	
 	public static IabHelper mHelper;
 	public static String upgradeSKU = "wordmaster_upgrade";
@@ -66,6 +69,9 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 			getSupportFragmentManager().beginTransaction().add(R.id.empty, new MenuListFragment()).addToBackStack("top").commit();
 		}
 		
+		TurnReceiver.resetNotifications(this);
+		checkIntent(getIntent());
+		
 		String base64PublicKey = Game.keySegment + Turn.keySegment + User.keySegment + PersonAdapter.keySegment;
 		mHelper = new IabHelper(this, base64PublicKey);
 		mHelper.startSetup(new OnIabSetupFinishedListener() {
@@ -76,6 +82,24 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 				}
 			}
 		});
+	}
+	
+	@Override
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+		checkIntent(intent);
+	}
+	
+	private void checkIntent(Intent intent) {
+		Bundle extras = intent.getExtras();
+		if (extras != null && extras.containsKey("gameid")) {
+			String gameid = extras.getString("gameid");
+			if (Game.getGame(gameid) != null) {
+				menuFragment.goToGame(gameid);
+			} else {
+				goToGameId = gameid;
+			}
+		}
 	}
 	
 	@Override
@@ -111,6 +135,7 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		Game.saveState(outState);
+		Game.saveState(this);
 	}
 
 	@Override
@@ -127,6 +152,7 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 		User.getUser(getPlusClient().getCurrentPerson(), this); // Load local user into cache
 		menuFragment.onSignInSucceeded();
 		if (gameAdapter != null) {
+			menuDetail.loadTurns();
 			gameAdapter.notifyDataSetChanged();
 		}
 		new RegisterThread(this).start();

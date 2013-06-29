@@ -10,6 +10,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 import uk.co.thomasc.wordmaster.BaseGame;
+import uk.co.thomasc.wordmaster.api.ServerAPI;
 
 public class RegisterThread extends Thread {
 	
@@ -49,8 +50,7 @@ public class RegisterThread extends Thread {
 			editor.putInt("version", currentVersion);
 			editor.commit();
 			
-			//TODO: Implement this call in ServerAPI
-			//ServerAPI.registerGCM(activity.getUserId(), regid);
+			ServerAPI.registerGCM(activity.getUserId(), regid);
 		}
 	}
 	

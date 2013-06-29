@@ -3,6 +3,9 @@ package uk.co.thomasc.wordmaster.objects;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 
 import uk.co.thomasc.wordmaster.BaseGame;
@@ -174,6 +177,15 @@ public class Game {
 	public int getPivotOldest() {
 		return oldestTurnId;
 	}
+	
+	public static void saveState(Context context) {
+		for (String gameid : games.keySet()) {
+			SharedPreferences prefs = context.getSharedPreferences("wordmaster.game." + gameid, Context.MODE_PRIVATE);
+			SharedPreferences.Editor editor = prefs.edit();
+			games.get(gameid).updatePreferences(editor);
+			editor.commit();
+		}
+	}
 
 	public static void saveState(Bundle outState) {
 		for (String gameid : games.keySet()) {
@@ -202,6 +214,11 @@ public class Game {
 		bundle.putInt("playerscore", playerScore);
 		bundle.putInt("opponentscore", opponentScore);
 		return bundle;
+	}
+	
+	private void updatePreferences(Editor editor) {
+		editor.putLong("time", getLastUpdateTimestamp());
+		editor.putString("oppname", opponent.getName());
 	}
 
 }
