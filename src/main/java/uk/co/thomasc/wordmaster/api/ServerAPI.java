@@ -244,6 +244,16 @@ public class ServerAPI {
 		};
 		t.start();
 	}
+	
+	public static void upgradePurchased(final String token) {
+		Thread t = new Thread() {
+			@Override
+			public void run() {
+				JSONObject json = ServerAPI.makeRequest("upgradePurchased", token);
+			}
+		};
+		t.start();
+	}
 
 	private static JSONObject makeRequest(String iface, String param1, String param2, String param3) {
 		return ServerAPI.makeRequest(ServerAPI.BASE_URL + iface + "/" + param1 + "/" + param2 + "/" + param3);

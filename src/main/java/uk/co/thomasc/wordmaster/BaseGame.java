@@ -2,6 +2,7 @@ package uk.co.thomasc.wordmaster;
 
 import java.util.ArrayList;
 
+import uk.co.thomasc.wordmaster.api.ServerAPI;
 import uk.co.thomasc.wordmaster.gcm.RegisterThread;
 import uk.co.thomasc.wordmaster.gcm.TurnReceiver;
 import uk.co.thomasc.wordmaster.iab.IabHelper;
@@ -9,6 +10,7 @@ import uk.co.thomasc.wordmaster.iab.IabHelper.OnIabPurchaseFinishedListener;
 import uk.co.thomasc.wordmaster.iab.IabHelper.OnIabSetupFinishedListener;
 import uk.co.thomasc.wordmaster.iab.IabHelper.QueryInventoryFinishedListener;
 import uk.co.thomasc.wordmaster.iab.IabResult;
+import uk.co.thomasc.wordmaster.iab.Inventory;
 import uk.co.thomasc.wordmaster.iab.Purchase;
 import uk.co.thomasc.wordmaster.objects.Game;
 import uk.co.thomasc.wordmaster.objects.Turn;
@@ -18,12 +20,12 @@ import uk.co.thomasc.wordmaster.view.create.PersonAdapter;
 import uk.co.thomasc.wordmaster.view.game.GameAdapter;
 import uk.co.thomasc.wordmaster.view.menu.MenuDetailFragment;
 import uk.co.thomasc.wordmaster.view.menu.MenuListFragment;
-
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.LinearLayout;
 
 /**
@@ -45,8 +47,8 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 	public String goToGameId = "";
 	
 	public static IabHelper mHelper;
+	public static String testSKU = "android.test.purchased";
 	public static String upgradeSKU = "wordmaster_upgrade";
-	// TODO: Create the upgrade IAP in developer console and get SKU
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -78,10 +80,24 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 			public void onIabSetupFinished(IabResult result) {
 				if (! result.isSuccess()) {
 					// TODO: IAB is broken, do something
+				} else {
+					consumeTestUpgrade();
 				}
 			}
 		});
 	}
+	
+	@Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Pass on the activity result to the helper for handling
+        if (!mHelper.handleActivityResult(requestCode, resultCode, data)) {
+            super.onActivityResult(requestCode, resultCode, data);
+        } else {
+            
+        }
+    }
 	
 	@Override
 	protected void onNewIntent(Intent intent) {
@@ -116,13 +132,31 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 		mHelper.launchPurchaseFlow(this, upgradeSKU, 1902, this, userId);
 	}
 	
+	public void consumeTestUpgrade() {
+		mHelper.queryInventoryAsync(new QueryInventoryFinishedListener() {
+			@Override
+			public void onQueryInventoryFinished(IabResult result, Inventory inv) {
+				System.out.println("Got the inventory");
+				if (inv.hasPurchase(testSKU)) {
+					mHelper.consumeAsync(inv.getPurchase(testSKU), null);
+				}
+			}
+		});
+	}
+	
 	@Override
 	public void onIabPurchaseFinished(IabResult result, Purchase info) {
 		if (result.isFailure()) {
-			// TODO: Purchase failed, do something
+			if (result.getResponse() == IabHelper.IABHELPER_USER_CANCELLED) {
+				System.out.println("User cancelled purchase");
+			} else {
+				System.out.println("IAB error " + result.getResponse());
+				// TODO: Purchase failed, show an error?
+			}
 		} else {
+			System.out.println("Upgrade purchased! Token: " + info.getToken());
 			getSupportFragmentManager().popBackStack("upgrade", 1);
-			// TODO: Do some upgradey stuff
+		//	ServerAPI.upgradePurchased(info.getToken());
 		}
 	}
 	
