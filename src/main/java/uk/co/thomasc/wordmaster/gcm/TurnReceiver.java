@@ -62,7 +62,7 @@ public class TurnReceiver extends BroadcastReceiver {
 				if (count == 1) {
 					i.putExtra("gameid", gameid);
 				}
-				PendingIntent contentIntent = PendingIntent.getActivity(context, 0, i, 0);
+				PendingIntent contentIntent = PendingIntent.getActivity(context, gameid.hashCode(), i, 0);
 				
 				NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
 				.setSmallIcon(R.drawable.ic_launcher)
