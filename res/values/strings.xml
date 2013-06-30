@@ -24,7 +24,7 @@
 	<string name="word_error">Not a word</string>
 	<string name="word_error_help">CAKE is not in the WordMaster dictionary.</string>
 	<string name="server_error">Server Error</string>
-	<string name="server_error_help">Something went wrong. Try again in a moment or two.</string>
+	<string name="server_error_help">Something went wrong. Try again later.</string>
 	
 	<string name="pull_to_refresh_pull_label">Pull to load history&#8230;</string>
 	<string name="pull_to_refresh_release_label">Release to load history&#8230;</string>
