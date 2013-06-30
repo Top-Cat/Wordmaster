@@ -113,22 +113,24 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 
 	@Override
 	public void onRequestComplete(final Game[] games) {
-		getActivity().runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				adapter.clear();
-				for (Game game : games) {
-					adapter.add(game);
+		if (isAdded()) {
+			getActivity().runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					adapter.clear();
+					for (Game game : games) {
+						adapter.add(game);
+					}
+					refreshOver();
+					
+					String gameid = ((BaseGame) getActivity()).goToGameId;
+					if (gameid.length() > 0) {
+						((BaseGame) getActivity()).goToGameId = "";
+						goToGame(gameid);
+					}
 				}
-				refreshOver();
-				
-				String gameid = ((BaseGame) getActivity()).goToGameId;
-				if (gameid.length() > 0) {
-					((BaseGame) getActivity()).goToGameId = "";
-					goToGame(gameid);
-				}
-			}
-		});
+			});
+		}
 	}
 
 	@Override

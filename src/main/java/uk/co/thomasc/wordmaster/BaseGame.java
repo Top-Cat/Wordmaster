@@ -194,16 +194,18 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 
 	@Override
 	public void onSignInSucceeded() {
-		Person person = getPlusClient().getCurrentPerson();
-		userId = person.getId();
-		User.onPlusConnected(this);
-		User.getUser(person, this); // Load local user into cache
-		menuFragment.onSignInSucceeded();
-		if (gameAdapter != null) {
-			menuDetail.loadTurns();
-			gameAdapter.notifyDataSetChanged();
+		if (getPlusClient().isConnected()) {
+			Person person = getPlusClient().getCurrentPerson();
+			userId = person.getId();
+			User.onPlusConnected(this);
+			User.getUser(person, this); // Load local user into cache
+			menuFragment.onSignInSucceeded();
+			if (gameAdapter != null) {
+				menuDetail.loadTurns();
+				gameAdapter.notifyDataSetChanged();
+			}
+			new RegisterThread(this).start();
 		}
-		new RegisterThread(this).start();
 	}
 
 	@Override
