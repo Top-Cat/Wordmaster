@@ -12,6 +12,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
 import android.widget.ListView;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -34,7 +35,7 @@ public class CreateGameFragment extends Fragment implements OnClickListener, OnI
 		
 		rootView.setOnClickListener(this);
 		
-		ListView users = (ListView) rootView.findViewById(R.id.user_picker);
+		final ListView users = (ListView) rootView.findViewById(R.id.user_picker);
 		adapter = new PersonAdapter(getActivity());
 		((BaseGameActivity) getActivity()).getPlusClient().loadPeople(new OnPeopleLoadedListener() {
 			@Override
@@ -47,6 +48,13 @@ public class CreateGameFragment extends Fragment implements OnClickListener, OnI
 				} finally {
 					personBuffer.close();
 				}
+				if (adapter.getCount() == 0) {
+					users.setVisibility(View.GONE);
+					rootView.findViewById(R.id.no_players).setVisibility(View.VISIBLE);
+					Button button = (Button) rootView.findViewById(R.id.no_players_btn);
+					button.setVisibility(View.VISIBLE);
+					button.setOnClickListener(CreateGameFragment.this);
+				}
 			}
 		}, Collection.VISIBLE);
 		users.setAdapter(adapter);
@@ -57,7 +65,9 @@ public class CreateGameFragment extends Fragment implements OnClickListener, OnI
 
 	@Override
 	public void onClick(View v) {
-		
+		if (v.getId() == R.id.no_players_btn) {
+			getActivity().getSupportFragmentManager().popBackStack("userpicker", 1);
+		}
 	}
 
 	@Override

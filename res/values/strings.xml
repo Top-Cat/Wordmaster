@@ -45,6 +45,7 @@
 	<string name="triangle">Downward arrow</string>
 	
 	<string name="create_title">New Game</string>
+	<string name="no_players">There is no one available in your Google+ circles to start a game with.</string>
 	
 	<string name="upgrade_title">Upgrade</string>
 	<string name="why_upgrade">To create more games you need to upgrade to the full version of Wordmaster.</string>
