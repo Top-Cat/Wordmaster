@@ -50,7 +50,7 @@ public class RegisterThread extends Thread {
 			editor.putInt("version", currentVersion);
 			editor.commit();
 			
-			ServerAPI.registerGCM(activity.getUserId(), regid);
+			ServerAPI.registerGCM(activity.getUserId(), regid, activity);
 		}
 	}
 	

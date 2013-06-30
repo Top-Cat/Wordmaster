@@ -15,6 +15,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import uk.co.thomasc.wordmaster.BaseGame;
+import uk.co.thomasc.wordmaster.game.Achievements;
 import uk.co.thomasc.wordmaster.objects.Game;
 import uk.co.thomasc.wordmaster.objects.Turn;
 import uk.co.thomasc.wordmaster.objects.User;
@@ -35,7 +36,7 @@ public class ServerAPI {
 		Thread t = new Thread() {
 			@Override
 			public void run() {
-				JSONObject json = ServerAPI.makeRequest("getMatches", playerID);
+				JSONObject json = ServerAPI.makeRequest("getMatches", playerID, activityReference);
 				if (json != null) {
 					boolean success = ((Boolean) json.get("success")).booleanValue();
 					if (success) {
@@ -81,7 +82,7 @@ public class ServerAPI {
 		Thread t = new Thread() {
 			@Override
 			public void run() {
-				JSONObject json = ServerAPI.makeRequest("getTurns", gameID);
+				JSONObject json = ServerAPI.makeRequest("getTurns", gameID, activityReference);
 				if (json != null) {
 					List<Turn> turns = ServerAPI.getTurns(json, activityReference);
 					if (turns != null) {
@@ -110,7 +111,7 @@ public class ServerAPI {
 		Thread t = new Thread() {
 			@Override
 			public void run() {
-				JSONObject json = ServerAPI.makeRequest("getTurns", gameID, String.valueOf(turnID), Integer.toString(number));
+				JSONObject json = ServerAPI.makeRequest("getTurns", gameID, String.valueOf(turnID), Integer.toString(number), activityReference);
 				if (json != null) {
 					List<Turn> turns = ServerAPI.getTurns(json, activityReference);
 					if (turns != null) {
@@ -138,7 +139,9 @@ public class ServerAPI {
 				long when = (Long) turnObject.get("when");
 				int correct = ((Long) turnObject.get("correct")).intValue();
 				int displaced = ((Long) turnObject.get("displaced")).intValue();
-				if (num > 0 || activityReference.getUserId().equals(playerID)) {
+				
+				boolean isPlayer = activityReference.getUserId().equals(playerID);
+				if (num > 0 || isPlayer) {
 					Turn turn;
 					if (correct == 4) {
 						String opponentWord = (String) turnObject.get("oppword");
@@ -165,11 +168,11 @@ public class ServerAPI {
 	 * @param word – the guess the player has made
 	 * @param listener – a TakeTurnRequestListener to be notified when the request finishes 
 	 */
-	public static void takeTurn(final String playerID, final String gameID, final String word, final TakeTurnRequestListener listener) {
+	public static void takeTurn(final String playerID, final String gameID, final String word, final BaseGame activityReference, final TakeTurnRequestListener listener) {
 		Thread t = new Thread() {
 			@Override
 			public void run() {
-				JSONObject json = ServerAPI.makeRequest("takeTurn", playerID, gameID, word);
+				JSONObject json = ServerAPI.makeRequest("takeTurn", playerID, gameID, word, activityReference);
 				boolean success = ((Boolean) json.get("success")).booleanValue();
 				JSONObject response = (JSONObject) json.get("response");
 				boolean validWord = (Boolean) response.get("validword");
@@ -194,7 +197,7 @@ public class ServerAPI {
 		Thread t = new Thread() {
 			@Override
 			public void run() {
-				JSONObject json = ServerAPI.makeRequest("createGame", playerID, opponentID);
+				JSONObject json = ServerAPI.makeRequest("createGame", playerID, opponentID, activityReference);
 				boolean success = ((Boolean) json.get("success")).booleanValue();
 				JSONObject response = (JSONObject) json.get("response");
 				if (success) {
@@ -220,11 +223,11 @@ public class ServerAPI {
 	 * @param word – the word the player wishes to use
 	 * @param listener – a SetWordRequestListener to be notified when the request finishes 
 	 */
-	public static void setWord(final String playerID, final String gameID, final String word, final SetWordRequestListener listener) {
+	public static void setWord(final String playerID, final String gameID, final String word, final BaseGame activityReference, final SetWordRequestListener listener) {
 		Thread t = new Thread() {
 			@Override
 			public void run() {
-				JSONObject json = ServerAPI.makeRequest("setWord", playerID, gameID, word);
+				JSONObject json = ServerAPI.makeRequest("setWord", playerID, gameID, word, activityReference);
 				boolean success = ((Boolean) json.get("success")).booleanValue();
 				JSONObject response = (JSONObject) json.get("response");
 				boolean validWord = (Boolean) response.get("validword");
@@ -235,39 +238,39 @@ public class ServerAPI {
 		t.start();
 	}
 	
-	public static void registerGCM(final String playerID, final String regid) {
+	public static void registerGCM(final String playerID, final String regid, final BaseGame activityReference) {
 		Thread t = new Thread() {
 			@Override
 			public void run() {
-				ServerAPI.makeRequest("registerGCM", playerID, regid);
+				ServerAPI.makeRequest("registerGCM", playerID, regid, activityReference);
 			}
 		};
 		t.start();
 	}
 	
-	public static void upgradePurchased(final String token) {
+	public static void upgradePurchased(final String token, final BaseGame activityReference) {
 		Thread t = new Thread() {
 			@Override
 			public void run() {
-				JSONObject json = ServerAPI.makeRequest("upgradePurchased", token);
+				ServerAPI.makeRequest("upgradePurchased", token, activityReference);
 			}
 		};
 		t.start();
 	}
 
-	private static JSONObject makeRequest(String iface, String param1, String param2, String param3) {
-		return ServerAPI.makeRequest(ServerAPI.BASE_URL + iface + "/" + param1 + "/" + param2 + "/" + param3);
+	private static JSONObject makeRequest(String iface, String param1, String param2, String param3, BaseGame activityReference) {
+		return ServerAPI.makeRequest(ServerAPI.BASE_URL + iface + "/" + param1 + "/" + param2 + "/" + param3, activityReference);
 	}
 
-	private static JSONObject makeRequest(String iface, String param1, String param2) {
-		return ServerAPI.makeRequest(ServerAPI.BASE_URL + iface + "/" + param1 + "/" + param2);
+	private static JSONObject makeRequest(String iface, String param1, String param2, BaseGame activityReference) {
+		return ServerAPI.makeRequest(ServerAPI.BASE_URL + iface + "/" + param1 + "/" + param2, activityReference);
 	}
 
-	private static JSONObject makeRequest(String iface, String param1) {
-		return ServerAPI.makeRequest(ServerAPI.BASE_URL + iface + "/" + param1);
+	private static JSONObject makeRequest(String iface, String param1, BaseGame activityReference) {
+		return ServerAPI.makeRequest(ServerAPI.BASE_URL + iface + "/" + param1, activityReference);
 	}
 
-	private static JSONObject makeRequest(String url) {
+	private static JSONObject makeRequest(String url, BaseGame activityReference) {
 		String jsonText = "";
 
 		try {
@@ -281,11 +284,24 @@ public class ServerAPI {
 
 			JSONParser parser = new JSONParser();
 			JSONObject jsonObject = (JSONObject) parser.parse(jsonText);
+			processAchievements(jsonObject, activityReference);
 			return jsonObject;
 		} catch (IOException ex) {
 			return null;
 		} catch (ParseException ex) {
 			return null;
+		}
+	}
+	
+	private static void processAchievements(JSONObject json, BaseGame activityReference) {
+		JSONObject achievements = (JSONObject) json.get("achievements");
+		for (Object key : achievements.keySet()) {
+			int sid = Integer.parseInt((String) key);
+			Achievements achievement = Achievements.forServerId(sid);
+			if (achievement != null) {
+				int increment = ((Long) achievements.get(key)).intValue();
+				activityReference.unlockAchievement(achievement, increment);
+			}
 		}
 	}
 

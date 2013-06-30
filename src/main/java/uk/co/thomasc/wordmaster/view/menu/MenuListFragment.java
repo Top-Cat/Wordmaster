@@ -5,6 +5,7 @@ import uk.co.thomasc.wordmaster.R;
 import uk.co.thomasc.wordmaster.api.CreateGameRequestListener;
 import uk.co.thomasc.wordmaster.api.GetMatchesRequestListener;
 import uk.co.thomasc.wordmaster.api.ServerAPI;
+import uk.co.thomasc.wordmaster.game.Achievements;
 import uk.co.thomasc.wordmaster.objects.Game;
 import uk.co.thomasc.wordmaster.objects.callbacks.GameCreationListener;
 import uk.co.thomasc.wordmaster.util.BaseGameActivity;
@@ -218,6 +219,7 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 				
 				@Override
 				public void onRequestComplete(final Game game) {
+					((BaseGame) getActivity()).unlockAchievement(Achievements.IDONTHATEYOU);
 					getActivity().runOnUiThread(new Runnable() {
 						@Override
 						public void run() {

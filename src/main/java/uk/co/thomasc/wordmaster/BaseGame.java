@@ -3,6 +3,7 @@ package uk.co.thomasc.wordmaster;
 import java.util.ArrayList;
 
 import uk.co.thomasc.wordmaster.api.ServerAPI;
+import uk.co.thomasc.wordmaster.game.Achievements;
 import uk.co.thomasc.wordmaster.gcm.RegisterThread;
 import uk.co.thomasc.wordmaster.gcm.TurnReceiver;
 import uk.co.thomasc.wordmaster.iab.IabHelper;
@@ -25,6 +26,9 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.LinearLayout;
 
 /**
@@ -162,7 +166,7 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 		} else {
 			System.out.println("Upgrade purchased! Token: " + info.getToken());
 			getSupportFragmentManager().popBackStack("upgrade", 1);
-			ServerAPI.upgradePurchased(info.getToken());
+			ServerAPI.upgradePurchased(info.getToken(), this);
 		}
 	}
 	
@@ -205,6 +209,7 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 		if (menuDetail != null && topId.equals("game")) {
 			menuDetail.hideKeyboard();
 			menuDetail = null;
+			gameAdapter = null;
 			menuFragment.loadGames();
 		}
 		if (topId.equals("top")) {
@@ -212,6 +217,43 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 		} else {
 			super.onBackPressed();
 		}
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		if (isSignedIn()) {
+			MenuInflater inflater = getMenuInflater();
+			inflater.inflate(R.menu.main_menu, menu);
+			return true;
+		}
+		return super.onCreateOptionsMenu(menu);
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+			case R.id.show_achievements:
+				if (isSignedIn()) {
+					startActivityForResult(getGamesClient().getAchievementsIntent(), 1001);
+				}
+				return true;
+			default:
+				return super.onOptionsItemSelected(item);
+		}
+	}
+	
+	public void unlockAchievement(Achievements achievement, int increment) {
+		for (String id : achievement.getIds()) {
+			if (achievement.isIncremental()) {
+				getGamesClient().incrementAchievement(id, increment);
+			} else {
+				getGamesClient().unlockAchievement(id);
+			}
+		}
+	}
+	
+	public void unlockAchievement(Achievements achievement) {
+		unlockAchievement(achievement, 0);
 	}
 	
 	public String getUserId() {
