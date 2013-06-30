@@ -25,7 +25,6 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.LinearLayout;
 
 /**

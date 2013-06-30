@@ -3,7 +3,7 @@
 	<!-- Application theme. -->
 	<style name="FullscreenTheme" parent="android:Theme.NoTitleBar">
 		<item name="android:windowContentOverlay">@null</item>
-		<item name="android:windowBackground">@null</item>
+		<item name="android:windowBackground">@color/mainbg</item>
 	</style>
 	
 	<style name="SignInButton">
