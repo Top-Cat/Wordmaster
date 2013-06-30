@@ -167,7 +167,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
 		scrollToBottom();
 	}
 	
-	private void scrollToBottom() {
+	public void scrollToBottom() {
 		post(new Runnable() {
 			@Override
 			public void run() {

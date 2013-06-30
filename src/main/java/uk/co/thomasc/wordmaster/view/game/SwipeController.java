@@ -73,12 +73,7 @@ public class SwipeController extends FragmentStatePagerAdapter {
 				public void run() {
 					adapter.add(turn);
 					if (newerTurn) {
-						listView.post(new Runnable() {
-							@Override
-							public void run() {
-								listView.setSelection(adapter.getCount() - 1);
-							}
-						});
+						listView.scrollToBottom();
 					}
 				}
 			});
