@@ -2,6 +2,8 @@ package uk.co.thomasc.wordmaster;
 
 import java.util.ArrayList;
 
+import com.google.android.gms.plus.model.people.Person;
+
 import uk.co.thomasc.wordmaster.api.ServerAPI;
 import uk.co.thomasc.wordmaster.game.Achievements;
 import uk.co.thomasc.wordmaster.gcm.RegisterThread;
@@ -192,9 +194,10 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 
 	@Override
 	public void onSignInSucceeded() {
-		userId = getGamesClient().getCurrentPlayer().getPlayerId();
+		Person person = getPlusClient().getCurrentPerson();
+		userId = person.getId();
 		User.onPlusConnected(this);
-		User.getUser(getPlusClient().getCurrentPerson(), this); // Load local user into cache
+		User.getUser(person, this); // Load local user into cache
 		menuFragment.onSignInSucceeded();
 		if (gameAdapter != null) {
 			menuDetail.loadTurns();
