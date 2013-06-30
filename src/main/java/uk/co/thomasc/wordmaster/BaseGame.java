@@ -2,8 +2,6 @@ package uk.co.thomasc.wordmaster;
 
 import java.util.ArrayList;
 
-import com.google.android.gms.plus.model.people.Person;
-
 import uk.co.thomasc.wordmaster.api.ServerAPI;
 import uk.co.thomasc.wordmaster.game.Achievements;
 import uk.co.thomasc.wordmaster.gcm.RegisterThread;
@@ -23,6 +21,7 @@ import uk.co.thomasc.wordmaster.view.create.PersonAdapter;
 import uk.co.thomasc.wordmaster.view.game.GameAdapter;
 import uk.co.thomasc.wordmaster.view.menu.MenuDetailFragment;
 import uk.co.thomasc.wordmaster.view.menu.MenuListFragment;
+import uk.co.thomasc.wordmaster.view.upgrade.UpgradeFragment;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
@@ -32,6 +31,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
+
+import com.google.android.gms.plus.model.people.Person;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -52,8 +53,8 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 	public String goToGameId = "";
 	
 	public static IabHelper mHelper;
-	public static String testSKU = "android.test.purchased";
 	public static String upgradeSKU = "wordmaster_upgrade";
+	public UpgradeFragment upgradeFragment;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -143,15 +144,9 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 		mHelper.queryInventoryAsync(new QueryInventoryFinishedListener() {
 			@Override
 			public void onQueryInventoryFinished(IabResult result, Inventory inv) {
-				System.out.println("Got the inventory");
-				ArrayList<Purchase> purchases = new ArrayList<Purchase>();
-				if (inv.hasPurchase(testSKU)) {
-					purchases.add(inv.getPurchase(testSKU));
-				}
 				if (inv.hasPurchase(upgradeSKU)) {
-					purchases.add(inv.getPurchase(upgradeSKU));
+					mHelper.consumeAsync(inv.getPurchase(upgradeSKU), null);
 				}
-				mHelper.consumeAsync(purchases, null);
 			}
 		});
 	}
@@ -159,15 +154,11 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 	@Override
 	public void onIabPurchaseFinished(IabResult result, Purchase info) {
 		if (result.isFailure()) {
-			if (result.getResponse() == IabHelper.IABHELPER_USER_CANCELLED) {
-				System.out.println("User cancelled purchase");
-			} else {
-				System.out.println("IAB error " + result.getResponse());
-				// TODO: Purchase failed, show an error?
+			if (result.getResponse() != IabHelper.IABHELPER_USER_CANCELLED) {
+				upgradeFragment.upgradeFailed();
 			}
 		} else {
-			System.out.println("Upgrade purchased! Token: " + info.getToken());
-			getSupportFragmentManager().popBackStack("upgrade", 1);
+			upgradeFragment.upgradeComplete();
 			ServerAPI.upgradePurchased(info.getToken(), this);
 		}
 	}

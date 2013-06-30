@@ -210,6 +210,7 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 						// TODO: Tell the user unicorns died out with the dinosaurs
 					} else {
 						UpgradeFragment fragment = new UpgradeFragment();
+						((BaseGame) getActivity()).upgradeFragment = fragment;
 						FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
 						ft.setCustomAnimations(R.anim.fadein, 0, 0, R.anim.fadeout);
 						ft.addToBackStack("upgrade")

@@ -12,10 +12,12 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 public class UpgradeFragment extends Fragment implements OnClickListener, QueryInventoryFinishedListener {
 
 	private View rootView;
+	private boolean completed = false;
 	
 	public UpgradeFragment() {
 		
@@ -37,7 +39,11 @@ public class UpgradeFragment extends Fragment implements OnClickListener, QueryI
 	@Override
 	public void onClick(View v) {
 		if (v.getId() == R.id.buy_upgrade) {
-			((BaseGame) getActivity()).buyUpgrade();
+			if (completed) {
+				getActivity().getSupportFragmentManager().popBackStack("upgrade", 1);
+			} else {
+				((BaseGame) getActivity()).buyUpgrade();
+			}
 		} else if (v.getId() == R.id.cancel_upgrade) {
 			getActivity().getSupportFragmentManager().popBackStack("upgrade", 1);
 		}
@@ -51,6 +57,21 @@ public class UpgradeFragment extends Fragment implements OnClickListener, QueryI
 			Button button = (Button) rootView.findViewById(R.id.buy_upgrade);
 			button.setText(button.getText() + " - " + inv.getSkuDetails(BaseGame.upgradeSKU).getPrice());
 		}
+	}
+	
+	public void upgradeComplete() {
+		completed = true;
+		rootView.findViewById(R.id.cancel_upgrade).setVisibility(View.GONE);
+		((Button) rootView.findViewById(R.id.buy_upgrade)).setText(R.string.OK);
+		((TextView) rootView.findViewById(R.id.why_upgrade)).setText(R.string.upgrade_thanks);
+		((TextView) rootView.findViewById(R.id.why_upgrade_cont)).setText(R.string.upgrade_thanks_cont);
+	}
+	
+	public void upgradeFailed() {
+		completed = false;
+		((Button) rootView.findViewById(R.id.buy_upgrade)).setText(R.string.try_again);
+		((TextView) rootView.findViewById(R.id.why_upgrade)).setText(R.string.upgrade_error);
+		((TextView) rootView.findViewById(R.id.why_upgrade_cont)).setText(R.string.upgrade_error_cont);
 	}
 
 }

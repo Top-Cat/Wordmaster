@@ -49,6 +49,12 @@
 	<string name="why_upgrade_cont">This one-off payment will allow you to create as many games as you like.</string>
 	<string name="buy_upgrade">Upgrade Now</string>
 	<string name="cancel_upgrade">No Thanks</string>
+	<string name="upgrade_thanks">Thank you for your purchase. Wordmaster has been upgraded to the full version.</string>
+	<string name="upgrade_thanks_cont">You can now create as many games as you like.</string>
+	<string name="upgrade_error">Something went wrong when contacting the Google Play store. You have not been charged.</string>
+	<string name="upgrade_error_cont">Would you like to try your purchase again?</string>
+	<string name="OK">OK</string>
+	<string name="try_again">Try Again</string>
 	
 	<string name="show_achievements">Achievements</string>
 	
