@@ -3,8 +3,8 @@ package uk.co.thomasc.wordmaster.game;
 import android.util.SparseArray;
 
 public enum Achievements {
-	IDONTHATEYOU("CgkIj_Ku7KQVEAIQAw"),
-	LUCKY("CgkIj_Ku7KQVEAIQBA"),
+	IDONTHATEYOU(4, "CgkIj_Ku7KQVEAIQAw"),
+	LUCKY(5, "CgkIj_Ku7KQVEAIQBA"),
 	PARTICIPANT(1, new String[] {"CgkIj_Ku7KQVEAIQBQ", "CgkIj_Ku7KQVEAIQBg", "CgkIj_Ku7KQVEAIQCA", "CgkIj_Ku7KQVEAIQBw"}, true),
 	;
 	
@@ -14,6 +14,10 @@ public enum Achievements {
 	
 	private Achievements(String id) {
 		this(0, new String[] {id});
+	}
+	
+	private Achievements(int sid, String id) {
+		this(sid, new String[] {id}, false);
 	}
 	
 	private Achievements(int sid, String[] ids) {
