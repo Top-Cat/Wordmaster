@@ -240,10 +240,10 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 	
 	public void unlockAchievement(Achievements achievement, int increment) {
 		for (String id : achievement.getIds()) {
-			if (achievement.isIncremental()) {
-				getGamesClient().incrementAchievement(id, increment);
-			} else {
+			if (!achievement.isIncremental()) {
 				getGamesClient().unlockAchievement(id);
+			} else if (increment > 0) {
+				getGamesClient().incrementAchievement(id, increment);
 			}
 		}
 	}
