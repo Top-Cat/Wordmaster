@@ -27,6 +27,7 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
@@ -212,6 +213,16 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 		} else {
 			super.onBackPressed();
 		}
+	}
+	
+	@Override
+	public boolean onKeyUp(int keyCode, KeyEvent event) {
+		int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+		if (currentapiVersion >= android.os.Build.VERSION_CODES.HONEYCOMB && keyCode == KeyEvent.KEYCODE_MENU) {
+			menuFragment.showPopup(findViewById(R.id.dropdown));
+			return true;
+		}
+		return super.onKeyUp(keyCode, event);
 	}
 	
 	@Override

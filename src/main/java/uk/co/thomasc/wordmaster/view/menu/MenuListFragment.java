@@ -86,7 +86,6 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 		goToGame(adapter.getItem(position).getID());
 	}
 
-	@SuppressLint("NewApi")
 	@Override
 	public void onClick(View v) {
 		if (v.getId() == R.id.button_sign_in) {
@@ -100,23 +99,28 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 		} else if (v.getId() == R.id.startnew) {
 			startNew();
 		} else if (v.getId() == R.id.dropdown) {
-			PopupMenu popup = new PopupMenu(getActivity(), v);
-			popup.getMenuInflater().inflate(R.menu.main_menu, popup.getMenu());
-			popup.show();
-			popup.setOnMenuItemClickListener(new OnMenuItemClickListener() {
-				@Override
-				public boolean onMenuItemClick(MenuItem item) {
-					if (item.getItemId() == R.id.startnew) {
-						startNew();
-					} else if (item.getItemId() == R.id.show_achievements) {
-						if (((BaseGame) getActivity()).isSignedIn()) {
-							startActivityForResult(((BaseGame) getActivity()).getGamesClient().getAchievementsIntent(), 1001);
-						}
-					}
-					return true;
-				}
-			});
+			showPopup(v);
 		}
+	}
+
+	@SuppressLint("NewApi")
+	public void showPopup(View v) {
+		PopupMenu popup = new PopupMenu(getActivity(), v);
+		popup.getMenuInflater().inflate(R.menu.main_menu, popup.getMenu());
+		popup.show();
+		popup.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+			@Override
+			public boolean onMenuItemClick(MenuItem item) {
+				if (item.getItemId() == R.id.startnew) {
+					startNew();
+				} else if (item.getItemId() == R.id.show_achievements) {
+					if (((BaseGame) getActivity()).isSignedIn()) {
+						startActivityForResult(((BaseGame) getActivity()).getGamesClient().getAchievementsIntent(), 1001);
+					}
+				}
+				return true;
+			}
+		});
 	}
 	
 	private void startNew() {
