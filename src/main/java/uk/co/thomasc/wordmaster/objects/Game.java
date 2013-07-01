@@ -26,7 +26,10 @@ public class Game {
 
 	public static Game getGame(String id, User player, User opponent) {
 		if (games.containsKey(id)) {
-			return games.get(id);
+			Game game = games.get(id);
+			game.player = player;
+			game.opponent = opponent;
+			return game;
 		} else {
 			Game newGame = new Game(id, player, opponent);
 			games.put(id, newGame);
