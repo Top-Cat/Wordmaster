@@ -14,6 +14,8 @@ import uk.co.thomasc.wordmaster.objects.callbacks.ImageLoadedListener;
 import uk.co.thomasc.wordmaster.objects.callbacks.TurnAddedListener;
 import uk.co.thomasc.wordmaster.util.CapsLockLimiter;
 import uk.co.thomasc.wordmaster.util.TurnMaker;
+import uk.co.thomasc.wordmaster.view.DialogPanel;
+import uk.co.thomasc.wordmaster.view.Errors;
 import uk.co.thomasc.wordmaster.view.game.GameLayout;
 import uk.co.thomasc.wordmaster.view.game.SwipeController;
 import uk.co.thomasc.wordmaster.view.game.SwipeListener;
@@ -157,7 +159,13 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener, T
 			
 			@Override
 			public void onRequestFailed() {
-				// TODO: Tell the user the tooth fairy isn't real
+				getActivity().runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						DialogPanel errorMessage = (DialogPanel) getActivity().findViewById(R.id.errorMessage);
+						errorMessage.show(Errors.NETWORK);
+					}
+				});				
 			}
 			
 			@Override
