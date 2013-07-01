@@ -22,7 +22,7 @@
 	<string name="turn_error">It\'s not your turn!</string>
 	<string name="turn_error_help">Wait for your opponent to take their turn.</string>
 	<string name="word_error">Not a word</string>
-	<string name="word_error_help">CAKE is not in the WordMaster dictionary.</string>
+	<string name="word_error_help">That word is not in the Wordmaster dictionary.</string>
 	<string name="server_error">Server Error</string>
 	<string name="server_error_help">Something went wrong. Try again later.</string>
 	<string name="opponent_error">Game not ready</string>

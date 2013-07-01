@@ -66,7 +66,7 @@ public class TurnMaker implements OnClickListener, TakeTurnRequestListener, GetT
 					if (errorCode == 1) {
 						errorMessage.show(Errors.WORD);
 						final String guess = input.getText().toString();
-						errorMessage.setSubtitle(guess + " is not in the WordMaster dictionary.");
+						errorMessage.setSubtitle(guess + " is not in the Wordmaster dictionary.");
 					} else if (errorCode == 2) {
 						errorMessage.show(Errors.OPPONENT);
 					} else if (errorCode == 3) {
