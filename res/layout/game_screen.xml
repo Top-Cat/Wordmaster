@@ -28,7 +28,7 @@
 			<uk.co.thomasc.wordmaster.view.RussoText
 				android:id="@+id/playerscore"
 				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
+				android:layout_height="48dp"
 				android:drawablePadding="5dp"
 				android:paddingLeft="5dp"
 				android:text="@string/default_score"
@@ -48,7 +48,7 @@
 			<uk.co.thomasc.wordmaster.view.RussoText
 				android:id="@+id/oppscore"
 				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
+				android:layout_height="48dp"
 				android:layout_gravity="right"
 				android:drawablePadding="5dp"
 				android:paddingRight="5dp"
