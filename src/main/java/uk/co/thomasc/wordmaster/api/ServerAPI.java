@@ -38,8 +38,8 @@ public class ServerAPI {
 			public void run() {
 				JSONObject json = ServerAPI.makeRequest("getMatches", playerID, activityReference);
 				if (json != null) {
-					boolean success = ((Boolean) json.get("success")).booleanValue();
-					if (success) {
+					int errorCode = ((Long) json.get("error")).intValue();
+					if (errorCode == 0) {
 						JSONArray response = (JSONArray) json.get("response");
 						Game[] games = new Game[response.size()];
 						for (int i = 0; i < response.size(); i++) {
@@ -126,8 +126,8 @@ public class ServerAPI {
 	}
 
 	private static List<Turn> getTurns(JSONObject json, BaseGame activityReference) {
-		boolean success = ((Boolean) json.get("success")).booleanValue();
-		if (success) {
+		int errorCode = ((Long) json.get("error")).intValue();
+		if (errorCode == 0) {
 			JSONArray response = (JSONArray) json.get("response");
 			List<Turn> turns = new ArrayList<Turn>();
 			for (int i = 0; i < response.size(); i++) {
@@ -173,11 +173,9 @@ public class ServerAPI {
 			@Override
 			public void run() {
 				JSONObject json = ServerAPI.makeRequest("takeTurn", playerID, gameID, word, activityReference);
-				boolean success = ((Boolean) json.get("success")).booleanValue();
-				JSONObject response = (JSONObject) json.get("response");
-				boolean validWord = (Boolean) response.get("validword");
-				boolean[] result = { success, validWord };
-				listener.onRequestComplete(result);
+				
+				int errorCode = ((Long) json.get("error")).intValue();
+				listener.onRequestComplete(errorCode);
 			}
 		};
 		t.start();
@@ -198,15 +196,14 @@ public class ServerAPI {
 			@Override
 			public void run() {
 				JSONObject json = ServerAPI.makeRequest("createGame", playerID, opponentID, activityReference);
-				boolean success = ((Boolean) json.get("success")).booleanValue();
+				int errorCode = ((Long) json.get("error")).intValue();
 				JSONObject response = (JSONObject) json.get("response");
-				if (success) {
+				if (errorCode == 0) {
 					String gameID = (String) response.get("gameid");
 					Game game = Game.getGame(gameID, User.getUser(playerID, activityReference), User.getUser(opponentID, activityReference));
 					listener.onRequestComplete(game);
 				} else {
-					boolean hasPaid = (Boolean) response.get("haspaid");
-					listener.onRequestFailed(hasPaid);
+					listener.onRequestFailed(errorCode);
 				}
 			}
 		};
@@ -228,11 +225,9 @@ public class ServerAPI {
 			@Override
 			public void run() {
 				JSONObject json = ServerAPI.makeRequest("setWord", playerID, gameID, word, activityReference);
-				boolean success = ((Boolean) json.get("success")).booleanValue();
-				JSONObject response = (JSONObject) json.get("response");
-				boolean validWord = (Boolean) response.get("validword");
-				boolean[] result = { success, validWord };
-				listener.onRequestComplete(result);
+				int errorCode = ((Long) json.get("error")).intValue();
+				
+				listener.onRequestComplete(errorCode);
 			}
 		};
 		t.start();

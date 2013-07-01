@@ -50,11 +50,8 @@ public class TurnMaker implements OnClickListener, TakeTurnRequestListener, GetT
 	}
 
 	@Override
-	public void onRequestComplete(boolean[] result) {
-		boolean success = result[0];
-		boolean validWord = result[1];
-		
-		if (success) {
+	public void onRequestComplete(final int errorCode) {
+		if (errorCode == 0) {
 			int pivot = game.getPivotLatest();
 			if (pivot > 0) {
 				ServerAPI.getTurns(game.getID(), pivot, 1, activity, this);
@@ -62,25 +59,26 @@ public class TurnMaker implements OnClickListener, TakeTurnRequestListener, GetT
 				ServerAPI.getTurns(game.getID(), activity, this);
 			}
 		} else {
-			if (validWord) {
-				listener.stopSpinner();
-				activity.runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						errorMessage.show(Errors.SERVER);
-					}
-				});
-			} else {
-				listener.stopSpinner();
-				activity.runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
+			listener.stopSpinner();
+			activity.runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					if (errorCode == 1) {
 						errorMessage.show(Errors.WORD);
 						final String guess = input.getText().toString();
 						errorMessage.setSubtitle(guess + " is not in the WordMaster dictionary.");
+					} else if (errorCode == 2) {
+						errorMessage.show(Errors.OPPONENT);
+					} else if (errorCode == 3) {
+						game.setPlayersTurn(false);
+						errorMessage.show(Errors.TURN);
+					} else if (errorCode == 6) {
+						errorMessage.show(Errors.WORDSET);
+					} else {
+						errorMessage.show(Errors.SERVER);
 					}
-				});
-			}
+				}
+			});
 		}
 	}
 

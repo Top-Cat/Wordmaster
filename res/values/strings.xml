@@ -25,6 +25,12 @@
 	<string name="word_error_help">CAKE is not in the WordMaster dictionary.</string>
 	<string name="server_error">Server Error</string>
 	<string name="server_error_help">Something went wrong. Try again later.</string>
+	<string name="opponent_error">Game not ready</string>
+	<string name="opponent_error_help">Opponent hasn\'t chosen their word yet.</string>
+	<string name="match_error">Match already exists</string>
+	<string name="match_error_help">You\'re already playing against that person.</string>
+	<string name="word_set_error">Word already set</string>
+	<string name="word_set_error_help">You\'ve already chosen your word for this game.</string>
 	
 	<string name="pull_to_refresh_pull_label">Pull to load history&#8230;</string>
 	<string name="pull_to_refresh_release_label">Release to load history&#8230;</string>

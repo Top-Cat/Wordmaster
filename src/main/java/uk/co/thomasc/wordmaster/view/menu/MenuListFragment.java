@@ -205,10 +205,8 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 		} else {
 			ServerAPI.createGame(playerID, opponentID, (BaseGame) getActivity(), new CreateGameRequestListener() {
 				@Override
-				public void onRequestFailed(boolean hasPaid) {
-					if (hasPaid) {
-						// TODO: Tell the user unicorns died out with the dinosaurs
-					} else {
+				public void onRequestFailed(int errorCode) {
+					if (errorCode == 4) {
 						UpgradeFragment fragment = new UpgradeFragment();
 						((BaseGame) getActivity()).upgradeFragment = fragment;
 						FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
@@ -216,6 +214,12 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 						ft.addToBackStack("upgrade")
 							.add(R.id.outer, fragment)
 							.commit();
+					} else if (errorCode == 5) {
+						DialogPanel netError = (DialogPanel) getView().findViewById(R.id.dialog_panel);
+						netError.show(Errors.MATCH);
+					} else {
+						DialogPanel netError = (DialogPanel) getView().findViewById(R.id.dialog_panel);
+						netError.show(Errors.SERVER);
 					}
 				}
 				
