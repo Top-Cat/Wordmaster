@@ -52,6 +52,9 @@ public class GameAdapter extends ArrayAdapter<Turn> {
 		final Turn item = getItem(position);
 		User user = item.getUser();
 		boolean isPlayer = (user.getPlusID().equals(((BaseGame) act).getUserId()));
+		if (!isPlayer && item.getTurnNum() == 0) {
+			return new View(getContext());
+		}
 		final boolean winningTurn = (item.getCorrectLetters() == 4);
 		int viewId = item.getTurnNum() == 0 ? R.layout.game_row_new_round : (isPlayer ? (winningTurn ? R.layout.game_row_win : R.layout.game_row_big) : (winningTurn ? R.layout.game_row_lose : R.layout.game_row_small));
 		
