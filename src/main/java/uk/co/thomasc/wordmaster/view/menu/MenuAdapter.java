@@ -9,7 +9,6 @@ import uk.co.thomasc.wordmaster.objects.Game;
 import uk.co.thomasc.wordmaster.objects.callbacks.ImageLoadedListener;
 import uk.co.thomasc.wordmaster.objects.callbacks.NameLoadedListener;
 import uk.co.thomasc.wordmaster.view.TimeSinceText;
-
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.Drawable;

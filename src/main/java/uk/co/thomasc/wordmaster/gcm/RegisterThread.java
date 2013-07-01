@@ -2,15 +2,14 @@ package uk.co.thomasc.wordmaster.gcm;
 
 import java.io.IOException;
 
+import uk.co.thomasc.wordmaster.BaseGame;
+import uk.co.thomasc.wordmaster.api.ServerAPI;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
-
-import uk.co.thomasc.wordmaster.BaseGame;
-import uk.co.thomasc.wordmaster.api.ServerAPI;
 
 public class RegisterThread extends Thread {
 	

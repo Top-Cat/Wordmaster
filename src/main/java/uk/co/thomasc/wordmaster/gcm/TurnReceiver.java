@@ -1,5 +1,8 @@
 package uk.co.thomasc.wordmaster.gcm;
 
+import uk.co.thomasc.wordmaster.BaseGame;
+import uk.co.thomasc.wordmaster.R;
+import uk.co.thomasc.wordmaster.objects.Game;
 import android.app.Activity;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -10,10 +13,6 @@ import android.content.SharedPreferences;
 import android.support.v4.app.NotificationCompat;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
-
-import uk.co.thomasc.wordmaster.BaseGame;
-import uk.co.thomasc.wordmaster.R;
-import uk.co.thomasc.wordmaster.objects.Game;
 
 public class TurnReceiver extends BroadcastReceiver {
 

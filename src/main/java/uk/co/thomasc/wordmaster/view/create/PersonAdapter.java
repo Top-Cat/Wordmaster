@@ -4,8 +4,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.android.gms.plus.model.people.Person;
-
 import uk.co.thomasc.wordmaster.R;
 import uk.co.thomasc.wordmaster.objects.User;
 import uk.co.thomasc.wordmaster.objects.callbacks.ImageLoadedListener;
@@ -20,6 +18,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.google.android.gms.plus.model.people.Person;
 
 public class PersonAdapter extends ArrayAdapter<Person> {
 

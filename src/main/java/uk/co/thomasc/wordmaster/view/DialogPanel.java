@@ -2,7 +2,6 @@ package uk.co.thomasc.wordmaster.view;
 
 import uk.co.thomasc.wordmaster.R;
 import uk.co.thomasc.wordmaster.util.TimerHandler;
-
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;

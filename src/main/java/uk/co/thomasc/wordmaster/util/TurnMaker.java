@@ -13,7 +13,6 @@ import uk.co.thomasc.wordmaster.objects.Game;
 import uk.co.thomasc.wordmaster.objects.Turn;
 import uk.co.thomasc.wordmaster.view.DialogPanel;
 import uk.co.thomasc.wordmaster.view.Errors;
-
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.EditText;

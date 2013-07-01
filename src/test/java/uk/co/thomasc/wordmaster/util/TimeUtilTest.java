@@ -1,7 +1,7 @@
 package uk.co.thomasc.wordmaster.util;
 
-import org.junit.Test;
 import org.junit.Assert;
+import org.junit.Test;
 
 public class TimeUtilTest {
 

@@ -1,6 +1,5 @@
 package uk.co.thomasc.wordmaster.view.menu;
 
-import java.util.ArrayList;
 import java.util.Set;
 
 import uk.co.thomasc.wordmaster.BaseGame;
@@ -51,7 +50,7 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 	private CreateGameFragment createGameFragment;
 	private UnhideGameFragment unhideGameFragment;
 	
-	private String PREFS = "WM_ALPHA_HIDDEN";
+	private String PREFS = "WM_HIDDEN_GAMES_";
 	private SharedPreferences prefs;
 	
 	@Override
@@ -94,8 +93,6 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 				dialog.show();
 			}
 		}
-		
-		prefs = getActivity().getSharedPreferences(PREFS, 0);
 
 		return v;
 	}
@@ -256,6 +253,9 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 	}
 
 	public void onSignInSucceeded() {
+		prefs = getActivity().getSharedPreferences(PREFS + ((BaseGame) getActivity()).getUserId(), 0);
+		System.out.println(PREFS + ((BaseGame) getActivity()).getUserId());
+		
 		getView().findViewById(R.id.button_sign_in).setVisibility(View.GONE);
 		getView().findViewById(R.id.whysignin).setVisibility(View.GONE);
 		getView().findViewById(R.id.main_feed).setVisibility(View.VISIBLE);

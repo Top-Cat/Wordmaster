@@ -3,13 +3,12 @@ package uk.co.thomasc.wordmaster.objects;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import uk.co.thomasc.wordmaster.BaseGame;
+import uk.co.thomasc.wordmaster.objects.callbacks.TurnAddedListener;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
-
-import uk.co.thomasc.wordmaster.BaseGame;
-import uk.co.thomasc.wordmaster.objects.callbacks.TurnAddedListener;
 
 public class Game {
 

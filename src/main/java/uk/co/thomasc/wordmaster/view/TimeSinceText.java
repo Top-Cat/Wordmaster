@@ -1,9 +1,8 @@
 package uk.co.thomasc.wordmaster.view;
 
+import uk.co.thomasc.wordmaster.util.TimeUtil;
 import android.content.Context;
 import android.util.AttributeSet;
-
-import uk.co.thomasc.wordmaster.util.TimeUtil;
 
 public class TimeSinceText extends RussoText {
 	

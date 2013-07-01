@@ -1,7 +1,6 @@
 package uk.co.thomasc.wordmaster.view;
 
 import uk.co.thomasc.wordmaster.R;
-
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;

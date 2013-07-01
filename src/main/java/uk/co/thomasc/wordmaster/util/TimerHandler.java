@@ -1,14 +1,13 @@
 package uk.co.thomasc.wordmaster.util;
 
+import uk.co.thomasc.wordmaster.R.anim;
+import uk.co.thomasc.wordmaster.view.DialogPanel;
 import android.os.Handler;
 import android.os.Message;
 import android.view.View;
 import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.view.animation.Animation.AnimationListener;
-
-import uk.co.thomasc.wordmaster.R.anim;
-import uk.co.thomasc.wordmaster.view.DialogPanel;
+import android.view.animation.AnimationUtils;
 
 public class TimerHandler extends Handler {
 	private DialogPanel dialogPanel;

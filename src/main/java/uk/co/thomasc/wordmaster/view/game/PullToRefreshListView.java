@@ -1,5 +1,6 @@
 package uk.co.thomasc.wordmaster.view.game;
 
+import uk.co.thomasc.wordmaster.R;
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.graphics.Canvas;
@@ -19,8 +20,6 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
-import uk.co.thomasc.wordmaster.R;
 
 public class PullToRefreshListView extends ListView implements OnScrollListener {
 

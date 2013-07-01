@@ -1,10 +1,7 @@
 package uk.co.thomasc.wordmaster.view.unhide;
 
-import java.util.ArrayList;
-
 import uk.co.thomasc.wordmaster.R;
 import uk.co.thomasc.wordmaster.objects.Game;
-import uk.co.thomasc.wordmaster.objects.callbacks.GameCreationListener;
 import uk.co.thomasc.wordmaster.objects.callbacks.UnhideGameListener;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;

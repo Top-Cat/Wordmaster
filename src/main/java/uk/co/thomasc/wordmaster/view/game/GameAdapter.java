@@ -9,7 +9,6 @@ import uk.co.thomasc.wordmaster.objects.Turn;
 import uk.co.thomasc.wordmaster.objects.User;
 import uk.co.thomasc.wordmaster.objects.callbacks.NameLoadedListener;
 import uk.co.thomasc.wordmaster.view.TimeSinceText;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
