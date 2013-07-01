@@ -3,4 +3,6 @@
 		android:title="@string/action_create" />
 	<item android:id="@+id/show_achievements"
 		android:title="@string/action_achievements" />
+	<item android:id="@+id/action_logout"
+		android:title="@string/action_logout" />
 </menu>

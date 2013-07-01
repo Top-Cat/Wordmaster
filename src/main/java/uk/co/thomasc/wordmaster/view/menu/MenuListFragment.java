@@ -111,11 +111,14 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 		popup.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 			@Override
 			public boolean onMenuItemClick(MenuItem item) {
-				if (item.getItemId() == R.id.startnew) {
-					startNew();
-				} else if (item.getItemId() == R.id.show_achievements) {
-					if (((BaseGame) getActivity()).isSignedIn()) {
+				if (((BaseGame) getActivity()).isSignedIn()) {
+					if (item.getItemId() == R.id.startnew) {
+						startNew();
+					} else if (item.getItemId() == R.id.show_achievements) {
 						startActivityForResult(((BaseGame) getActivity()).getGamesClient().getAchievementsIntent(), 1001);
+					} else if (item.getItemId() == R.id.action_logout) {
+						((BaseGame) getActivity()).signOut();
+						((BaseGame) getActivity()).onSignInFailed();
 					}
 				}
 				return true;

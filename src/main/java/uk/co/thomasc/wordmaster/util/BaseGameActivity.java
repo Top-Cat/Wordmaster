@@ -131,7 +131,7 @@ public abstract class BaseGameActivity extends FragmentActivity implements GameH
 		mHelper.beginUserInitiatedSignIn();
 	}
 
-	protected void signOut() {
+	public void signOut() {
 		mHelper.signOut();
 	}
 

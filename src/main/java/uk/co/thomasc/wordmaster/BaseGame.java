@@ -237,15 +237,17 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-			case R.id.show_achievements:
-				if (isSignedIn()) {
+		if (isSignedIn()) {
+			switch (item.getItemId()) {
+				case R.id.show_achievements:
 					startActivityForResult(getGamesClient().getAchievementsIntent(), 1001);
-				}
-				return true;
-			default:
-				return super.onOptionsItemSelected(item);
+					return true;
+				case R.id.action_logout:
+					signOut();
+					return true;
+			}
 		}
+		return super.onOptionsItemSelected(item);
 	}
 	
 	public void unlockAchievement(Achievements achievement, int increment) {
