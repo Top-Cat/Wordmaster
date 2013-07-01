@@ -115,7 +115,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
 		mFooterView.setHeight(0);
 		addFooterView(mFooterView, null, false);
 
-		mRefreshOriginalTopPadding = mRefreshView.getPaddingTop();
+		topPadding = mRefreshOriginalTopPadding = mRefreshView.getPaddingTop();
 		addHeaderView(mRefreshView);
 
 		measureView(mRefreshView);
@@ -352,8 +352,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
 		if (mCurrentScrollState == OnScrollListener.SCROLL_STATE_TOUCH_SCROLL && mRefreshState != PullToRefreshListView.REFRESHING) {
 			if (firstVisibleItem == 0) {
 				mRefreshViewImage.setVisibility(View.VISIBLE);
-				mRefreshViewText.setText(R.string.pull_to_refresh_pull_label);
-				if ((mRefreshView.getBottom() >= mRefreshViewHeight + 0 || mRefreshView.getTop() >= 0) && mRefreshState != PullToRefreshListView.RELEASE_TO_REFRESH) {
+				if ((mRefreshView.getBottom() >= mRefreshViewHeight || mRefreshView.getTop() >= 0) && mRefreshState != PullToRefreshListView.RELEASE_TO_REFRESH) {
 					mRefreshViewText.setText(R.string.pull_to_refresh_release_label);
 					mRefreshViewImage.clearAnimation();
 					mRefreshViewImage.startAnimation(mFlipAnimation);
@@ -363,6 +362,8 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
 					mRefreshViewImage.clearAnimation();
 					mRefreshViewImage.startAnimation(mReverseFlipAnimation);
 					mRefreshState = PullToRefreshListView.PULL_TO_REFRESH;
+				} else if (mRefreshState == PULL_TO_REFRESH) {
+					mRefreshViewText.setText(R.string.pull_to_refresh_pull_label);
 				}
 			} else {
 				mRefreshViewImage.setVisibility(View.GONE);
