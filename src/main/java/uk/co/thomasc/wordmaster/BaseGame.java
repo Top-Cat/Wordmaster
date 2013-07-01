@@ -28,7 +28,6 @@ import android.content.res.Configuration;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
 
@@ -217,9 +216,9 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		if (isSignedIn()) {
-			MenuInflater inflater = getMenuInflater();
-			inflater.inflate(R.menu.main_menu, menu);
+		int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+		if (currentapiVersion < android.os.Build.VERSION_CODES.HONEYCOMB && isSignedIn()) {
+			getMenuInflater().inflate(R.menu.main_menu, menu);
 			return true;
 		}
 		return super.onCreateOptionsMenu(menu);

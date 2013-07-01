@@ -12,17 +12,21 @@ import uk.co.thomasc.wordmaster.view.DialogPanel;
 import uk.co.thomasc.wordmaster.view.Errors;
 import uk.co.thomasc.wordmaster.view.create.CreateGameFragment;
 import uk.co.thomasc.wordmaster.view.upgrade.UpgradeFragment;
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.PopupMenu;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+import android.widget.PopupMenu.OnMenuItemClickListener;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -82,6 +86,7 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 		goToGame(adapter.getItem(position).getID());
 	}
 
+	@SuppressLint("NewApi")
 	@Override
 	public void onClick(View v) {
 		if (v.getId() == R.id.button_sign_in) {
@@ -93,14 +98,35 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 		} else if (v.getId() == R.id.refresh && getView().findViewById(R.id.refresh).getVisibility() == View.VISIBLE) {
 			loadGames();
 		} else if (v.getId() == R.id.startnew) {
-			createGameFragment = new CreateGameFragment();
-			createGameFragment.setGameCreatedListener(this);
-			getActivity().getSupportFragmentManager().beginTransaction()
-				.setCustomAnimations(R.anim.fadein, 0, 0, R.anim.fadeout)
-				.addToBackStack("userpicker")
-				.add(R.id.outer, createGameFragment)
-				.commit();
+			startNew();
+		} else if (v.getId() == R.id.dropdown) {
+			PopupMenu popup = new PopupMenu(getActivity(), v);
+			popup.getMenuInflater().inflate(R.menu.main_menu, popup.getMenu());
+			popup.show();
+			popup.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+				@Override
+				public boolean onMenuItemClick(MenuItem item) {
+					if (item.getItemId() == R.id.startnew) {
+						startNew();
+					} else if (item.getItemId() == R.id.show_achievements) {
+						if (((BaseGame) getActivity()).isSignedIn()) {
+							startActivityForResult(((BaseGame) getActivity()).getGamesClient().getAchievementsIntent(), 1001);
+						}
+					}
+					return true;
+				}
+			});
 		}
+	}
+	
+	private void startNew() {
+		createGameFragment = new CreateGameFragment();
+		createGameFragment.setGameCreatedListener(this);
+		getActivity().getSupportFragmentManager().beginTransaction()
+			.setCustomAnimations(R.anim.fadein, 0, 0, R.anim.fadeout)
+			.addToBackStack("userpicker")
+			.add(R.id.outer, createGameFragment)
+			.commit();
 	}
 
 	public void loadGames() {
@@ -177,7 +203,8 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 
 		// Enable UI
 		getView().findViewById(R.id.refresh).setOnClickListener(this);
-		getView().findViewById(R.id.startnew).setOnClickListener(this);
+		safeSetOnClickListener(R.id.startnew, this);
+		safeSetOnClickListener(R.id.dropdown, this);
 
 		loadGames();
 	}
@@ -193,9 +220,17 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 
 		// Disable UI
 		getView().findViewById(R.id.refresh).setOnClickListener(null);
-		getView().findViewById(R.id.startnew).setOnClickListener(null);
+		safeSetOnClickListener(R.id.startnew, null);
+		safeSetOnClickListener(R.id.dropdown, null);
 	}
 
+	private void safeSetOnClickListener(int id, OnClickListener listener) {
+		View view = getView().findViewById(id);
+		if (view != null) {
+			view.setOnClickListener(listener);
+		}
+	}
+	
 	@Override
 	public void onCreateGame(String playerID, String opponentID) {
 		getActivity().getSupportFragmentManager().popBackStack("userpicker", 1);
