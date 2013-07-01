@@ -63,7 +63,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
 		@Override
 		public void onChanged() {
 			super.onChanged();
-			adaptFooterHeight();
+			adaptFooterHeight(false);
 		}
 	};
 
@@ -139,14 +139,14 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
 		super.onDraw(canvas);
 		if (mHeight == -1) { // do it only once
 			mHeight = getHeight(); // getHeight only returns useful data after first onDraw()
-			adaptFooterHeight();
+			adaptFooterHeight(true);
 		}
 	}
 
 	/**
 	 * Adapts the height of the footer view.
 	 */
-	private void adaptFooterHeight() {
+	private void adaptFooterHeight(boolean scroll) {
 		int itemHeight = getTotalItemHeight();
 		int footerAndHeaderSize = footerHeight + mRefreshViewHeight - mRefreshOriginalTopPadding;
 		int actualItemsSize = itemHeight - footerAndHeaderSize;
@@ -157,7 +157,9 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
 			footerHeight = h;
 			mFooterView.setHeight(h);
 		}
-		scrollToBottom();
+		if (scroll) {
+			scrollToBottom();
+		}
 		mFooterView.forceLayout();
 	}
 	
