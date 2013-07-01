@@ -55,6 +55,7 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 	public static IabHelper mHelper;
 	public static String upgradeSKU = "wordmaster_upgrade";
 	public UpgradeFragment upgradeFragment;
+	private boolean iabAvailable;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -85,8 +86,9 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 			@Override
 			public void onIabSetupFinished(IabResult result) {
 				if (! result.isSuccess()) {
-					// TODO: IAB is broken, do something
+					iabAvailable = false;
 				} else {
+					iabAvailable = true;
 					// for testing purposes, tell google play we've consumed the upgrade SKUs
 					consumeUpgrades();
 					// TODO: Get rid of this before release!
@@ -266,6 +268,10 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 	
 	public String getUserId() {
 		return userId;
+	}
+	
+	public boolean isIabAvailable() {
+		return iabAvailable;
 	}
 
 }

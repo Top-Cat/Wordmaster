@@ -254,7 +254,6 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 
 	public void onSignInSucceeded() {
 		prefs = getActivity().getSharedPreferences(PREFS + ((BaseGame) getActivity()).getUserId(), 0);
-		System.out.println(PREFS + ((BaseGame) getActivity()).getUserId());
 		
 		getView().findViewById(R.id.button_sign_in).setVisibility(View.GONE);
 		getView().findViewById(R.id.whysignin).setVisibility(View.GONE);

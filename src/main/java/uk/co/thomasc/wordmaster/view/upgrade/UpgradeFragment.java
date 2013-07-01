@@ -18,6 +18,7 @@ public class UpgradeFragment extends Fragment implements OnClickListener, QueryI
 
 	private View rootView;
 	private boolean completed = false;
+	private boolean iabAvailable = true;
 	
 	public UpgradeFragment() {
 		
@@ -31,7 +32,11 @@ public class UpgradeFragment extends Fragment implements OnClickListener, QueryI
 		rootView.findViewById(R.id.buy_upgrade).setOnClickListener(this);
 		rootView.findViewById(R.id.cancel_upgrade).setOnClickListener(this);
 		
-		((BaseGame) getActivity()).queryInventory(this);
+		if (((BaseGame) getActivity()).isIabAvailable()) {
+			((BaseGame) getActivity()).queryInventory(this);
+		} else {
+			iabAvailable = false;
+		}
 				
 		return rootView;
 	}
@@ -41,8 +46,10 @@ public class UpgradeFragment extends Fragment implements OnClickListener, QueryI
 		if (v.getId() == R.id.buy_upgrade) {
 			if (completed) {
 				getActivity().getSupportFragmentManager().popBackStack("upgrade", 1);
-			} else {
+			} else if (iabAvailable) {
 				((BaseGame) getActivity()).buyUpgrade();
+			} else {
+				upgradeFailed();
 			}
 		} else if (v.getId() == R.id.cancel_upgrade) {
 			getActivity().getSupportFragmentManager().popBackStack("upgrade", 1);
@@ -51,9 +58,7 @@ public class UpgradeFragment extends Fragment implements OnClickListener, QueryI
 
 	@Override
 	public void onQueryInventoryFinished(IabResult result, Inventory inv) {
-		if (result.isFailure()) {
-			System.out.println(result.getMessage());
-		} else {
+		if (! result.isFailure()) {
 			Button button = (Button) rootView.findViewById(R.id.buy_upgrade);
 			button.setText(button.getText() + " - " + inv.getSkuDetails(BaseGame.upgradeSKU).getPrice());
 		}
