@@ -10,6 +10,8 @@ import uk.co.thomasc.wordmaster.api.ServerAPI;
 import uk.co.thomasc.wordmaster.objects.Game;
 import uk.co.thomasc.wordmaster.objects.Turn;
 import uk.co.thomasc.wordmaster.objects.callbacks.TurnAddedListener;
+import uk.co.thomasc.wordmaster.view.DialogPanel;
+import uk.co.thomasc.wordmaster.view.Errors;
 import uk.co.thomasc.wordmaster.view.RussoText;
 import uk.co.thomasc.wordmaster.view.game.PullToRefreshListView.OnRefreshListener;
 import uk.co.thomasc.wordmaster.view.menu.MenuDetailFragment;
@@ -101,7 +103,14 @@ public class SwipeController extends FragmentStatePagerAdapter {
 							
 							@Override
 							public void onRequestFailed() {
-								// TODO: Undermine all the user's beliefs								
+								getActivity().runOnUiThread(new Runnable() {
+									@Override
+									public void run() {
+										listView.onRefreshComplete();
+										DialogPanel errorMessage = (DialogPanel) getActivity().findViewById(R.id.errorMessage);
+										errorMessage.show(Errors.NETWORK);
+									}
+								});
 							}
 							
 							@Override

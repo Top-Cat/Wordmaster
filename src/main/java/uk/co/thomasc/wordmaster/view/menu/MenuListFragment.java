@@ -171,15 +171,17 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 
 	@Override
 	public void onRequestFailed() {
-		getActivity().runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				DialogPanel netError = (DialogPanel) getView().findViewById(R.id.dialog_panel);
-				netError.show(Errors.NETWORK);
-				
-				refreshOver();
-			}
-		});
+		if (isAdded()) {
+			getActivity().runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					DialogPanel netError = (DialogPanel) getView().findViewById(R.id.dialog_panel);
+					netError.show(Errors.NETWORK);
+					
+					refreshOver();
+				}
+			});
+		}
 	}
 	
 	public void goToGame(String gameID) {
