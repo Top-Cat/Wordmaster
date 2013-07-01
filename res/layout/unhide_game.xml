@@ -1,0 +1,41 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:background="@color/black_overlay" >
+
+	<LinearLayout
+		android:layout_width="280dp"
+		android:layout_height="wrap_content"
+		android:layout_gravity="center"
+		android:layout_margin="40dp"
+		android:background="@drawable/border"
+		android:orientation="vertical">
+
+		<LinearLayout
+			android:id="@+id/unhide_game_header"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:background="@color/menu_header">
+
+			<TextView
+				android:id="@+id/unhide_game_title"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_margin="10dp"
+				android:gravity="center"
+				android:text="@string/unhide_title"
+				android:textAppearance="?android:attr/textAppearanceLarge"
+				android:textColor="@color/menu_header_text" />
+
+		</LinearLayout>
+
+		<ListView
+			android:id="@+id/unhide_game"
+			android:layout_width="match_parent"
+			android:layout_height="fill_parent"
+			android:padding="2dp" >
+		</ListView>
+
+	</LinearLayout>
+
+</FrameLayout>

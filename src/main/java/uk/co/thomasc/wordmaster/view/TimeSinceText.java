@@ -8,7 +8,7 @@ import uk.co.thomasc.wordmaster.util.TimeUtil;
 public class TimeSinceText extends RussoText {
 	
 	private long timestamp = TimeUtil.now();
-	private boolean running = true;
+	private boolean running = false;
 	private TimerThread thread;
 
 	public TimeSinceText(Context context) {
@@ -37,8 +37,10 @@ public class TimeSinceText extends RussoText {
 	
 	@Override
 	protected void onAttachedToWindow() {
-		running = true;
-		thread.start();
+		if (!running) {
+			running = true;
+			thread.start();
+		}
 	}
 	
 	private class TimerThread extends Thread {

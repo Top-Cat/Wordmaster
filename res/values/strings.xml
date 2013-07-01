@@ -10,9 +10,12 @@
 	
 	<string name="action_refresh">Refresh</string>
 	<string name="action_create">Create Game</string>
+	<string name="action_unhide">Unhide Game&#8230;</string>
 	<string name="action_achievements">Achievements</string>
 	<string name="action_logout">Logout</string>
 	<string name="action_menu">Menu</string>
+	
+	<string name="context_menu_hide_game">Hide Game</string>
 	
 	<string name="turn">Turn</string>
 	<string name="guess">Guess</string>
@@ -57,6 +60,8 @@
 	
 	<string name="create_title">New Game</string>
 	<string name="no_players">There is no one available in your Google+ circles to start a game with.</string>
+	
+	<string name="unhide_title">Unhide Game</string>
 	
 	<string name="upgrade_title">Upgrade</string>
 	<string name="why_upgrade">To create more games you need to upgrade to the full version of Wordmaster.</string>
