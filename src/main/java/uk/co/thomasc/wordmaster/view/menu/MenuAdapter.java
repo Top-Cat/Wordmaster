@@ -104,6 +104,8 @@ public class MenuAdapter extends ArrayAdapter<Game> {
 		
 		view.findViewById(R.id.turnindicator).setVisibility(item.isPlayersTurn() || item.needsWord() ? View.VISIBLE : View.GONE);
 
+		view.setBackgroundResource(R.drawable.itembg);
+		
 		return view;
 	}
 

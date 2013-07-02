@@ -64,6 +64,7 @@ public class GameAdapter extends ArrayAdapter<Turn> {
 		
 		if (item.getTurnNum() == 0) {
 			((TextView) view.findViewById(R.id.guess)).setText("Your word is " + item.getGuess());
+			view.setBackgroundResource(R.drawable.wordbg);
 		} else {
 			if (isPlayer) {
 				((TextView) view.findViewById(R.id.guess)).setText(item.getGuess().toUpperCase(Locale.ENGLISH));
@@ -106,9 +107,12 @@ public class GameAdapter extends ArrayAdapter<Turn> {
 						((ImageView) view.findViewById(peg)).setImageDrawable(white);
 					}
 				}
+				view.setBackgroundResource(R.drawable.itembg);
+			} else {
+				view.setBackgroundResource(R.drawable.gameendbg);
 			}
 		}
-
+		
 		return view;
 	}
 
