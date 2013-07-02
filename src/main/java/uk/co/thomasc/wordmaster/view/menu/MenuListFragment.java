@@ -54,9 +54,6 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 	private CreateGameFragment createGameFragment;
 	private UnhideGameFragment unhideGameFragment;
 	
-	private String PREFS = "WM_HIDDEN_GAMES_";
-	private SharedPreferences prefs;
-	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.menu_screen, container, false);
@@ -129,7 +126,7 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 		PopupMenu popup = new PopupMenu(getActivity(), v);
 		popup.getMenuInflater().inflate(R.menu.main_menu, popup.getMenu());
 		
-		final Set<String> hiddenGames = prefs.getAll().keySet();
+		final Set<String> hiddenGames = ((BaseGame) getActivity()).getHiddenGamesPreferences().getAll().keySet();
 		if (hiddenGames.isEmpty()) {
 			popup.getMenu().removeItem(R.id.unhide_game);
 		}
@@ -167,11 +164,11 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 			.commit();
 	}
 	
-	private void unhideGame() {
+	public void unhideGame() {
 		unhideGameFragment = new UnhideGameFragment();
 		unhideGameFragment.setUnhideGameListener(this);
-		String[] hiddenGames = new String[prefs.getAll().size()];
-		hiddenGames = prefs.getAll().keySet().toArray(hiddenGames);
+		String[] hiddenGames = new String[((BaseGame) getActivity()).getHiddenGamesPreferences().getAll().size()];
+		hiddenGames = ((BaseGame) getActivity()).getHiddenGamesPreferences().getAll().keySet().toArray(hiddenGames);
 		Bundle args = new Bundle();
 		args.putStringArray(UnhideGameFragment.ARG_ID, hiddenGames);
 		unhideGameFragment.setArguments(args);
@@ -198,8 +195,8 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 				public void run() {
 					adapter.clear();
 					for (Game game : games) {
-						if (prefs.contains(game.getID())) {
-							if (! prefs.getBoolean(game.getID(), false)) {
+						if (((BaseGame) getActivity()).getHiddenGamesPreferences().contains(game.getID())) {
+							if (! ((BaseGame) getActivity()).getHiddenGamesPreferences().getBoolean(game.getID(), false)) {
 								adapter.add(game);
 							}
 						} else {
@@ -257,9 +254,7 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 		getView().findViewById(R.id.refresh_progress).setVisibility(View.GONE);
 	}
 
-	public void onSignInSucceeded() {
-		prefs = getActivity().getSharedPreferences(PREFS + ((BaseGame) getActivity()).getUserId(), 0);
-		
+	public void onSignInSucceeded() {		
 		getView().findViewById(R.id.button_sign_in).setVisibility(View.GONE);
 		getView().findViewById(R.id.whysignin).setVisibility(View.GONE);
 		getView().findViewById(R.id.main_feed).setVisibility(View.VISIBLE);
@@ -317,8 +312,8 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 		getActivity().getSupportFragmentManager().popBackStack("userpicker", 1);
 		Game existingGame = Game.getGame(playerID, opponentID);
 		if (existingGame != null) {
-			if (prefs.contains(existingGame.getID())) {
-				Editor editor = prefs.edit();
+			if (((BaseGame) getActivity()).getHiddenGamesPreferences().contains(existingGame.getID())) {
+				Editor editor = ((BaseGame) getActivity()).getHiddenGamesPreferences().edit();
 				editor.remove(existingGame.getID());
 				editor.commit();
 				adapter.add(existingGame);
@@ -371,7 +366,7 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
 		if (item.getItemId() == R.id.hide_game) {
 			Game game = adapter.getItem(info.position);
-			Editor editor = prefs.edit();
+			Editor editor = ((BaseGame) getActivity()).getHiddenGamesPreferences().edit();
 			editor.putBoolean(game.getID(), true);
 			editor.commit();
 			adapter.remove(game);
@@ -383,7 +378,7 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 	@Override
 	public void onUnhideGame(Game game) {
 		getActivity().getSupportFragmentManager().popBackStack("unhide", 1);
-		Editor editor = prefs.edit();
+		Editor editor = ((BaseGame) getActivity()).getHiddenGamesPreferences().edit();
 		editor.remove(game.getID());
 		editor.commit();
 		adapter.add(game);

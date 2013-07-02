@@ -1,6 +1,7 @@
 package uk.co.thomasc.wordmaster;
 
 import java.util.ArrayList;
+import java.util.Set;
 
 import uk.co.thomasc.wordmaster.api.ServerAPI;
 import uk.co.thomasc.wordmaster.game.Achievements;
@@ -23,6 +24,7 @@ import uk.co.thomasc.wordmaster.view.menu.MenuDetailFragment;
 import uk.co.thomasc.wordmaster.view.menu.MenuListFragment;
 import uk.co.thomasc.wordmaster.view.upgrade.UpgradeFragment;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Typeface;
@@ -56,6 +58,9 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 	public static String upgradeSKU = "wordmaster_upgrade";
 	public UpgradeFragment upgradeFragment;
 	private boolean iabAvailable;
+	
+	private String PREFS = "WM_HIDDEN_GAMES_";
+	private SharedPreferences prefs;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -192,6 +197,7 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 			userId = person.getId();
 			User.onPlusConnected(this);
 			User.getUser(person, this); // Load local user into cache
+			loadPreferences();
 			menuFragment.onSignInSucceeded();
 			if (gameAdapter != null) {
 				menuDetail.loadTurns();
@@ -199,6 +205,14 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 			}
 			new RegisterThread(this).start();
 		}
+	}
+	
+	private void loadPreferences() {
+		prefs = getSharedPreferences(PREFS + userId, 0);
+	}
+	
+	public SharedPreferences getHiddenGamesPreferences() {
+		return prefs;
 	}
 
 	@Override
@@ -232,6 +246,25 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 		int currentapiVersion = android.os.Build.VERSION.SDK_INT;
 		if (currentapiVersion < android.os.Build.VERSION_CODES.HONEYCOMB && isSignedIn()) {
 			getMenuInflater().inflate(R.menu.main_menu, menu);
+			final Set<String> hiddenGames = prefs.getAll().keySet();
+			if (hiddenGames.isEmpty()) {
+				menu.removeItem(R.id.unhide_game);
+			}
+			return true;
+		}
+		return super.onCreateOptionsMenu(menu);
+	}
+	
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+		if (currentapiVersion < android.os.Build.VERSION_CODES.HONEYCOMB && isSignedIn()) {
+			menu.clear();
+			getMenuInflater().inflate(R.menu.main_menu, menu);
+			final Set<String> hiddenGames = prefs.getAll().keySet();
+			if (hiddenGames.isEmpty()) {
+				menu.removeItem(R.id.unhide_game);
+			}
 			return true;
 		}
 		return super.onCreateOptionsMenu(menu);
@@ -241,6 +274,9 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (isSignedIn()) {
 			switch (item.getItemId()) {
+				case R.id.unhide_game:
+					menuFragment.unhideGame();
+					return true;
 				case R.id.show_achievements:
 					startActivityForResult(getGamesClient().getAchievementsIntent(), 1001);
 					return true;
