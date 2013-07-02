@@ -5,5 +5,5 @@ import uk.co.thomasc.wordmaster.objects.Game;
 public interface UnhideGameListener {
 
 	public void onUnhideGame(Game game);
-	
+
 }

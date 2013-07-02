@@ -1,13 +1,13 @@
 package uk.co.thomasc.wordmaster.util;
 
 public class TimeUtil {
-	
+
 	public static long now() {
 		return System.currentTimeMillis() / 1000;
 	}
-	
+
 	public static String timeSince(long time) {
-		long diff = now() - time;
+		long diff = TimeUtil.now() - time;
 		if (diff / 60 == 0) {
 			return diff + "s";
 		} else if (diff / 3600 == 0) {
@@ -20,7 +20,7 @@ public class TimeUtil {
 	}
 
 	public static long sleepTime(long time) {
-		long diff = now() - time;
+		long diff = TimeUtil.now() - time;
 		if (diff / 60 == 0) {
 			return 1000;
 		} else if (diff / 3600 == 0) {
@@ -31,5 +31,5 @@ public class TimeUtil {
 			return 60 * 60 * 1000;
 		}
 	}
-	
+
 }

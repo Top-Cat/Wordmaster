@@ -1,11 +1,12 @@
 package uk.co.thomasc.wordmaster.view;
 
-import uk.co.thomasc.wordmaster.util.TimeUtil;
 import android.content.Context;
 import android.util.AttributeSet;
 
+import uk.co.thomasc.wordmaster.util.TimeUtil;
+
 public class TimeSinceText extends RussoText {
-	
+
 	private long timestamp = TimeUtil.now();
 	private boolean running = false;
 	private TimerThread thread;
@@ -14,26 +15,26 @@ public class TimeSinceText extends RussoText {
 		super(context);
 		init();
 	}
-	
+
 	public TimeSinceText(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		init();
 	}
-	
+
 	public TimeSinceText(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		init();
 	}
-	
+
 	private void init() {
 		thread = new TimerThread();
 	}
-	
+
 	@Override
 	protected void onDetachedFromWindow() {
 		running = false;
 	}
-	
+
 	@Override
 	protected void onAttachedToWindow() {
 		if (!running) {
@@ -41,9 +42,9 @@ public class TimeSinceText extends RussoText {
 			thread.start();
 		}
 	}
-	
+
 	private class TimerThread extends Thread {
-		
+
 		@Override
 		public void run() {
 			while (running) {
@@ -60,12 +61,12 @@ public class TimeSinceText extends RussoText {
 				}
 			}
 		}
-		
+
 	}
 
 	public void setTimestamp(long lastUpdateTimestamp) {
-		this.timestamp = lastUpdateTimestamp;
+		timestamp = lastUpdateTimestamp;
 		thread.interrupt();
 	}
-	
+
 }

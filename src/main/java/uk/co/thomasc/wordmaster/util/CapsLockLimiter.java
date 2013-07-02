@@ -1,6 +1,5 @@
 package uk.co.thomasc.wordmaster.util;
 
-import uk.co.thomasc.wordmaster.R;
 import android.graphics.drawable.Drawable;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -8,6 +7,8 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import uk.co.thomasc.wordmaster.R;
 
 public class CapsLockLimiter implements TextWatcher {
 

@@ -3,41 +3,42 @@ package uk.co.thomasc.wordmaster.objects;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import uk.co.thomasc.wordmaster.BaseGame;
-import uk.co.thomasc.wordmaster.objects.callbacks.TurnAddedListener;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 
+import uk.co.thomasc.wordmaster.BaseGame;
+import uk.co.thomasc.wordmaster.objects.callbacks.TurnAddedListener;
+
 public class Game {
 
 	public static String keySegment = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApAOqKoj3zH7ADRMM9zHZkUegL8xRAoD8Qb7tl7Xz94T99y7qFiphoZ";
-	
+
 	public static HashMap<String, Game> games = new HashMap<String, Game>();
-	
+
 	public static Game getGame(String id) {
-		if (games.containsKey(id)) {
-			return games.get(id);
+		if (Game.games.containsKey(id)) {
+			return Game.games.get(id);
 		}
 		return null;
 	}
 
 	public static Game getGame(String id, User player, User opponent) {
-		if (games.containsKey(id)) {
-			Game game = games.get(id);
+		if (Game.games.containsKey(id)) {
+			Game game = Game.games.get(id);
 			game.player = player;
 			game.opponent = opponent;
 			return game;
 		} else {
 			Game newGame = new Game(id, player, opponent);
-			games.put(id, newGame);
+			Game.games.put(id, newGame);
 			return newGame;
 		}
 	}
-	
+
 	public static Game getGame(String playerID, String opponentID) {
-		for (Game g : games.values()) {
+		for (Game g : Game.games.values()) {
 			if (g.getPlayer().getPlusID().equals(playerID) &&
 					g.getOpponent().getPlusID().equals(opponentID)) {
 				return g;
@@ -45,7 +46,7 @@ public class Game {
 		}
 		return null;
 	}
-	
+
 	/* Properties */
 	private String gameID;
 	private User player, opponent;
@@ -109,7 +110,7 @@ public class Game {
 	public User getOpponent() {
 		return opponent;
 	}
-	
+
 	public long getLastUpdateTimestamp() {
 		return lastUpdated;
 	}
@@ -139,7 +140,7 @@ public class Game {
 	public void setPlayersTurn(boolean isPlayersTurn) {
 		playersTurn = isPlayersTurn;
 	}
-	
+
 	public void setLastUpdateTimestamp(long timestamp) {
 		lastUpdated = timestamp;
 	}
@@ -153,7 +154,7 @@ public class Game {
 			turnNumber = (turn.getTurnNum() / 2) + 1;
 			setLastUpdateTimestamp(turn.getUnixTimestamp());
 			newerTurn = true;
-			
+
 			setNeedsWord(turn.getCorrectLetters() == 4);
 		}
 		if (turn.getID() < oldestTurnId) {
@@ -163,7 +164,7 @@ public class Game {
 			l.onTurnAdded(turn, newerTurn);
 		}
 	}
-	
+
 	public void addTurnListener(TurnAddedListener listener) {
 		turnListeners.add(listener);
 	}
@@ -175,27 +176,27 @@ public class Game {
 	public int getPivotLatest() {
 		return latestTurnId;
 	}
-	
+
 	public int getPivotOldest() {
 		return oldestTurnId;
 	}
-	
+
 	public static void saveState(Context context) {
-		for (String gameid : games.keySet()) {
+		for (String gameid : Game.games.keySet()) {
 			SharedPreferences prefs = context.getSharedPreferences("wordmaster.game." + gameid, Context.MODE_PRIVATE);
 			SharedPreferences.Editor editor = prefs.edit();
-			games.get(gameid).updatePreferences(editor);
+			Game.games.get(gameid).updatePreferences(editor);
 			editor.commit();
 		}
 	}
 
 	public static void saveState(Bundle outState) {
-		for (String gameid : games.keySet()) {
-			outState.putBundle(gameid, games.get(gameid).toBundle());
+		for (String gameid : Game.games.keySet()) {
+			outState.putBundle(gameid, Game.games.get(gameid).toBundle());
 		}
-		outState.putStringArray("games", games.keySet().toArray(new String[games.size()]));
+		outState.putStringArray("games", Game.games.keySet().toArray(new String[Game.games.size()]));
 	}
-	
+
 	public static void restoreState(Bundle inState, BaseGame activityReference) {
 		String[] gameids = inState.getStringArray("games");
 		for (String gameid : gameids) {
@@ -206,7 +207,7 @@ public class Game {
 			game.setScore(gameData.getInt("playerscore"), gameData.getInt("opponentscore"));
 		}
 	}
-	
+
 	public Bundle toBundle() {
 		Bundle bundle = new Bundle();
 		bundle.putString("playerid", player.getPlusID());
@@ -217,7 +218,7 @@ public class Game {
 		bundle.putInt("opponentscore", opponentScore);
 		return bundle;
 	}
-	
+
 	private void updatePreferences(Editor editor) {
 		editor.putLong("time", getLastUpdateTimestamp());
 		editor.putString("oppname", opponent.getName());

@@ -9,21 +9,20 @@ public enum Errors {
 	SERVER(R.string.server_error, R.string.server_error_help),
 	OPPONENT(R.string.opponent_error, R.string.opponent_error_help),
 	MATCH(R.string.match_error, R.string.match_error_help),
-	WORDSET(R.string.word_set_error, R.string.word_set_error_help),
-	;
-	
+	WORDSET(R.string.word_set_error, R.string.word_set_error_help), ;
+
 	private int title;
 	private int subtitle;
-	
+
 	private Errors(int title, int subtitle) {
 		this.title = title;
 		this.subtitle = subtitle;
 	}
-	
+
 	public int getTitle() {
 		return title;
 	}
-	
+
 	public int getSubtitle() {
 		return subtitle;
 	}

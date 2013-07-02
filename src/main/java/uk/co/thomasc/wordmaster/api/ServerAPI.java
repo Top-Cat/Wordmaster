@@ -139,7 +139,7 @@ public class ServerAPI {
 				long when = (Long) turnObject.get("when");
 				int correct = ((Long) turnObject.get("correct")).intValue();
 				int displaced = ((Long) turnObject.get("displaced")).intValue();
-				
+
 				Turn turn;
 				if (correct == 4) {
 					String opponentWord = (String) turnObject.get("oppword");
@@ -170,7 +170,7 @@ public class ServerAPI {
 			@Override
 			public void run() {
 				JSONObject json = ServerAPI.makeRequest("takeTurn", playerID, gameID, word, activityReference);
-				
+
 				int errorCode = ((Long) json.get("error")).intValue();
 				listener.onRequestComplete(errorCode);
 			}
@@ -223,13 +223,13 @@ public class ServerAPI {
 			public void run() {
 				JSONObject json = ServerAPI.makeRequest("setWord", playerID, gameID, word, activityReference);
 				int errorCode = ((Long) json.get("error")).intValue();
-				
+
 				listener.onRequestComplete(errorCode);
 			}
 		};
 		t.start();
 	}
-	
+
 	public static void registerGCM(final String playerID, final String regid, final BaseGame activityReference) {
 		Thread t = new Thread() {
 			@Override
@@ -239,7 +239,7 @@ public class ServerAPI {
 		};
 		t.start();
 	}
-	
+
 	public static void upgradePurchased(final String token, final BaseGame activityReference) {
 		Thread t = new Thread() {
 			@Override
@@ -276,7 +276,7 @@ public class ServerAPI {
 
 			JSONParser parser = new JSONParser();
 			JSONObject jsonObject = (JSONObject) parser.parse(jsonText);
-			processAchievements(jsonObject, activityReference);
+			ServerAPI.processAchievements(jsonObject, activityReference);
 			return jsonObject;
 		} catch (IOException ex) {
 			return null;
@@ -284,7 +284,7 @@ public class ServerAPI {
 			return null;
 		}
 	}
-	
+
 	private static void processAchievements(JSONObject json, BaseGame activityReference) {
 		JSONObject achievements = (JSONObject) json.get("achievements");
 		for (Object key : achievements.keySet()) {

@@ -8,17 +8,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import uk.co.thomasc.wordmaster.objects.callbacks.ImageLoadedListener;
-import uk.co.thomasc.wordmaster.objects.callbacks.NameLoadedListener;
-import uk.co.thomasc.wordmaster.util.BaseGameActivity;
 import android.graphics.drawable.Drawable;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.plus.PlusClient.OnPersonLoadedListener;
 import com.google.android.gms.plus.model.people.Person;
 
+import uk.co.thomasc.wordmaster.objects.callbacks.ImageLoadedListener;
+import uk.co.thomasc.wordmaster.objects.callbacks.NameLoadedListener;
+import uk.co.thomasc.wordmaster.util.BaseGameActivity;
+
 public class User {
-	
+
 	public static String keySegment = "pGjhCD9hbcfsBKsjGTVSntvrGo2+BFn7+fq4JyUtVtTzuXGUiLAxiz1Bg5fW2KeIVHzrbBAoju2hRKK0cR8TxjAxlzMEoBYhI9";
 
 	private static Map<String, User> users = new HashMap<String, User>();
@@ -43,10 +44,10 @@ public class User {
 			return user;
 		}
 	}
-	
+
 	public static void onPlusConnected(BaseGameActivity activityReference) {
-		connected = true;
-		for (User user : users.values()) {
+		User.connected = true;
+		for (User user : User.users.values()) {
 			if (user.name == null) {
 				user.loadName(activityReference);
 			}
@@ -70,15 +71,15 @@ public class User {
 		this.plusID = plusID;
 		loadName(activityReference);
 	}
-	
+
 	private void loadName(final BaseGameActivity activityReference) {
-		if (connected) {
+		if (User.connected) {
 			activityReference.getPlusClient().loadPerson(new OnPersonLoadedListener() {
 				@Override
 				public void onPersonLoaded(ConnectionResult result, Person person) {
 					name = person.getDisplayName();
 					loadImage(person, activityReference);
-	
+
 					for (NameLoadedListener listener : userListeners) {
 						listener.onNameLoaded(name);
 					}
@@ -101,7 +102,7 @@ public class User {
 						HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 						conn.connect();
 						drawable = Drawable.createFromStream(conn.getInputStream(), "player avatar");
-	
+
 						for (ImageLoadedListener listener : imageListeners) {
 							listener.onImageLoaded(drawable);
 						}

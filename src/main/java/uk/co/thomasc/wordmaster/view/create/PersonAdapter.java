@@ -4,11 +4,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
-import uk.co.thomasc.wordmaster.R;
-import uk.co.thomasc.wordmaster.objects.User;
-import uk.co.thomasc.wordmaster.objects.callbacks.ImageLoadedListener;
-import uk.co.thomasc.wordmaster.objects.callbacks.NameLoadedListener;
-import uk.co.thomasc.wordmaster.util.BaseGameActivity;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -21,10 +16,16 @@ import android.widget.TextView;
 
 import com.google.android.gms.plus.model.people.Person;
 
+import uk.co.thomasc.wordmaster.R;
+import uk.co.thomasc.wordmaster.objects.User;
+import uk.co.thomasc.wordmaster.objects.callbacks.ImageLoadedListener;
+import uk.co.thomasc.wordmaster.objects.callbacks.NameLoadedListener;
+import uk.co.thomasc.wordmaster.util.BaseGameActivity;
+
 public class PersonAdapter extends ArrayAdapter<Person> {
 
 	public static String keySegment = "DB6Fpmlprf0yaYGbkfFh6XvisO25dvfq4mhyfNR5K15Xo9B6kfbnd1qQuO7zhB10ZCZaBZfRpJP5saK/jyRLWOzqi0vQIDAQAB";
-	
+
 	private Activity act;
 	final private Comparator<Person> comp;
 
@@ -48,22 +49,22 @@ public class PersonAdapter extends ArrayAdapter<Person> {
 	}
 
 	private Map<View, User> checkList = new HashMap<View, User>();
-	
+
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View rview = convertView;
-		
+
 		Person item = getItem(position);
-		
+
 		if (rview == null) {
 			LayoutInflater vi = (LayoutInflater) act.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			rview = vi.inflate(R.layout.person, null);
 		}
-		
+
 		final View view = rview;
 		final User user = User.getUser(item, (BaseGameActivity) act);
 		checkList.put(view, user);
-		
+
 		user.listenForLoad(new NameLoadedListener() {
 			@Override
 			public void onNameLoaded(final String name) {
@@ -90,7 +91,7 @@ public class PersonAdapter extends ArrayAdapter<Person> {
 				});
 			}
 		});
-		
+
 		return view;
 	}
 

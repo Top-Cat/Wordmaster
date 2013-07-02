@@ -3,22 +3,6 @@ package uk.co.thomasc.wordmaster.view.menu;
 import java.util.ArrayList;
 import java.util.List;
 
-import uk.co.thomasc.wordmaster.BaseGame;
-import uk.co.thomasc.wordmaster.R;
-import uk.co.thomasc.wordmaster.api.GetTurnsRequestListener;
-import uk.co.thomasc.wordmaster.api.ServerAPI;
-import uk.co.thomasc.wordmaster.api.TakeTurnSpinnerListener;
-import uk.co.thomasc.wordmaster.objects.Game;
-import uk.co.thomasc.wordmaster.objects.Turn;
-import uk.co.thomasc.wordmaster.objects.callbacks.ImageLoadedListener;
-import uk.co.thomasc.wordmaster.objects.callbacks.TurnAddedListener;
-import uk.co.thomasc.wordmaster.util.CapsLockLimiter;
-import uk.co.thomasc.wordmaster.util.TurnMaker;
-import uk.co.thomasc.wordmaster.view.DialogPanel;
-import uk.co.thomasc.wordmaster.view.Errors;
-import uk.co.thomasc.wordmaster.view.game.GameLayout;
-import uk.co.thomasc.wordmaster.view.game.SwipeController;
-import uk.co.thomasc.wordmaster.view.game.SwipeListener;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
@@ -36,6 +20,23 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import uk.co.thomasc.wordmaster.BaseGame;
+import uk.co.thomasc.wordmaster.R;
+import uk.co.thomasc.wordmaster.api.GetTurnsRequestListener;
+import uk.co.thomasc.wordmaster.api.ServerAPI;
+import uk.co.thomasc.wordmaster.api.TakeTurnSpinnerListener;
+import uk.co.thomasc.wordmaster.objects.Game;
+import uk.co.thomasc.wordmaster.objects.Turn;
+import uk.co.thomasc.wordmaster.objects.callbacks.ImageLoadedListener;
+import uk.co.thomasc.wordmaster.objects.callbacks.TurnAddedListener;
+import uk.co.thomasc.wordmaster.util.CapsLockLimiter;
+import uk.co.thomasc.wordmaster.util.TurnMaker;
+import uk.co.thomasc.wordmaster.view.DialogPanel;
+import uk.co.thomasc.wordmaster.view.Errors;
+import uk.co.thomasc.wordmaster.view.game.GameLayout;
+import uk.co.thomasc.wordmaster.view.game.SwipeController;
+import uk.co.thomasc.wordmaster.view.game.SwipeListener;
 
 public class MenuDetailFragment extends Fragment implements TurnAddedListener, TakeTurnSpinnerListener {
 
@@ -66,7 +67,7 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener, T
 		}
 		running = false;
 	}
-	
+
 	@Override
 	public void onResume() {
 		super.onResume();
@@ -78,7 +79,7 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener, T
 		((InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(input.getWindowToken(), 0);
 		getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 	}
-	
+
 	public void showKeyboard() {
 		((InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE)).showSoftInput(input, 0);
 		getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
@@ -87,12 +88,12 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener, T
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		final View rootView = inflater.inflate(R.layout.game_screen, container, false);
-		
+
 		((BaseGame) getActivity()).menuDetail = this;
-		
+
 		game = Game.getGame(gameid);
 		if (game != null) {
-		
+
 			game.getPlayer().listenForImage(new ImageLoadedListener() {
 				@Override
 				public void onImageLoaded(final Drawable image) {
@@ -115,54 +116,54 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener, T
 					});
 				}
 			});
-			
+
 			((TextView) rootView.findViewById(R.id.turn)).setText(Integer.toString(game.getTurnNumber()));
 			((TextView) rootView.findViewById(R.id.playerscore)).setText(Integer.toString(game.getPlayerScore()));
 			((TextView) rootView.findViewById(R.id.oppscore)).setText(Integer.toString(game.getOpponentScore()));
-			
+
 			if (game.needsWord()) {
 				RelativeLayout footer = (RelativeLayout) rootView.findViewById(R.id.footer);
 				footer.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 70, getResources().getDisplayMetrics());
 			}
-			
+
 			loadTurns();
 			game.addTurnListener(this);
-			
+
 			Resources res = getActivity().getResources();
 			Drawable guessEnabled = res.getDrawable(R.drawable.guess);
 			Drawable guessDisabled = res.getDrawable(R.drawable.guess_disabled);
-	
+
 			input = (EditText) rootView.findViewById(R.id.guess_input);
 			input.addTextChangedListener(new CapsLockLimiter(input, rootView, guessEnabled, guessDisabled));
-			
+
 			rootView.clearFocus();
-			
+
 			((ImageView) rootView.findViewById(R.id.guess_button)).setOnClickListener(new TurnMaker(game, (BaseGame) getActivity(), rootView, this));
-	
+
 			((GameLayout) rootView.findViewById(R.id.screen_game)).setActivity(getActivity());
-	
+
 			SwipeController swipe = new SwipeController(getActivity().getSupportFragmentManager(), gameid);
 			ViewPager mPager = (ViewPager) rootView.findViewById(R.id.pager);
 			mPager.setAdapter(swipe);
 			mPager.setOnPageChangeListener(new SwipeListener((ImageView) rootView.findViewById(R.id.indicator)));
-	
+
 			refresher = new RefresherThread();
 			running = true;
 			refresher.start();
-		
+
 			showKeyboard();
 		} else {
-			
+
 			getActivity().getSupportFragmentManager().popBackStack("top", 0);
-			
+
 		}
-		
+
 		return rootView;
 	}
-	
+
 	public void loadTurns() {
 		ServerAPI.getTurns(gameid, (BaseGame) getActivity(), new GetTurnsRequestListener() {
-			
+
 			@Override
 			public void onRequestFailed() {
 				getActivity().runOnUiThread(new Runnable() {
@@ -171,9 +172,9 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener, T
 						DialogPanel errorMessage = (DialogPanel) getActivity().findViewById(R.id.errorMessage);
 						errorMessage.show(Errors.NETWORK);
 					}
-				});				
+				});
 			}
-			
+
 			@Override
 			public void onRequestComplete(List<Turn> turns) {
 				ArrayList<Turn> gameTurns = game.getTurns();
@@ -193,7 +194,7 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener, T
 			}
 		});
 	}
-	
+
 	private void updateTurnCount() {
 		BaseGame act = ((BaseGame) getActivity());
 		act.runOnUiThread(new Runnable() {
@@ -209,7 +210,7 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener, T
 	@Override
 	public void onTurnAdded(Turn turn, boolean newerTurn) {
 		updateTurnCount();
-		
+
 		RelativeLayout footer = (RelativeLayout) getView().findViewById(R.id.footer);
 		footer.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, game.needsWord() ? 70 : 50, getResources().getDisplayMetrics());
 	}
@@ -230,9 +231,9 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener, T
 			}
 		});
 	}
-	
+
 	private class RefresherThread extends Thread {
-		
+
 		@Override
 		public void run() {
 			while (running) {
@@ -244,6 +245,6 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener, T
 				}
 			}
 		}
-		
+
 	}
 }

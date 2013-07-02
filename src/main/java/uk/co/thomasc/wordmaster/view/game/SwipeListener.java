@@ -1,8 +1,9 @@
 package uk.co.thomasc.wordmaster.view.game;
 
-import uk.co.thomasc.wordmaster.R;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.widget.ImageView;
+
+import uk.co.thomasc.wordmaster.R;
 
 public class SwipeListener implements OnPageChangeListener {
 

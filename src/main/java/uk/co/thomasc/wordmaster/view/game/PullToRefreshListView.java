@@ -1,6 +1,5 @@
 package uk.co.thomasc.wordmaster.view.game;
 
-import uk.co.thomasc.wordmaster.R;
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.graphics.Canvas;
@@ -20,6 +19,8 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import uk.co.thomasc.wordmaster.R;
 
 public class PullToRefreshListView extends ListView implements OnScrollListener {
 
@@ -161,13 +162,13 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
 		}
 		mFooterView.forceLayout();
 	}
-	
+
 	@Override
 	public void onSizeChanged(int w, int h, int oldw, int oldh) {
 		mHeight = -1;
 		scrollToBottom();
 	}
-	
+
 	public void scrollToBottom() {
 		post(new Runnable() {
 			@Override
@@ -297,7 +298,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
 			if (lastY > -1) {
 				float diff = (y - lastY) / 2.3f;
 				topPadding = topPadding + diff;
-				
+
 				mRefreshView.setPadding(mRefreshView.getPaddingLeft(), (int) topPadding, mRefreshView.getPaddingRight(), mRefreshView.getPaddingBottom());
 			}
 		}
@@ -363,7 +364,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
 					mRefreshViewImage.clearAnimation();
 					mRefreshViewImage.startAnimation(mReverseFlipAnimation);
 					mRefreshState = PullToRefreshListView.PULL_TO_REFRESH;
-				} else if (mRefreshState == PULL_TO_REFRESH) {
+				} else if (mRefreshState == PullToRefreshListView.PULL_TO_REFRESH) {
 					mRefreshViewText.setText(R.string.pull_to_refresh_pull_label);
 				}
 			} else {

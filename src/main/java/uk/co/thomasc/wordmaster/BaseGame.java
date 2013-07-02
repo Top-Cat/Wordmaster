@@ -3,6 +3,19 @@ package uk.co.thomasc.wordmaster;
 import java.util.ArrayList;
 import java.util.Set;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
+import android.graphics.Typeface;
+import android.os.Bundle;
+import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.LinearLayout;
+
+import com.google.android.gms.plus.model.people.Person;
+
 import uk.co.thomasc.wordmaster.api.ServerAPI;
 import uk.co.thomasc.wordmaster.game.Achievements;
 import uk.co.thomasc.wordmaster.gcm.RegisterThread;
@@ -23,18 +36,6 @@ import uk.co.thomasc.wordmaster.view.game.GameAdapter;
 import uk.co.thomasc.wordmaster.view.menu.MenuDetailFragment;
 import uk.co.thomasc.wordmaster.view.menu.MenuListFragment;
 import uk.co.thomasc.wordmaster.view.upgrade.UpgradeFragment;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
-import android.graphics.Typeface;
-import android.os.Bundle;
-import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.LinearLayout;
-
-import com.google.android.gms.plus.model.people.Person;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -50,24 +51,24 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 	public MenuDetailFragment menuDetail;
 	public GameAdapter gameAdapter;
 	public boolean wideLayout = false;
-	
+
 	private String userId = "";
 	public String goToGameId = "";
-	
+
 	public static IabHelper mHelper;
 	public static String upgradeSKU = "wordmaster_upgrade";
 	public UpgradeFragment upgradeFragment;
 	private boolean iabAvailable;
-	
+
 	private String PREFS = "WM_HIDDEN_GAMES_";
 	private SharedPreferences prefs;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		setContentView(R.layout.empty_screen);
-		
+
 		int screenLayoutSize = getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK;
 		wideLayout = screenLayoutSize > 2;
 		if (!wideLayout) {
@@ -82,15 +83,15 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 		} else {
 			getSupportFragmentManager().beginTransaction().add(R.id.empty, new MenuListFragment()).addToBackStack("top").commit();
 		}
-		
+
 		checkIntent(getIntent());
-		
+
 		String base64PublicKey = Game.keySegment + Turn.keySegment + User.keySegment + PersonAdapter.keySegment;
-		mHelper = new IabHelper(this, base64PublicKey);
-		mHelper.startSetup(new OnIabSetupFinishedListener() {
+		BaseGame.mHelper = new IabHelper(this, base64PublicKey);
+		BaseGame.mHelper.startSetup(new OnIabSetupFinishedListener() {
 			@Override
 			public void onIabSetupFinished(IabResult result) {
-				if (! result.isSuccess()) {
+				if (!result.isSuccess()) {
 					iabAvailable = false;
 				} else {
 					iabAvailable = true;
@@ -101,28 +102,28 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 			}
 		});
 	}
-	
-	@Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
 
-        // Pass on the activity result to the helper for handling
-        if (!mHelper.handleActivityResult(requestCode, resultCode, data)) {
-            super.onActivityResult(requestCode, resultCode, data);
-        } else {
-            
-        }
-    }
-	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+
+		// Pass on the activity result to the helper for handling
+		if (!BaseGame.mHelper.handleActivityResult(requestCode, resultCode, data)) {
+			super.onActivityResult(requestCode, resultCode, data);
+		} else {
+
+		}
+	}
+
 	@Override
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
 		checkIntent(intent);
 	}
-	
+
 	private void checkIntent(Intent intent) {
 		TurnReceiver.resetNotifications(this);
-		
+
 		Bundle extras = intent.getExtras();
 		if (extras != null && extras.containsKey("gameid")) {
 			String gameid = extras.getString("gameid");
@@ -133,31 +134,31 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 			}
 		}
 	}
-	
+
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		if (mHelper != null) {
-			mHelper.dispose();
+		if (BaseGame.mHelper != null) {
+			BaseGame.mHelper.dispose();
 		}
-		mHelper = null;
+		BaseGame.mHelper = null;
 	}
-	
+
 	public void buyUpgrade() {
-		mHelper.launchPurchaseFlow(this, upgradeSKU, 1902, this, userId);
+		BaseGame.mHelper.launchPurchaseFlow(this, BaseGame.upgradeSKU, 1902, this, userId);
 	}
-	
+
 	public void consumeUpgrades() {
-		mHelper.queryInventoryAsync(new QueryInventoryFinishedListener() {
+		BaseGame.mHelper.queryInventoryAsync(new QueryInventoryFinishedListener() {
 			@Override
 			public void onQueryInventoryFinished(IabResult result, Inventory inv) {
-				if (inv.hasPurchase(upgradeSKU)) {
-					mHelper.consumeAsync(inv.getPurchase(upgradeSKU), null);
+				if (inv.hasPurchase(BaseGame.upgradeSKU)) {
+					BaseGame.mHelper.consumeAsync(inv.getPurchase(BaseGame.upgradeSKU), null);
 				}
 			}
 		});
 	}
-	
+
 	@Override
 	public void onIabPurchaseFinished(IabResult result, Purchase info) {
 		if (result.isFailure()) {
@@ -169,13 +170,13 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 			ServerAPI.upgradePurchased(info.getToken(), this);
 		}
 	}
-	
+
 	public void queryInventory(QueryInventoryFinishedListener listener) {
 		ArrayList<String> additionalSkuList = new ArrayList<String>();
-		additionalSkuList.add(upgradeSKU);
-		mHelper.queryInventoryAsync(true, additionalSkuList, listener);
+		additionalSkuList.add(BaseGame.upgradeSKU);
+		BaseGame.mHelper.queryInventoryAsync(true, additionalSkuList, listener);
 	}
-	
+
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
@@ -206,11 +207,11 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 			new RegisterThread(this).start();
 		}
 	}
-	
+
 	private void loadPreferences() {
 		prefs = getSharedPreferences(PREFS + userId, 0);
 	}
-	
+
 	public SharedPreferences getHiddenGamesPreferences() {
 		return prefs;
 	}
@@ -230,7 +231,7 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 			super.onBackPressed();
 		}
 	}
-	
+
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
 		int currentapiVersion = android.os.Build.VERSION.SDK_INT;
@@ -240,7 +241,7 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 		}
 		return super.onKeyUp(keyCode, event);
 	}
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		int currentapiVersion = android.os.Build.VERSION.SDK_INT;
@@ -254,7 +255,7 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 		}
 		return super.onCreateOptionsMenu(menu);
 	}
-	
+
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		int currentapiVersion = android.os.Build.VERSION.SDK_INT;
@@ -269,7 +270,7 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 		}
 		return super.onCreateOptionsMenu(menu);
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (isSignedIn()) {
@@ -287,7 +288,7 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 		}
 		return super.onOptionsItemSelected(item);
 	}
-	
+
 	public void unlockAchievement(Achievements achievement, int increment) {
 		for (String id : achievement.getIds()) {
 			if (!achievement.isIncremental()) {
@@ -297,15 +298,15 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 			}
 		}
 	}
-	
+
 	public void unlockAchievement(Achievements achievement) {
 		unlockAchievement(achievement, 0);
 	}
-	
+
 	public String getUserId() {
 		return userId;
 	}
-	
+
 	public boolean isIabAvailable() {
 		return iabAvailable;
 	}
