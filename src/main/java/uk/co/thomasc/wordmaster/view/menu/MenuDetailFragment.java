@@ -78,6 +78,11 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener, T
 		((InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(input.getWindowToken(), 0);
 		getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 	}
+	
+	public void showKeyboard() {
+		((InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE)).showSoftInput(input, 0);
+		getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -130,6 +135,8 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener, T
 			input = (EditText) rootView.findViewById(R.id.guess_input);
 			input.addTextChangedListener(new CapsLockLimiter(input, rootView, guessEnabled, guessDisabled));
 			
+			rootView.clearFocus();
+			
 			((ImageView) rootView.findViewById(R.id.guess_button)).setOnClickListener(new TurnMaker(game, (BaseGame) getActivity(), rootView, this));
 	
 			((GameLayout) rootView.findViewById(R.id.screen_game)).setActivity(getActivity());
@@ -151,8 +158,6 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener, T
 		
 		return rootView;
 	}
-	
-	
 	
 	public void loadTurns() {
 		ServerAPI.getTurns(gameid, (BaseGame) getActivity(), new GetTurnsRequestListener() {
@@ -176,6 +181,14 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener, T
 						game.addTurn(turn);
 					}
 				}
+				getActivity().runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						input.clearFocus();
+						input.requestFocus();
+						showKeyboard();
+					}
+				});
 			}
 		});
 	}

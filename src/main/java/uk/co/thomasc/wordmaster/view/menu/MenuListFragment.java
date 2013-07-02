@@ -315,6 +315,12 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 		getActivity().getSupportFragmentManager().popBackStack("userpicker", 1);
 		Game existingGame = Game.getGame(playerID, opponentID);
 		if (existingGame != null) {
+			if (prefs.contains(existingGame.getID())) {
+				Editor editor = prefs.edit();
+				editor.remove(existingGame.getID());
+				editor.commit();
+				adapter.add(existingGame);
+			}
 			goToGame(existingGame.getID());
 		} else {
 			ServerAPI.createGame(playerID, opponentID, (BaseGame) getActivity(), new CreateGameRequestListener() {
