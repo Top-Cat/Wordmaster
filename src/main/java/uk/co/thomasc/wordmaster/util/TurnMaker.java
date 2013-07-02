@@ -38,6 +38,7 @@ public class TurnMaker implements OnClickListener, TakeTurnRequestListener, GetT
 		String guess = input.getText().toString();
 		if (guess.length() == 4) {
 			if (game.needsWord()) {
+				listener.startSpinner();
 				ServerAPI.setWord(game.getPlayer().getPlusID(), game.getID(), guess, activity, this);
 			} else if (game.isPlayersTurn()) {
 				listener.startSpinner();

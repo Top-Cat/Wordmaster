@@ -150,6 +150,7 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener, T
 			running = true;
 			refresher.start();
 		
+			showKeyboard();
 		} else {
 			
 			getActivity().getSupportFragmentManager().popBackStack("top", 0);
