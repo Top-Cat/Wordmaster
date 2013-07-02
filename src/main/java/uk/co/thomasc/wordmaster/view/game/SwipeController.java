@@ -17,6 +17,7 @@ import uk.co.thomasc.wordmaster.view.game.PullToRefreshListView.OnRefreshListene
 import uk.co.thomasc.wordmaster.view.menu.MenuDetailFragment;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -95,6 +96,7 @@ public class SwipeController extends FragmentStatePagerAdapter {
 				game.addTurnListener(this);
 				((PullToRefreshListView) rootView).setAdapter(adapter);
 				listView = (PullToRefreshListView) rootView;
+				listView.setCacheColorHint(Color.WHITE);
 				listView.setOnRefreshListener(new OnRefreshListener() {
 					@Override
 					public void onRefresh() {

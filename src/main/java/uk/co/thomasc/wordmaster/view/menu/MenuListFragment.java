@@ -22,6 +22,7 @@ import android.app.Dialog;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -69,6 +70,7 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 		ListView list = (ListView) v.findViewById(R.id.main_feed);
 		list.setAdapter(adapter);
 		list.setOnItemClickListener(this);
+		list.setCacheColorHint(Color.WHITE);
 		registerForContextMenu(list);
 		
 		if (savedInstanceState != null) {
