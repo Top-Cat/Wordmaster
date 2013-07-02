@@ -21,6 +21,8 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -35,6 +37,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.PopupMenu.OnMenuItemClickListener;
@@ -259,10 +262,7 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 		getView().findViewById(R.id.whysignin).setVisibility(View.GONE);
 		getView().findViewById(R.id.main_feed).setVisibility(View.VISIBLE);
 
-		// Enable UI
-		getView().findViewById(R.id.refresh).setOnClickListener(this);
-		safeSetOnClickListener(R.id.startnew, this);
-		safeSetOnClickListener(R.id.dropdown, this);
+		enableUI();
 
 		loadGames();
 	}
@@ -276,10 +276,7 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 		getView().findViewById(R.id.button_sign_in).setVisibility(View.VISIBLE);
 		getView().findViewById(R.id.whysignin).setVisibility(View.VISIBLE);
 
-		// Disable UI
-		getView().findViewById(R.id.refresh).setOnClickListener(null);
-		safeSetOnClickListener(R.id.startnew, null);
-		safeSetOnClickListener(R.id.dropdown, null);
+		disableUI();
 	}
 
 	private void safeSetOnClickListener(int id, OnClickListener listener) {
@@ -287,6 +284,30 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 		if (view != null) {
 			view.setOnClickListener(listener);
 		}
+	}
+	
+	private void safeSetVisiblity(int id, int visibility) {
+		View view = getView().findViewById(id);
+		if (view != null) {
+			view.setVisibility(visibility);
+		}
+	}
+	
+	private void disableUI() {
+		getView().findViewById(R.id.refresh).setVisibility(View.GONE);
+		safeSetOnClickListener(R.id.startnew, null);
+		safeSetVisiblity(R.id.startnew, View.GONE);
+		safeSetOnClickListener(R.id.dropdown, null);
+		safeSetVisiblity(R.id.dropdown, View.GONE);
+	}
+	
+	private void enableUI() {
+		getView().findViewById(R.id.refresh).setVisibility(View.VISIBLE);
+		getView().findViewById(R.id.refresh).setOnClickListener(this);
+		safeSetOnClickListener(R.id.startnew, this);
+		safeSetVisiblity(R.id.startnew, View.VISIBLE);
+		safeSetOnClickListener(R.id.dropdown, this);
+		safeSetVisiblity(R.id.dropdown, View.VISIBLE);
 	}
 	
 	@Override
