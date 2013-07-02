@@ -9,3 +9,5 @@
 target
 bin
 gen
+
+.DS_Store
