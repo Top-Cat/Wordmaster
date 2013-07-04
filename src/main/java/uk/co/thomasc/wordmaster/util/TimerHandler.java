@@ -19,7 +19,6 @@ public class TimerHandler extends Handler {
 
 	@Override
 	public void handleMessage(Message msg) {
-		System.out.println(msg.what + ", " + dialogPanel.getId());
 		if (dialogPanel.container.getVisibility() == View.VISIBLE) {
 			Animation removeAnim = AnimationUtils.loadAnimation(dialogPanel.getContext(), anim.slide_up);
 			removeAnim.setAnimationListener(new AnimationListener() {
