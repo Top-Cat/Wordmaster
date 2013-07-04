@@ -39,8 +39,7 @@ public class Game {
 
 	public static Game getGame(String playerID, String opponentID) {
 		for (Game g : Game.games.values()) {
-			if (g.getPlayer().getPlusID().equals(playerID) &&
-					g.getOpponent().getPlusID().equals(opponentID)) {
+			if (g.getPlayer().getPlusID().equals(playerID) && g.getOpponent().getPlusID().equals(opponentID)) {
 				return g;
 			}
 		}
@@ -51,11 +50,11 @@ public class Game {
 	private String gameID;
 	private User player, opponent;
 	private ArrayList<Turn> turns = new ArrayList<Turn>();
-	private int latestTurnId = 0;
+	private int latestTurnId = Integer.MIN_VALUE;
 	private int oldestTurnId = Integer.MAX_VALUE;
 	private int playerScore = 0, opponentScore = 0, turnNumber = 1;
 	private String playerWord = "", opponentWord = "";
-	private boolean needsWord = false, playersTurn = false;
+	private boolean needsWord = true, playersTurn = false;
 	private ArrayList<TurnAddedListener> turnListeners = new ArrayList<TurnAddedListener>();
 	private long lastUpdated = 0;
 
@@ -155,7 +154,9 @@ public class Game {
 			setLastUpdateTimestamp(turn.getUnixTimestamp());
 			newerTurn = true;
 
-			setNeedsWord(turn.getCorrectLetters() == 4);
+			if (turn.getTurnNum() > 0) {
+				setNeedsWord(turn.getCorrectLetters() == 4);
+			}
 		}
 		if (turn.getID() < oldestTurnId) {
 			oldestTurnId = turn.getID();

@@ -194,8 +194,8 @@ public class ServerAPI {
 			public void run() {
 				JSONObject json = ServerAPI.makeRequest("createGame", playerID, opponentID, activityReference);
 				int errorCode = ((Long) json.get("error")).intValue();
-				JSONObject response = (JSONObject) json.get("response");
 				if (errorCode == 0) {
+					JSONObject response = (JSONObject) json.get("response");
 					String gameID = (String) response.get("gameid");
 					Game game = Game.getGame(gameID, User.getUser(playerID, activityReference), User.getUser(opponentID, activityReference));
 					listener.onRequestComplete(game);
@@ -224,7 +224,7 @@ public class ServerAPI {
 				JSONObject json = ServerAPI.makeRequest("setWord", playerID, gameID, word, activityReference);
 				int errorCode = ((Long) json.get("error")).intValue();
 
-				listener.onRequestComplete(errorCode);
+				listener.onSetWordComplete(errorCode);
 			}
 		};
 		t.start();

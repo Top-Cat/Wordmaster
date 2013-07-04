@@ -40,14 +40,20 @@ public class TurnMaker implements OnClickListener, TakeTurnRequestListener, GetT
 		if (guess.length() == 4) {
 			if (game.needsWord()) {
 				listener.startSpinner();
-				ServerAPI.setWord(game.getPlayer().getPlusID(), game.getID(), guess, activity, this);
+				ServerAPI.setWord(activity.getUserId(), game.getID(), guess, activity, this);
 			} else if (game.isPlayersTurn()) {
 				listener.startSpinner();
-				ServerAPI.takeTurn(game.getPlayer().getPlusID(), game.getID(), guess, activity, this);
+				ServerAPI.takeTurn(activity.getUserId(), game.getID(), guess, activity, this);
 			} else {
 				errorMessage.show(Errors.TURN);
 			}
 		}
+	}
+	
+	@Override
+	public void onSetWordComplete(int errorCode) {
+		game.setNeedsWord(false);
+		onRequestComplete(errorCode);
 	}
 
 	@Override
