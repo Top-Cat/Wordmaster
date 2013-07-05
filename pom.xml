@@ -64,6 +64,7 @@
 	</dependencies>
 	<build>
 		<finalName>${project.artifactId}</finalName>
+		<defaultGoal>clean install</defaultGoal>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -104,6 +105,13 @@
 					<target>1.6</target>
 					<showWarnings>true</showWarnings>
 					<showDeprecation>true</showDeprecation>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<configuration>
+					<arguments>${arguments}</arguments>  
 				</configuration>
 			</plugin>
 			<plugin>
