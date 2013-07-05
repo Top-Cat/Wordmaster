@@ -34,7 +34,7 @@ public class UpgradeFragment extends Fragment implements OnClickListener, QueryI
 		rootView.findViewById(R.id.cancel_upgrade).setOnClickListener(this);
 
 		if (((BaseGame) getActivity()).isIabAvailable()) {
-			((BaseGame) getActivity()).queryInventory(this);
+			BaseGame.queryInventory(this);
 		} else {
 			iabAvailable = false;
 		}

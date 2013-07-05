@@ -464,7 +464,7 @@ public class GameHelper implements GooglePlayServicesClient.ConnectionCallbacks,
 		return mActivity;
 	}
 
-	void addToScope(StringBuilder scopeStringBuilder, String scope) {
+	static void addToScope(StringBuilder scopeStringBuilder, String scope) {
 		if (scopeStringBuilder.length() == 0) {
 			scopeStringBuilder.append("oauth2:");
 		} else {

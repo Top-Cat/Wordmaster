@@ -330,7 +330,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
 		mRefreshViewProgress.setVisibility(View.GONE);
 	}
 
-	private void measureView(View child) {
+	private static void measureView(View child) {
 		ViewGroup.LayoutParams p = child.getLayoutParams();
 		if (p == null) {
 			p = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);

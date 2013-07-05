@@ -148,7 +148,7 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 		BaseGame.mHelper.launchPurchaseFlow(this, BaseGame.upgradeSKU, 1902, this, userId);
 	}
 
-	public void consumeUpgrades() {
+	public static void consumeUpgrades() {
 		BaseGame.mHelper.queryInventoryAsync(new QueryInventoryFinishedListener() {
 			@Override
 			public void onQueryInventoryFinished(IabResult result, Inventory inv) {
@@ -171,7 +171,7 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 		}
 	}
 
-	public void queryInventory(QueryInventoryFinishedListener listener) {
+	public static void queryInventory(QueryInventoryFinishedListener listener) {
 		ArrayList<String> additionalSkuList = new ArrayList<String>();
 		additionalSkuList.add(BaseGame.upgradeSKU);
 		BaseGame.mHelper.queryInventoryAsync(true, additionalSkuList, listener);
