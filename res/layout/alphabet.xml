@@ -3,13 +3,13 @@
 	android:layout_height="fill_parent"
 	android:background="@color/mainbg"
 	android:orientation="vertical"
-	android:paddingTop="10dp" >
+	android:paddingTop="5dp" >
 
 	<LinearLayout
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:gravity="center"
-		android:paddingTop="20dp" >
+		android:paddingTop="10dp" >
 
 		<uk.co.thomasc.wordmaster.view.RussoText
 			android:id="@+id/alphaQ"
@@ -67,7 +67,7 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:gravity="center"
-		android:paddingTop="20dp" >
+		android:paddingTop="10dp" >
 
 		<uk.co.thomasc.wordmaster.view.RussoText
 			android:id="@+id/alphaA"
@@ -120,7 +120,7 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:gravity="center"
-		android:paddingTop="20dp" >
+		android:paddingTop="10dp" >
 
 		<uk.co.thomasc.wordmaster.view.RussoText
 			android:id="@+id/alphaZ"
