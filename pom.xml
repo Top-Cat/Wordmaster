@@ -23,7 +23,7 @@
 	</repositories>
 	
 	<scm>
-		<connection>scm:git:git://github.com/Top-Cat/Wordmaster.git</connection>
+		<connection>scm:git:https://github.com/Top-Cat/Wordmaster.git</connection>
 	</scm>
 
 	<dependencies>
