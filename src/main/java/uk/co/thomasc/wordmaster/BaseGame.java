@@ -234,8 +234,9 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
+		String topId = getSupportFragmentManager().getBackStackEntryAt(getSupportFragmentManager().getBackStackEntryCount() - 1).getName();
 		int currentapiVersion = android.os.Build.VERSION.SDK_INT;
-		if (currentapiVersion >= android.os.Build.VERSION_CODES.HONEYCOMB && keyCode == KeyEvent.KEYCODE_MENU) {
+		if (currentapiVersion >= android.os.Build.VERSION_CODES.HONEYCOMB && keyCode == KeyEvent.KEYCODE_MENU && topId.equals("top")) {
 			menuFragment.showPopup(findViewById(R.id.dropdown));
 			return true;
 		}
