@@ -53,11 +53,16 @@ public class TurnMaker implements OnClickListener, TakeTurnRequestListener, GetT
 	@Override
 	public void onSetWordComplete(int errorCode) {
 		game.setNeedsWord(false);
-		onRequestComplete(errorCode);
+		onComplete(errorCode);
 	}
 
 	@Override
 	public void onRequestComplete(final int errorCode) {
+		game.setPlayersTurn(false);
+		onComplete(errorCode);
+	}
+	
+	private void onComplete(final int errorCode) {
 		if (errorCode == 0) {
 			int pivot = game.getPivotLatest();
 			if (pivot > 0) {
@@ -94,7 +99,6 @@ public class TurnMaker implements OnClickListener, TakeTurnRequestListener, GetT
 		for (Turn turn : turns) {
 			game.addTurn(turn);
 		}
-		game.setPlayersTurn(false);
 		activity.runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
