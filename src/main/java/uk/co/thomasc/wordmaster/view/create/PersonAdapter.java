@@ -1,6 +1,5 @@
 package uk.co.thomasc.wordmaster.view.create;
 
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,25 +26,16 @@ public class PersonAdapter extends ArrayAdapter<Person> {
 	public static String keySegment = "DB6Fpmlprf0yaYGbkfFh6XvisO25dvfq4mhyfNR5K15Xo9B6kfbnd1qQuO7zhB10ZCZaBZfRpJP5saK/jyRLWOzqi0vQIDAQAB";
 
 	private Activity act;
-	final private Comparator<Person> comp;
 
 	public PersonAdapter(Activity act) {
 		super(act, 0);
 
 		this.act = act;
-
-		comp = new Comparator<Person>() {
-			@Override
-			public int compare(Person e1, Person e2) {
-				return e1.getCircledByCount() > e2.getCircledByCount() ? 1 : -1;
-			}
-		};
 	}
 
 	@Override
 	public void add(Person object) {
 		super.add(object);
-		sort(comp);
 	}
 	
 	@Override

@@ -12,6 +12,7 @@ import android.widget.ListView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.plus.PlusClient.OnPeopleLoadedListener;
+import com.google.android.gms.plus.model.people.Person;
 import com.google.android.gms.plus.model.people.Person.Collection;
 import com.google.android.gms.plus.model.people.PersonBuffer;
 
@@ -50,7 +51,7 @@ public class CreateGameFragment extends Fragment implements OnClickListener, OnI
 					personBuffer.close();
 				}
 			}
-		}, Collection.VISIBLE);
+		}, Collection.VISIBLE, Person.OrderBy.BEST, 50, null);
 		users.setAdapter(adapter);
 		users.setOnItemClickListener(this);
 
