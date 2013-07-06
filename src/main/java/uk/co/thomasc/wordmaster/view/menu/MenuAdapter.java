@@ -50,6 +50,11 @@ public class MenuAdapter extends ArrayAdapter<Game> {
 		sort(comp);
 	}
 
+	@Override
+	public boolean isEnabled(int position) {
+		return getItem(position).getOpponent() != null;
+	}
+	
 	private Map<View, Game> checkList = new HashMap<View, Game>();
 
 	@Override
@@ -67,33 +72,38 @@ public class MenuAdapter extends ArrayAdapter<Game> {
 
 		checkList.put(view, item);
 
-		((TextView) rview.findViewById(R.id.playera)).setText("Loading...");
-		item.getOpponent().listenForLoad(new NameLoadedListener() {
-			@Override
-			public void onNameLoaded(final String name) {
-				act.runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						if (item == checkList.get(view)) {
-							((TextView) view.findViewById(R.id.playera)).setText("vs " + name);
+		if (item.getOpponent() == null) {
+			((TextView) rview.findViewById(R.id.playera)).setText("Auto Match In Progress");
+			((ImageView) view.findViewById(R.id.avatar)).setImageResource(R.drawable.games_matches_green);
+		} else {
+			((TextView) rview.findViewById(R.id.playera)).setText("Loading...");
+			item.getOpponent().listenForLoad(new NameLoadedListener() {
+				@Override
+				public void onNameLoaded(final String name) {
+					act.runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							if (item == checkList.get(view)) {
+								((TextView) view.findViewById(R.id.playera)).setText("vs " + name);
+							}
 						}
-					}
-				});
-			}
-		});
-		item.getOpponent().listenForImage(new ImageLoadedListener() {
-			@Override
-			public void onImageLoaded(final Drawable image) {
-				act.runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						if (item == checkList.get(view)) {
-							((ImageView) view.findViewById(R.id.avatar)).setImageDrawable(image);
+					});
+				}
+			});
+			item.getOpponent().listenForImage(new ImageLoadedListener() {
+				@Override
+				public void onImageLoaded(final Drawable image) {
+					act.runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							if (item == checkList.get(view)) {
+								((ImageView) view.findViewById(R.id.avatar)).setImageDrawable(image);
+							}
 						}
-					}
-				});
-			}
-		});
+					});
+				}
+			});
+		}
 
 		long time = item.getLastUpdateTimestamp();
 		if (time != 0) {

@@ -44,13 +44,19 @@ public class ServerAPI {
 						Game[] games = new Game[response.size()];
 						for (int i = 0; i < response.size(); i++) {
 							JSONObject gameObject = (JSONObject) response.get(i);
-							String opponentID = (String) gameObject.get("oppid");
 							String gameID = (String) gameObject.get("gameid");
 							boolean needsWord = (Boolean) gameObject.get("needword");
 							int playerScore = ((Long) gameObject.get("pscore")).intValue();
-							int opponentScore = ((Long) gameObject.get("oscore")).intValue();
 							boolean playersTurn = (Boolean) gameObject.get("turn");
-							Game game = Game.getGame(gameID, User.getUser(playerID, activityReference), User.getUser(opponentID, activityReference));
+							
+							User opp = null;
+							int opponentScore = 0;
+							if (gameObject.containsKey("oppid")) {
+								opp = User.getUser((String) gameObject.get("oppid"), activityReference);
+								opponentScore = ((Long) gameObject.get("oscore")).intValue();
+							}
+							
+							Game game = Game.getGame(gameID, User.getUser(playerID, activityReference), opp);
 							game.setPlayersTurn(playersTurn);
 							game.setNeedsWord(needsWord);
 							game.setScore(playerScore, opponentScore);
@@ -192,12 +198,23 @@ public class ServerAPI {
 		Thread t = new Thread() {
 			@Override
 			public void run() {
-				JSONObject json = ServerAPI.makeRequest("createGame", playerID, opponentID, activityReference);
+				JSONObject json;
+				if (opponentID == null) {
+					json = ServerAPI.makeRequest("createGame", playerID, activityReference);
+				} else {
+					json = ServerAPI.makeRequest("createGame", playerID, opponentID, activityReference);
+				}
 				int errorCode = ((Long) json.get("error")).intValue();
 				if (errorCode == 0) {
 					JSONObject response = (JSONObject) json.get("response");
 					String gameID = (String) response.get("gameid");
-					Game game = Game.getGame(gameID, User.getUser(playerID, activityReference), User.getUser(opponentID, activityReference));
+					
+					User opp = null;
+					if (opponentID == null) {
+						opp = User.getUser(opponentID, activityReference);
+					}
+					
+					Game game = Game.getGame(gameID, User.getUser(playerID, activityReference), opp);
 					listener.onRequestComplete(game);
 				} else {
 					listener.onRequestFailed(errorCode);

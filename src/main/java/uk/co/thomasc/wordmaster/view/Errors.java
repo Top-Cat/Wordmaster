@@ -9,7 +9,8 @@ public enum Errors {
 	SERVER(R.string.server_error, R.string.server_error_help),
 	OPPONENT(R.string.opponent_error, R.string.opponent_error_help),
 	MATCH(R.string.match_error, R.string.match_error_help),
-	WORDSET(R.string.word_set_error, R.string.word_set_error_help), ;
+	WORDSET(R.string.word_set_error, R.string.word_set_error_help),
+	AUTOMATCH(R.string.auto_match_error, R.string.auto_match_error_help), ;
 
 	private int title;
 	private int subtitle;

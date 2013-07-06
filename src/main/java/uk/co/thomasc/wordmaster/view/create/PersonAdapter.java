@@ -47,6 +47,11 @@ public class PersonAdapter extends ArrayAdapter<Person> {
 		super.add(object);
 		sort(comp);
 	}
+	
+	@Override
+	public int getCount() {
+		return super.getCount() + 1;
+	}
 
 	private Map<View, User> checkList = new HashMap<View, User>();
 
@@ -54,43 +59,50 @@ public class PersonAdapter extends ArrayAdapter<Person> {
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View rview = convertView;
 
-		Person item = getItem(position);
-
 		if (rview == null) {
 			LayoutInflater vi = (LayoutInflater) act.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			rview = vi.inflate(R.layout.person, null);
 		}
-
+		
 		final View view = rview;
-		final User user = User.getUser(item, (BaseGameActivity) act);
-		checkList.put(view, user);
-
-		user.listenForLoad(new NameLoadedListener() {
-			@Override
-			public void onNameLoaded(final String name) {
-				act.runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						if (user == checkList.get(view)) {
-							((TextView) view.findViewById(R.id.playera)).setText(name);
+		
+		if (position == 0) {
+			((ImageView) view.findViewById(R.id.avatar)).setImageResource(R.drawable.games_matches_green);
+			((TextView) view.findViewById(R.id.playera)).setText("Auto Match");
+			checkList.remove(view);
+		} else {
+			Person item = getItem(position - 1);
+			
+			final User user = User.getUser(item, (BaseGameActivity) act);
+			checkList.put(view, user);
+	
+			user.listenForLoad(new NameLoadedListener() {
+				@Override
+				public void onNameLoaded(final String name) {
+					act.runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							if (user == checkList.get(view)) {
+								((TextView) view.findViewById(R.id.playera)).setText(name);
+							}
 						}
-					}
-				});
-			}
-		});
-		user.listenForImage(new ImageLoadedListener() {
-			@Override
-			public void onImageLoaded(final Drawable image) {
-				act.runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						if (user == checkList.get(view)) {
-							((ImageView) view.findViewById(R.id.avatar)).setImageDrawable(image);
+					});
+				}
+			});
+			user.listenForImage(new ImageLoadedListener() {
+				@Override
+				public void onImageLoaded(final Drawable image) {
+					act.runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							if (user == checkList.get(view)) {
+								((ImageView) view.findViewById(R.id.avatar)).setImageDrawable(image);
+							}
 						}
-					}
-				});
-			}
-		});
+					});
+				}
+			});
+		}
 
 		return view;
 	}

@@ -319,7 +319,7 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 		} else {
 			ServerAPI.createGame(playerID, opponentID, (BaseGame) getActivity(), new CreateGameRequestListener() {
 				@Override
-				public void onRequestFailed(int errorCode) {
+				public void onRequestFailed(final int errorCode) {
 					if (errorCode == 4) {
 						UpgradeFragment fragment = new UpgradeFragment();
 						((BaseGame) getActivity()).upgradeFragment = fragment;
@@ -328,12 +328,20 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 						ft.addToBackStack("upgrade")
 								.add(R.id.outer, fragment)
 								.commit();
-					} else if (errorCode == 5) {
-						DialogPanel netError = (DialogPanel) getView().findViewById(R.id.dialog_panel);
-						netError.show(Errors.MATCH);
 					} else {
-						DialogPanel netError = (DialogPanel) getView().findViewById(R.id.dialog_panel);
-						netError.show(Errors.SERVER);
+						getActivity().runOnUiThread(new Runnable() {
+							@Override
+							public void run() {
+								DialogPanel netError = (DialogPanel) getView().findViewById(R.id.dialog_panel);
+								if (errorCode == 5) {
+									netError.show(Errors.MATCH);
+								} else if (errorCode == 9) {
+									netError.show(Errors.AUTOMATCH);
+								} else {
+									netError.show(Errors.SERVER);
+								}
+							}
+						});
 					}
 				}
 

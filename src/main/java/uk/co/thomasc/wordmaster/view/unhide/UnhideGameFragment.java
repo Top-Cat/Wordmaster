@@ -36,6 +36,7 @@ public class UnhideGameFragment extends Fragment implements OnClickListener, OnI
 		final View rootView = inflater.inflate(R.layout.unhide_game, container, false);
 
 		rootView.setOnClickListener(this);
+		rootView.findViewById(R.id.action_close).setOnClickListener(this);
 
 		final ListView users = (ListView) rootView.findViewById(R.id.unhide_game);
 		adapter = new UnhideAdapter(getActivity());
@@ -52,7 +53,9 @@ public class UnhideGameFragment extends Fragment implements OnClickListener, OnI
 
 	@Override
 	public void onClick(View v) {
-
+		if (v.getId() == R.id.action_close) {
+			getActivity().getSupportFragmentManager().popBackStack("unhide", 1);
+		}
 	}
 
 	@Override

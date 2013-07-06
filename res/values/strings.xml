@@ -8,6 +8,7 @@
 	<string name="whitepeg">White Peg</string>
 	
 	<string name="action_refresh">Refresh</string>
+	<string name="action_close">Close Window</string>
 	<string name="action_create">Create Game</string>
 	<string name="action_unhide">Unhide Game&#8230;</string>
 	<string name="action_achievements">Achievements</string>
@@ -38,6 +39,8 @@
 	<string name="match_error_help">You\'re already playing against that person.</string>
 	<string name="word_set_error">Word already set</string>
 	<string name="word_set_error_help">You\'ve already chosen your word for this game.</string>
+	<string name="auto_match_error">Auto match pending</string>
+	<string name="auto_match_error_help">You\'re already in the queue for matching.</string>
 	
 	<string name="pull_to_refresh_pull_label">Pull to load history&#8230;</string>
 	<string name="pull_to_refresh_release_label">Release to load history&#8230;</string>
@@ -58,7 +61,6 @@
 	<string name="triangle">Downward arrow</string>
 	
 	<string name="create_title">New Game</string>
-	<string name="no_players">There is no one available in your Google+ circles to start a game with.</string>
 	
 	<string name="unhide_title">Unhide Game</string>
 	

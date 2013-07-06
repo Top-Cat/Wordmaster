@@ -15,7 +15,8 @@
 			android:id="@+id/user_picker_header"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:background="@color/menu_header">
+			android:background="@color/menu_header"
+			android:gravity="center_vertical" >
 
 			<TextView
 				android:id="@+id/user_picker_title"
@@ -27,6 +28,20 @@
 				android:textAppearance="?android:attr/textAppearanceLarge"
 				android:textColor="@color/menu_header_text" />
 
+			<View
+				android:layout_width="0dp"
+				android:layout_height="0dp"
+				android:layout_weight="1" />
+
+			<ImageView
+				android:id="@+id/action_close"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginRight="3dp"
+				android:contentDescription="@string/action_close"
+				android:padding="5dp"
+				android:src="@drawable/navigation_cancel" />
+
 		</LinearLayout>
 
 		<ListView
@@ -35,23 +50,6 @@
 			android:layout_height="fill_parent"
 			android:padding="2dp" >
 		</ListView>
-
-		<TextView
-			android:id="@+id/no_players"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:text="@string/no_players"
-			android:textAppearance="?android:attr/textAppearanceMedium"
-			android:layout_margin="10dp"
-			android:visibility="gone" />
-
-		<Button
-			android:id="@+id/no_players_btn"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_margin="10dp"
-			android:text="@string/OK"
-			android:visibility="gone" />
 
 	</LinearLayout>
 

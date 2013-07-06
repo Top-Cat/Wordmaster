@@ -39,7 +39,7 @@ public class Game {
 
 	public static Game getGame(String playerID, String opponentID) {
 		for (Game g : Game.games.values()) {
-			if (g.getPlayer().getPlusID().equals(playerID) && g.getOpponent().getPlusID().equals(opponentID)) {
+			if (g.getPlayer().getPlusID().equals(playerID) && g.getOpponent() != null && g.getOpponent().getPlusID().equals(opponentID)) {
 				return g;
 			}
 		}
