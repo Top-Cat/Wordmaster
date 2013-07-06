@@ -245,8 +245,9 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
+		String topId = getSupportFragmentManager().getBackStackEntryAt(getSupportFragmentManager().getBackStackEntryCount() - 1).getName();
 		int currentapiVersion = android.os.Build.VERSION.SDK_INT;
-		if (currentapiVersion < android.os.Build.VERSION_CODES.HONEYCOMB && isSignedIn()) {
+		if (currentapiVersion < android.os.Build.VERSION_CODES.HONEYCOMB && isSignedIn() && topId.equals("top")) {
 			getMenuInflater().inflate(R.menu.main_menu, menu);
 			final Set<String> hiddenGames = prefs.getAll().keySet();
 			if (hiddenGames.isEmpty()) {
@@ -259,8 +260,9 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
+		String topId = getSupportFragmentManager().getBackStackEntryAt(getSupportFragmentManager().getBackStackEntryCount() - 1).getName();
 		int currentapiVersion = android.os.Build.VERSION.SDK_INT;
-		if (currentapiVersion < android.os.Build.VERSION_CODES.HONEYCOMB && isSignedIn()) {
+		if (currentapiVersion < android.os.Build.VERSION_CODES.HONEYCOMB && isSignedIn() && topId.equals("top")) {
 			menu.clear();
 			getMenuInflater().inflate(R.menu.main_menu, menu);
 			final Set<String> hiddenGames = prefs.getAll().keySet();
