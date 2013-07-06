@@ -1,5 +1,8 @@
 package uk.co.thomasc.wordmaster.view.create;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -20,6 +23,7 @@ import uk.co.thomasc.wordmaster.BaseGame;
 import uk.co.thomasc.wordmaster.R;
 import uk.co.thomasc.wordmaster.objects.callbacks.GameCreationListener;
 import uk.co.thomasc.wordmaster.util.BaseGameActivity;
+import uk.co.thomasc.wordmaster.view.menu.MenuAdapter;
 
 public class CreateGameFragment extends Fragment implements OnClickListener, OnItemClickListener {
 
@@ -43,9 +47,18 @@ public class CreateGameFragment extends Fragment implements OnClickListener, OnI
 			@Override
 			public void onPeopleLoaded(ConnectionResult status, PersonBuffer personBuffer, String nextPageToken) {
 				try {
+					Set<String> existingOpponents = new HashSet<String>();
+					MenuAdapter menuAdapter = ((BaseGame) getActivity()).menuFragment.adapter;
+					for (int i = 0; i < menuAdapter.getCount(); i++) {
+						existingOpponents.add(menuAdapter.getItem(i).getOpponent().getPlusID());
+					}
+					
 					int count = personBuffer.getCount();
 					for (int i = 0; i < count; i++) {
-						adapter.add(personBuffer.get(i).freeze());
+						Person person = personBuffer.get(i).freeze();
+						if (!existingOpponents.contains(person.getId())) {
+							adapter.add(personBuffer.get(i).freeze());
+						}
 					}
 				} finally {
 					personBuffer.close();
