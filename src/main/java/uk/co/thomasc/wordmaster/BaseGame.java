@@ -263,15 +263,19 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 		String topId = getSupportFragmentManager().getBackStackEntryAt(getSupportFragmentManager().getBackStackEntryCount() - 1).getName();
 		int currentapiVersion = android.os.Build.VERSION.SDK_INT;
 		if (currentapiVersion < android.os.Build.VERSION_CODES.HONEYCOMB && isSignedIn() && topId.equals("top")) {
-			menu.clear();
-			getMenuInflater().inflate(R.menu.main_menu, menu);
 			final Set<String> hiddenGames = prefs.getAll().keySet();
-			if (hiddenGames.isEmpty()) {
-				menu.removeItem(R.id.unhide_game);
+			if (menu.findItem(R.id.unhide_game) != null) {
+				if (hiddenGames.isEmpty()) {
+					menu.removeItem(R.id.unhide_game);
+				}
+			} else {
+				if (! hiddenGames.isEmpty()) {
+					menu.add(Menu.NONE, R.id.unhide_game, Menu.NONE, R.string.unhide_title);
+				}
 			}
 			return true;
 		}
-		return super.onCreateOptionsMenu(menu);
+		return super.onPrepareOptionsMenu(menu);
 	}
 
 	@Override
