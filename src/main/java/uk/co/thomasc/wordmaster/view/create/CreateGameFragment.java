@@ -29,6 +29,8 @@ public class CreateGameFragment extends Fragment implements OnClickListener, OnI
 
 	public PersonAdapter adapter;
 	private GameCreationListener listener;
+	private OnPeopleLoadedListener peopleListener;
+	String nextPageToken;
 
 	public CreateGameFragment() {
 
@@ -42,10 +44,11 @@ public class CreateGameFragment extends Fragment implements OnClickListener, OnI
 		rootView.findViewById(R.id.action_close).setOnClickListener(this);
 
 		final ListView users = (ListView) rootView.findViewById(R.id.user_picker);
-		adapter = new PersonAdapter(getActivity());
-		((BaseGameActivity) getActivity()).getPlusClient().loadPeople(new OnPeopleLoadedListener() {
+		adapter = new PersonAdapter(getActivity(), this);
+		peopleListener = new OnPeopleLoadedListener() {
 			@Override
 			public void onPeopleLoaded(ConnectionResult status, PersonBuffer personBuffer, String nextPageToken) {
+				CreateGameFragment.this.nextPageToken = nextPageToken;
 				try {
 					Set<String> existingOpponents = new HashSet<String>();
 					MenuAdapter menuAdapter = ((BaseGame) getActivity()).menuFragment.adapter;
@@ -63,8 +66,10 @@ public class CreateGameFragment extends Fragment implements OnClickListener, OnI
 				} finally {
 					personBuffer.close();
 				}
+				adapter.notifyDataSetChanged();
 			}
-		}, Collection.VISIBLE, Person.OrderBy.BEST, 50, null);
+		};
+		((BaseGameActivity) getActivity()).getPlusClient().loadPeople(peopleListener, Collection.VISIBLE, Person.OrderBy.BEST, 50, nextPageToken);
 		users.setAdapter(adapter);
 		users.setOnItemClickListener(this);
 
@@ -83,6 +88,11 @@ public class CreateGameFragment extends Fragment implements OnClickListener, OnI
 		String userID = ((BaseGame) getActivity()).getUserId();
 		if (position == 0) {
 			listener.onCreateGame(userID, null);
+		} else if (position == adapter.getCount() - 1) {
+			if (nextPageToken != null) {
+				((BaseGameActivity) getActivity()).getPlusClient().loadPeople(peopleListener, Collection.VISIBLE, Person.OrderBy.BEST, 50, nextPageToken);
+				nextPageToken = null;
+			}
 		} else {
 			String oppID = adapter.getItem(position - 1).getId();
 			listener.onCreateGame(userID, oppID);

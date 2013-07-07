@@ -26,11 +26,13 @@ public class PersonAdapter extends ArrayAdapter<Person> {
 	public static String keySegment = "DB6Fpmlprf0yaYGbkfFh6XvisO25dvfq4mhyfNR5K15Xo9B6kfbnd1qQuO7zhB10ZCZaBZfRpJP5saK/jyRLWOzqi0vQIDAQAB";
 
 	private Activity act;
+	private CreateGameFragment fragment;
 
-	public PersonAdapter(Activity act) {
+	public PersonAdapter(Activity act, CreateGameFragment fragment) {
 		super(act, 0);
 
 		this.act = act;
+		this.fragment = fragment;
 	}
 
 	@Override
@@ -40,7 +42,7 @@ public class PersonAdapter extends ArrayAdapter<Person> {
 	
 	@Override
 	public int getCount() {
-		return super.getCount() + 1;
+		return super.getCount() + (fragment.nextPageToken == null ? 1 : 2);
 	}
 
 	private Map<View, User> checkList = new HashMap<View, User>();
@@ -55,10 +57,15 @@ public class PersonAdapter extends ArrayAdapter<Person> {
 		}
 		
 		final View view = rview;
+		((ImageView) view.findViewById(R.id.avatar)).setVisibility(View.VISIBLE);
 		
 		if (position == 0) {
 			((ImageView) view.findViewById(R.id.avatar)).setImageResource(R.drawable.games_matches_green);
 			((TextView) view.findViewById(R.id.playera)).setText("Auto Match");
+			checkList.remove(view);
+		} else if (position == getCount() - 1 && fragment.nextPageToken != null) {
+			((ImageView) view.findViewById(R.id.avatar)).setVisibility(View.INVISIBLE);
+			((TextView) view.findViewById(R.id.playera)).setText("More...");
 			checkList.remove(view);
 		} else {
 			Person item = getItem(position - 1);
