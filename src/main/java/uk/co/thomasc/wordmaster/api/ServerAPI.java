@@ -212,7 +212,7 @@ public class ServerAPI {
 					String gameID = (String) response.get("gameid");
 					
 					User opp = null;
-					if (opponentID == null) {
+					if (opponentID != null) {
 						opp = User.getUser(opponentID, activityReference);
 					}
 					
