@@ -12,6 +12,8 @@ public enum Achievements {
 	PUTITONRANDOM(7, "CgkIj_Ku7KQVEAIQEg"),
 	EAGER(8, "CgkIj_Ku7KQVEAIQEw"),
 	LONGGAME(9, "CgkIj_Ku7KQVEAIQFA"),
+	NOTHINGTODO(10, "CgkIj_Ku7KQVEAIQFQ"),
+	WATCHYOURLANGUAGE(11, "CgkIj_Ku7KQVEAIQFg"),
 	;
 
 	private int sid;
