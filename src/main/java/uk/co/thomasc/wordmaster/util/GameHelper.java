@@ -39,6 +39,9 @@ import com.google.android.gms.games.OnSignOutCompleteListener;
 import com.google.android.gms.games.multiplayer.Invitation;
 import com.google.android.gms.plus.PlusClient;
 
+import uk.co.thomasc.wordmaster.BaseGame;
+import uk.co.thomasc.wordmaster.game.TokenFetchThread;
+
 public class GameHelper implements GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener, OnSignOutCompleteListener {
 
 	/** Listener for sign-in success or failure events. */
@@ -86,7 +89,8 @@ public class GameHelper implements GooglePlayServicesClient.ConnectionCallbacks,
 	public final static int CLIENT_GAMES = 0x01;
 	public final static int CLIENT_PLUS = 0x02;
 	public final static int CLIENT_APPSTATE = 0x04;
-	public final static int CLIENT_ALL = GameHelper.CLIENT_GAMES | GameHelper.CLIENT_PLUS | GameHelper.CLIENT_APPSTATE;
+	public final static int CLIENT_TOKEN = 0x08;
+	public final static int CLIENT_ALL = GameHelper.CLIENT_GAMES | GameHelper.CLIENT_PLUS | GameHelper.CLIENT_APPSTATE | GameHelper.CLIENT_TOKEN;
 
 	// What clients were requested? (bit flags)
 	int mRequestedClients = GameHelper.CLIENT_NONE;
@@ -519,6 +523,9 @@ public class GameHelper implements GooglePlayServicesClient.ConnectionCallbacks,
 		} else if (mPlusClient != null && 0 != (pendingClients & GameHelper.CLIENT_PLUS)) {
 			debugLog("Connecting PlusClient.");
 			mClientCurrentlyConnecting = GameHelper.CLIENT_PLUS;
+		} else if (0 != (pendingClients & GameHelper.CLIENT_TOKEN)) {
+			debugLog("Getting client token");
+			mClientCurrentlyConnecting = GameHelper.CLIENT_TOKEN;
 		} else if (mAppStateClient != null && 0 != (pendingClients & GameHelper.CLIENT_APPSTATE)) {
 			debugLog("Connecting AppStateClient.");
 			mClientCurrentlyConnecting = GameHelper.CLIENT_APPSTATE;
@@ -539,6 +546,9 @@ public class GameHelper implements GooglePlayServicesClient.ConnectionCallbacks,
 				break;
 			case CLIENT_PLUS:
 				mPlusClient.connect();
+				break;
+			case CLIENT_TOKEN:
+				new TokenFetchThread((BaseGame) mActivity, this).start();
 				break;
 		}
 	}
@@ -573,6 +583,10 @@ public class GameHelper implements GooglePlayServicesClient.ConnectionCallbacks,
 			mConnectedClients &= ~GameHelper.CLIENT_PLUS;
 			mPlusClient.disconnect();
 			mPlusClient.connect();
+		}
+		if ((whatClients & GameHelper.CLIENT_TOKEN) != 0) {
+			mConnectedClients &= ~GameHelper.CLIENT_TOKEN;
+			new TokenFetchThread((BaseGame) mActivity, this).start();
 		}
 	}
 

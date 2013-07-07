@@ -55,7 +55,7 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 	private String userId = "";
 	public String goToGameId = "";
 
-	public static IabHelper mHelper;
+	public static IabHelper mBHelper;
 	public static String upgradeSKU = "wordmaster_upgrade";
 	public UpgradeFragment upgradeFragment;
 	private boolean iabAvailable;
@@ -87,8 +87,8 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 		checkIntent(getIntent());
 
 		String base64PublicKey = Game.keySegment + Turn.keySegment + User.keySegment + PersonAdapter.keySegment;
-		BaseGame.mHelper = new IabHelper(this, base64PublicKey);
-		BaseGame.mHelper.startSetup(new OnIabSetupFinishedListener() {
+		BaseGame.mBHelper = new IabHelper(this, base64PublicKey);
+		BaseGame.mBHelper.startSetup(new OnIabSetupFinishedListener() {
 			@Override
 			public void onIabSetupFinished(IabResult result) {
 				if (!result.isSuccess()) {
@@ -108,10 +108,8 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 		super.onActivityResult(requestCode, resultCode, data);
 
 		// Pass on the activity result to the helper for handling
-		if (!BaseGame.mHelper.handleActivityResult(requestCode, resultCode, data)) {
+		if (!BaseGame.mBHelper.handleActivityResult(requestCode, resultCode, data)) {
 			super.onActivityResult(requestCode, resultCode, data);
-		} else {
-
 		}
 	}
 
@@ -138,22 +136,22 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		if (BaseGame.mHelper != null) {
-			BaseGame.mHelper.dispose();
+		if (BaseGame.mBHelper != null) {
+			BaseGame.mBHelper.dispose();
 		}
-		BaseGame.mHelper = null;
+		BaseGame.mBHelper = null;
 	}
 
 	public void buyUpgrade() {
-		BaseGame.mHelper.launchPurchaseFlow(this, BaseGame.upgradeSKU, 1902, this, userId);
+		BaseGame.mBHelper.launchPurchaseFlow(this, BaseGame.upgradeSKU, 1902, this, userId);
 	}
 
 	public static void consumeUpgrades() {
-		BaseGame.mHelper.queryInventoryAsync(new QueryInventoryFinishedListener() {
+		BaseGame.mBHelper.queryInventoryAsync(new QueryInventoryFinishedListener() {
 			@Override
 			public void onQueryInventoryFinished(IabResult result, Inventory inv) {
 				if (inv.hasPurchase(BaseGame.upgradeSKU)) {
-					BaseGame.mHelper.consumeAsync(inv.getPurchase(BaseGame.upgradeSKU), null);
+					BaseGame.mBHelper.consumeAsync(inv.getPurchase(BaseGame.upgradeSKU), null);
 				}
 			}
 		});
@@ -174,7 +172,7 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 	public static void queryInventory(QueryInventoryFinishedListener listener) {
 		ArrayList<String> additionalSkuList = new ArrayList<String>();
 		additionalSkuList.add(BaseGame.upgradeSKU);
-		BaseGame.mHelper.queryInventoryAsync(true, additionalSkuList, listener);
+		BaseGame.mBHelper.queryInventoryAsync(true, additionalSkuList, listener);
 	}
 
 	@Override

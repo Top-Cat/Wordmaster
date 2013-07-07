@@ -55,7 +55,7 @@ public abstract class BaseGameActivity extends FragmentActivity implements GameH
 	public static final int CLIENT_ALL = GameHelper.CLIENT_ALL;
 
 	// Requested clients. By default, that's just the games client.
-	protected int mRequestedClients = BaseGameActivity.CLIENT_GAMES | BaseGameActivity.CLIENT_PLUS;
+	protected int mRequestedClients = BaseGameActivity.CLIENT_GAMES | BaseGameActivity.CLIENT_PLUS | GameHelper.CLIENT_TOKEN;
 
 	/** Constructs a BaseGameActivity with default client (GamesClient). */
 	protected BaseGameActivity() {

@@ -10,7 +10,9 @@ public enum Achievements {
 	SILVERPEGS(3, new String[] { "CgkIj_Ku7KQVEAIQDg", "CgkIj_Ku7KQVEAIQDw", "CgkIj_Ku7KQVEAIQEA", "CgkIj_Ku7KQVEAIQEQ" }, true),
 	NEMESIS(6, "CgkIj_Ku7KQVEAIQDQ"),
 	PUTITONRANDOM(7, "CgkIj_Ku7KQVEAIQEg"),
-	EAGER(8, "CgkIj_Ku7KQVEAIQEw"), ;
+	EAGER(8, "CgkIj_Ku7KQVEAIQEw"),
+	LONGGAME(9, "CgkIj_Ku7KQVEAIQFA"),
+	;
 
 	private int sid;
 	private String[] ids;

@@ -19,10 +19,12 @@ import uk.co.thomasc.wordmaster.game.Achievements;
 import uk.co.thomasc.wordmaster.objects.Game;
 import uk.co.thomasc.wordmaster.objects.Turn;
 import uk.co.thomasc.wordmaster.objects.User;
+import uk.co.thomasc.wordmaster.util.GameHelper;
 
 public class ServerAPI {
 
 	private static final String BASE_URL = "http://thomasc.co.uk/wm/";
+	private static String playerid = "";
 
 	/**
 	 * Calls the getMatches function of the server API. Retrieves
@@ -36,7 +38,7 @@ public class ServerAPI {
 		Thread t = new Thread() {
 			@Override
 			public void run() {
-				JSONObject json = ServerAPI.makeRequest("getMatches", playerID, activityReference);
+				JSONObject json = ServerAPI.makeRequest("getMatches", activityReference);
 				if (json != null) {
 					int errorCode = ((Long) json.get("error")).intValue();
 					if (errorCode == 0) {
@@ -175,7 +177,7 @@ public class ServerAPI {
 		Thread t = new Thread() {
 			@Override
 			public void run() {
-				JSONObject json = ServerAPI.makeRequest("takeTurn", playerID, gameID, word, activityReference);
+				JSONObject json = ServerAPI.makeRequest("takeTurn", gameID, word, activityReference);
 
 				int errorCode = ((Long) json.get("error")).intValue();
 				listener.onRequestComplete(errorCode);
@@ -200,9 +202,9 @@ public class ServerAPI {
 			public void run() {
 				JSONObject json;
 				if (opponentID == null) {
-					json = ServerAPI.makeRequest("createGame", playerID, activityReference);
+					json = ServerAPI.makeRequest("createGame", activityReference);
 				} else {
-					json = ServerAPI.makeRequest("createGame", playerID, opponentID, activityReference);
+					json = ServerAPI.makeRequest("createGame", opponentID, activityReference);
 				}
 				int errorCode = ((Long) json.get("error")).intValue();
 				if (errorCode == 0) {
@@ -238,7 +240,7 @@ public class ServerAPI {
 		Thread t = new Thread() {
 			@Override
 			public void run() {
-				JSONObject json = ServerAPI.makeRequest("setWord", playerID, gameID, word, activityReference);
+				JSONObject json = ServerAPI.makeRequest("setWord", gameID, word, activityReference);
 				int errorCode = ((Long) json.get("error")).intValue();
 
 				listener.onSetWordComplete(errorCode);
@@ -251,7 +253,7 @@ public class ServerAPI {
 		Thread t = new Thread() {
 			@Override
 			public void run() {
-				ServerAPI.makeRequest("registerGCM", playerID, regid, activityReference);
+				ServerAPI.makeRequest("registerGCM", regid, activityReference);
 			}
 		};
 		t.start();
@@ -266,20 +268,43 @@ public class ServerAPI {
 		};
 		t.start();
 	}
+	
+
+	public static void identify(final String authToken, final BaseGame activityReference, final GameHelper gameHelper) {
+		Thread t = new Thread() {
+			@Override
+			public void run() {
+				JSONObject json = ServerAPI.doRequest(ServerAPI.BASE_URL + "identify" + "/" + authToken, activityReference);
+				JSONObject response = (JSONObject) json.get("response");
+				playerid = (String) response.get("key");
+				activityReference.runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						gameHelper.onConnected(null);
+					}
+				});
+			}
+		};
+		t.start();
+	}
 
 	private static JSONObject makeRequest(String iface, String param1, String param2, String param3, BaseGame activityReference) {
-		return ServerAPI.makeRequest(ServerAPI.BASE_URL + iface + "/" + param1 + "/" + param2 + "/" + param3, activityReference);
+		return ServerAPI.doRequest(ServerAPI.BASE_URL + iface + "/" + playerid + "/" + param1 + "/" + param2 + "/" + param3, activityReference);
 	}
 
 	private static JSONObject makeRequest(String iface, String param1, String param2, BaseGame activityReference) {
-		return ServerAPI.makeRequest(ServerAPI.BASE_URL + iface + "/" + param1 + "/" + param2, activityReference);
+		return ServerAPI.doRequest(ServerAPI.BASE_URL + iface + "/" + playerid + "/" + param1 + "/" + param2, activityReference);
 	}
 
 	private static JSONObject makeRequest(String iface, String param1, BaseGame activityReference) {
-		return ServerAPI.makeRequest(ServerAPI.BASE_URL + iface + "/" + param1, activityReference);
+		return ServerAPI.doRequest(ServerAPI.BASE_URL + iface + "/" + playerid + "/" + param1, activityReference);
+	}
+	
+	private static JSONObject makeRequest(String iface, BaseGame activityReference) {
+		return ServerAPI.doRequest(ServerAPI.BASE_URL + iface + "/" + playerid, activityReference);
 	}
 
-	private static JSONObject makeRequest(String url, BaseGame activityReference) {
+	private static JSONObject doRequest(String url, final BaseGame activityReference) {
 		String jsonText = "";
 
 		try {
