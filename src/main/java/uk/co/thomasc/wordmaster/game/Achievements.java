@@ -3,11 +3,11 @@ package uk.co.thomasc.wordmaster.game;
 import android.util.SparseArray;
 
 public enum Achievements {
-	IDONTHATEYOU(4, "CgkIj_Ku7KQVEAIQAw"),
-	LUCKY(5, "CgkIj_Ku7KQVEAIQBA"),
 	PARTICIPANT(1, new String[] { "CgkIj_Ku7KQVEAIQBQ", "CgkIj_Ku7KQVEAIQBg", "CgkIj_Ku7KQVEAIQCA", "CgkIj_Ku7KQVEAIQBw" }, true),
 	GOLDPEGS(2, new String[] { "CgkIj_Ku7KQVEAIQCQ", "CgkIj_Ku7KQVEAIQCg", "CgkIj_Ku7KQVEAIQCw", "CgkIj_Ku7KQVEAIQDA" }, true),
 	SILVERPEGS(3, new String[] { "CgkIj_Ku7KQVEAIQDg", "CgkIj_Ku7KQVEAIQDw", "CgkIj_Ku7KQVEAIQEA", "CgkIj_Ku7KQVEAIQEQ" }, true),
+	IDONTHATEYOU(4, "CgkIj_Ku7KQVEAIQAw"),
+	LUCKY(5, "CgkIj_Ku7KQVEAIQBA"),
 	NEMESIS(6, "CgkIj_Ku7KQVEAIQDQ"),
 	PUTITONRANDOM(7, "CgkIj_Ku7KQVEAIQEg"),
 	EAGER(8, "CgkIj_Ku7KQVEAIQEw"),
