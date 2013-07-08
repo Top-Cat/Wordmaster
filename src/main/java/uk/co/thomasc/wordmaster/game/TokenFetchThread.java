@@ -27,8 +27,7 @@ public class TokenFetchThread extends Thread {
 	@Override
 	public void run() {
 		try {
-			String authToken = GoogleAuthUtil.getToken(activity, activity.getPlusClient().getAccountName(), "oauth2:" + Scopes.GAMES);
-			System.out.println(authToken);
+			String authToken = GoogleAuthUtil.getToken(activity, gameHelper.getGamesClient().getCurrentAccountName(), "oauth2:" + Scopes.GAMES);
 			ServerAPI.identify(authToken, activity, gameHelper);
 			return;
 		} catch (UserRecoverableAuthException e) {
