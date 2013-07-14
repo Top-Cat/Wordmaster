@@ -99,49 +99,51 @@ public class SwipeController extends FragmentStatePagerAdapter {
 				((BaseGame) getActivity()).gameAdapter = adapter = new GameAdapter(getActivity());
 
 				game = Game.getGame(SwipeController.gid);
-				for (Turn t : game.getTurns()) {
-					adapter.add(t);
-				}
-				game.addTurnListener(this);
-				((PullToRefreshListView) rootView).setAdapter(adapter);
-				listView = (PullToRefreshListView) rootView;
-				listView.setCacheColorHint(Color.WHITE);
-				listView.setOnRefreshListener(new OnRefreshListener() {
-					@Override
-					public void onRefresh() {
-						int pivot = game.getPivotOldest();
-						ServerAPI.getTurns(game.getID(), pivot, -10, (BaseGame) getActivity(), new GetTurnsRequestListener() {
-
-							@Override
-							public void onRequestFailed() {
-								getActivity().runOnUiThread(new Runnable() {
-									@Override
-									public void run() {
-										listView.onRefreshComplete();
-										DialogPanel errorMessage = (DialogPanel) getActivity().findViewById(R.id.errorMessage);
-										errorMessage.show(Errors.NETWORK);
-									}
-								});
-							}
-
-							@Override
-							public void onRequestComplete(List<Turn> turns) {
-								ArrayList<Turn> gameTurns = game.getTurns();
-								for (Turn turn : turns) {
-									if (!gameTurns.contains(turn)) {
-										game.addTurn(turn);
-									}
-								}
-								getActivity().runOnUiThread(new Runnable() {
-									@Override
-									public void run() {
-										listView.onRefreshComplete();
-									}
-								});
-							}
-						});
+				if (game != null) {
+					for (Turn t : game.getTurns()) {
+						adapter.add(t);
 					}
-				});
+					game.addTurnListener(this);
+					((PullToRefreshListView) rootView).setAdapter(adapter);
+					listView = (PullToRefreshListView) rootView;
+					listView.setCacheColorHint(Color.WHITE);
+					listView.setOnRefreshListener(new OnRefreshListener() {
+						@Override
+						public void onRefresh() {
+							int pivot = game.getPivotOldest();
+							ServerAPI.getTurns(game.getID(), pivot, -10, (BaseGame) getActivity(), new GetTurnsRequestListener() {
+	
+								@Override
+								public void onRequestFailed() {
+									getActivity().runOnUiThread(new Runnable() {
+										@Override
+										public void run() {
+											listView.onRefreshComplete();
+											DialogPanel errorMessage = (DialogPanel) getActivity().findViewById(R.id.errorMessage);
+											errorMessage.show(Errors.NETWORK);
+										}
+									});
+								}
+	
+								@Override
+								public void onRequestComplete(List<Turn> turns) {
+									ArrayList<Turn> gameTurns = game.getTurns();
+									for (Turn turn : turns) {
+										if (!gameTurns.contains(turn)) {
+											game.addTurn(turn);
+										}
+									}
+									getActivity().runOnUiThread(new Runnable() {
+										@Override
+										public void run() {
+											listView.onRefreshComplete();
+										}
+									});
+								}
+							});
+						}
+					});
+				}
 			} else {
 				alphaPref = getActivity().getSharedPreferences(Pages.SP_PREF + getArguments().getString(MenuDetailFragment.ARG_ITEM_ID), 0);
 
