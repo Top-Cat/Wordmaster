@@ -3,6 +3,7 @@ package uk.co.thomasc.wordmaster.view.menu;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
@@ -183,13 +184,16 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener, T
 
 			@Override
 			public void onRequestFailed() {
-				getActivity().runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						DialogPanel errorMessage = (DialogPanel) getActivity().findViewById(R.id.errorMessage);
-						errorMessage.show(Errors.NETWORK);
-					}
-				});
+				Activity act = getActivity();
+				if (act != null) {
+					act.runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							DialogPanel errorMessage = (DialogPanel) getActivity().findViewById(R.id.errorMessage);
+							errorMessage.show(Errors.NETWORK);
+						}
+					});
+				}
 			}
 
 			@Override
@@ -200,14 +204,17 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener, T
 						game.addTurn(turn);
 					}
 				}
-				getActivity().runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						input.clearFocus();
-						input.requestFocus();
-						showKeyboard();
-					}
-				});
+				Activity act = getActivity();
+				if (act != null) {
+					act.runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							input.clearFocus();
+							input.requestFocus();
+							showKeyboard();
+						}
+					});
+				}
 			}
 		});
 	}
