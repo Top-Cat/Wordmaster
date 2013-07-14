@@ -1,88 +1,102 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:tools="http://schemas.android.com/tools"
-	android:id="@+id/screen_menu"
 	android:layout_width="0dp"
 	android:layout_height="match_parent"
 	android:layout_weight="1"
-	android:background="@color/mainbg"
-	android:orientation="vertical" >
+	android:orientation="horizontal" >
 
-	<LinearLayout
-		android:id="@+id/nav"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:background="@color/menu_header" >
-
+	<RelativeLayout
+		android:id="@+id/screen_menu"
+		android:layout_width="0dp"
+		android:layout_height="fill_parent"
+		android:layout_weight="1"
+		android:background="@color/mainbg"
+		android:orientation="vertical" >
+	
+		<LinearLayout
+			android:id="@+id/nav"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:background="@color/menu_header" >
+	
+			<TextView
+				android:id="@+id/title"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:drawableLeft="@drawable/ic_launcher"
+				android:drawablePadding="10dp"
+				android:gravity="center"
+				android:text="@string/app_name"
+				android:textColor="@color/menu_header_text"
+				android:textSize="20sp" />
+	
+			<View
+				android:layout_width="0dp"
+				android:layout_height="0dp"
+				android:layout_weight="1" />
+	
+			<ProgressBar
+				android:id="@+id/refresh_progress"
+				android:layout_width="36dp"
+				android:layout_height="wrap_content"
+				android:visibility="gone" />
+	
+			<ImageView
+				android:id="@+id/refresh"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center"
+				android:contentDescription="@string/game_screen"
+				android:padding="5dp"
+				android:src="@drawable/navigation_refresh" />
+	
+			<ImageView
+				android:id="@+id/startnew"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center"
+				android:contentDescription="@string/game_screen"
+				android:padding="5dp"
+				android:src="@drawable/content_new" />
+		</LinearLayout>
+	
+		<com.google.android.gms.common.SignInButton
+			android:id="@+id/button_sign_in"
+			style="@style/SignInButton"
+			android:layout_below="@id/nav"
+			android:layout_centerHorizontal="true" >
+		</com.google.android.gms.common.SignInButton>
+	
 		<TextView
-			android:id="@+id/title"
-			android:layout_width="wrap_content"
+			android:id="@+id/whysignin"
+			android:layout_width="200dp"
 			android:layout_height="wrap_content"
-			android:drawableLeft="@drawable/ic_launcher"
-			android:drawablePadding="10dp"
+			android:layout_below="@id/button_sign_in"
+			android:layout_centerHorizontal="true"
 			android:gravity="center"
-			android:text="@string/app_name"
-			android:textColor="@color/menu_header_text"
-			android:textSize="20sp" />
-
-		<View
-			android:layout_width="0dp"
-			android:layout_height="0dp"
-			android:layout_weight="1" />
-
-		<ProgressBar
-			android:id="@+id/refresh_progress"
-			android:layout_width="36dp"
+			android:text="@string/whysignin"
+			android:textColor="@color/whysignin" />
+	
+		<ListView
+			android:id="@+id/main_feed"
+			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:visibility="gone" />
-
-		<ImageView
-			android:id="@+id/refresh"
-			android:layout_width="wrap_content"
+			android:layout_below="@id/whysignin"
+			android:divider="@null"
+			android:visibility="gone" >
+		</ListView>
+	
+		<uk.co.thomasc.wordmaster.view.DialogPanel
+			android:id="@+id/dialog_panel"
+			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
-			android:layout_gravity="center"
-			android:contentDescription="@string/game_screen"
-			android:padding="5dp"
-			android:src="@drawable/navigation_refresh" />
-
-		<ImageView
-			android:id="@+id/startnew"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_gravity="center"
-			android:contentDescription="@string/game_screen"
-			android:padding="5dp"
-			android:src="@drawable/content_new" />
-	</LinearLayout>
-
-	<com.google.android.gms.common.SignInButton
-		android:id="@+id/button_sign_in"
-		style="@style/SignInButton"
-		android:layout_below="@id/nav"
-		android:layout_centerHorizontal="true" >
-	</com.google.android.gms.common.SignInButton>
-
-	<TextView
-		android:id="@+id/whysignin"
-		android:layout_width="200dp"
-		android:layout_height="wrap_content"
-		android:layout_below="@id/button_sign_in"
-		android:layout_centerHorizontal="true"
-		android:gravity="center"
-		android:text="@string/whysignin"
-		android:textColor="@color/whysignin" />
-
-	<ListView
-		android:id="@+id/main_feed"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_below="@id/whysignin"
-		android:visibility="gone" >
-	</ListView>
-
-	<uk.co.thomasc.wordmaster.view.DialogPanel
-		android:id="@+id/dialog_panel"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:layout_below="@id/nav" />
-
-</RelativeLayout>
+			android:layout_below="@id/nav" />
+	
+	</RelativeLayout>
+	
+	<ImageView
+		android:id="@+id/divider"
+		style="@style/divider"
+		android:contentDescription="@string/divider" />
+	
+</LinearLayout>

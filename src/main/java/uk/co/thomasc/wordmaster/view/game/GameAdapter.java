@@ -44,6 +44,25 @@ public class GameAdapter extends ArrayAdapter<Turn> {
 		super.add(object);
 		sort(comp);
 	}
+	
+	@Override
+	public int getViewTypeCount() {
+		return 5;
+	}
+	
+	@Override
+	public int getItemViewType(int position) {
+		Turn item = getItem(position);
+		if (item.getTurnNum() == 0) {
+			return 0;
+		} else {
+			int v = item.getUser().getPlusID().equals(((BaseGame) act).getUserId()) ? 1 : 3;
+			if (item.getCorrectLetters() < 4) {
+				v++;
+			}
+			return v;
+		}
+	}
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
@@ -56,10 +75,29 @@ public class GameAdapter extends ArrayAdapter<Turn> {
 			return new View(getContext());
 		}
 		final boolean winningTurn = (item.getCorrectLetters() == 4);
-		int viewId = item.getTurnNum() == 0 ? R.layout.game_row_new_round : (isPlayer ? (winningTurn ? R.layout.game_row_win : R.layout.game_row_big) : (winningTurn ? R.layout.game_row_lose : R.layout.game_row_small));
 
-		if (view == null || view.getId() != viewId) {
+		if (view == null) {
 			LayoutInflater vi = (LayoutInflater) act.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			
+			int viewId = 0;
+			switch (getItemViewType(position)) {
+				case 0:
+					viewId = R.layout.game_row_new_round;
+					break;
+				case 1:
+					viewId = R.layout.game_row_win;
+					break;
+				case 2:
+					viewId = R.layout.game_row_big;
+					break;
+				case 3:
+					viewId = R.layout.game_row_lose;
+					break;
+				case 4:
+					viewId = R.layout.game_row_small;
+					break;
+			}
+			
 			view = vi.inflate(viewId, null);
 		}
 

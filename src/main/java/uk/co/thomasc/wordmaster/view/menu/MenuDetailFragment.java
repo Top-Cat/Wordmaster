@@ -9,9 +9,10 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
@@ -123,7 +124,7 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener, T
 
 			if (game.needsWord()) {
 				RelativeLayout footer = (RelativeLayout) rootView.findViewById(R.id.footer);
-				footer.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 70, getResources().getDisplayMetrics());
+				footer.getLayoutParams().height = BaseGame.convertDip2Pixels(getResources(), 70);
 			}
 
 			loadTurns();
@@ -142,10 +143,26 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener, T
 
 			((GameLayout) rootView.findViewById(R.id.screen_game)).setActivity(getActivity());
 
-			SwipeController swipe = new SwipeController(getActivity().getSupportFragmentManager(), gameid);
+			SwipeController swipe = new SwipeController((BaseGame) getActivity(), gameid);
 			ViewPager mPager = (ViewPager) rootView.findViewById(R.id.pager);
+			
+			mPager.setPageMargin(BaseGame.convertDip2Pixels(getResources(), 2));
+			mPager.setPageMarginDrawable(R.color.divider);
+			
+			if (((BaseGame) getActivity()).wideLayout) {
+				
+				mPager.setOnTouchListener(new OnTouchListener() {
+					@Override
+					public boolean onTouch(View v, MotionEvent event) {
+						return true;
+					}
+				});
+				rootView.findViewById(R.id.indicator).setVisibility(View.INVISIBLE);
+			} else {
+				mPager.setOnPageChangeListener(new SwipeListener((ImageView) rootView.findViewById(R.id.indicator)));
+			}
+			
 			mPager.setAdapter(swipe);
-			mPager.setOnPageChangeListener(new SwipeListener((ImageView) rootView.findViewById(R.id.indicator)));
 
 			refresher = new RefresherThread();
 			running = true;
@@ -212,7 +229,7 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener, T
 		updateTurnCount();
 
 		RelativeLayout footer = (RelativeLayout) getView().findViewById(R.id.footer);
-		footer.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, game.needsWord() ? 70 : 50, getResources().getDisplayMetrics());
+		footer.getLayoutParams().height = BaseGame.convertDip2Pixels(getResources(), game.needsWord() ? 70 : 50);
 	}
 
 	@Override

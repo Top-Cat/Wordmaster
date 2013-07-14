@@ -11,8 +11,10 @@
 	
 	<color name="mainbg">#FFFFFFFF</color>
 	<color name="maintext">#FF000000</color>
+	<color name="selectedtext">#FFE5FFFE</color>
 	<color name="hiddenletter">#FFAAAAAA</color>
 	<color name="strike">#FF888888</color>
+	<color name="divider">#FF666666</color>
 	
 	<color name="network_error_bg">#FF982525</color>
 	<color name="network_error_txt">#FFFFFFFF</color>

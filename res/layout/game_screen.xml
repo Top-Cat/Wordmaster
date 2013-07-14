@@ -1,215 +1,202 @@
 <uk.co.thomasc.wordmaster.view.game.GameLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:tools="http://schemas.android.com/tools"
 	android:id="@+id/screen_game"
-	android:layout_width="0dp"
-	android:layout_weight="1"
-	android:layout_height="match_parent"
-	android:background="@color/mainbg"
-	android:orientation="vertical"
-	android:visibility="visible" >
-	
-	<RelativeLayout 
+	style="@style/gamelayout" >
+
+	<LinearLayout
+		android:id="@+id/header"
 		android:layout_width="match_parent"
-		android:layout_height="fill_parent">
+		android:layout_height="wrap_content"
+		android:background="@color/header" >
+
+		<ImageView
+			android:id="@+id/playerAvatar"
+			android:layout_width="48dp"
+			android:layout_height="48dp"
+			android:contentDescription="@string/playeravatar"
+			android:src="@drawable/person" />
+
+		<uk.co.thomasc.wordmaster.view.RussoText
+			android:id="@+id/playerscore"
+			android:layout_width="wrap_content"
+			android:layout_height="48dp"
+			android:drawablePadding="5dp"
+			android:paddingLeft="5dp"
+			android:text="@string/default_score"
+			android:textColor="@color/header_text"
+			android:textSize="40sp" />
+
+		<ImageView
+			android:id="@+id/indicator"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_gravity="bottom"
+			android:layout_weight="0.2"
+			android:contentDescription="@string/game_screen"
+			android:paddingBottom="5dp"
+			android:src="@drawable/page_note_left" />
+
+		<uk.co.thomasc.wordmaster.view.RussoText
+			android:id="@+id/oppscore"
+			android:layout_width="wrap_content"
+			android:layout_height="48dp"
+			android:layout_gravity="right"
+			android:drawablePadding="5dp"
+			android:paddingRight="5dp"
+			android:text="@string/default_score"
+			android:textColor="@color/header_text"
+			android:textSize="40sp" />
+
+		<ImageView
+			android:id="@+id/oppAvatar"
+			android:layout_width="48dp"
+			android:layout_height="48dp"
+			android:contentDescription="@string/oppavatar"
+			android:src="@drawable/person" />
+	</LinearLayout>
+
+	<RelativeLayout
+		android:id="@+id/footer"
+		android:layout_width="match_parent"
+		android:layout_height="50dp"
+		android:layout_alignParentBottom="true"
+		android:background="@color/footer_bar" >
 
 		<LinearLayout
-			android:id="@+id/header"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:background="@color/header" >
+			android:id="@+id/setword_msg"
+			android:layout_width="fill_parent"
+			android:layout_height="20dp"
+			android:layout_alignParentTop="true"
+			android:layout_marginBottom="50dp"
+			android:background="@color/setword_bg"
+			android:gravity="center"
+			android:orientation="horizontal" >
 
 			<ImageView
-				android:id="@+id/playerAvatar"
-				android:layout_width="48dp"
-				android:layout_height="48dp"
-				android:contentDescription="@string/playeravatar"
-				android:src="@drawable/person" />
-
-			<uk.co.thomasc.wordmaster.view.RussoText
-				android:id="@+id/playerscore"
+				android:id="@+id/triangle_left"
 				android:layout_width="wrap_content"
-				android:layout_height="48dp"
-				android:drawablePadding="5dp"
-				android:paddingLeft="5dp"
-				android:text="@string/default_score"
-				android:textColor="@color/header_text"
-				android:textSize="40sp" />
-
-			<ImageView
-				android:id="@+id/indicator"
-				android:layout_width="0dp"
 				android:layout_height="wrap_content"
-				android:layout_gravity="bottom"
-				android:layout_weight="0.2"
-				android:contentDescription="@string/game_screen"
-				android:paddingBottom="5dp"
-				android:src="@drawable/page_note_left" />
+				android:layout_marginRight="20dp"
+				android:src="@drawable/triangle"
+				android:contentDescription="@string/triangle" />
 
-			<uk.co.thomasc.wordmaster.view.RussoText
-				android:id="@+id/oppscore"
+			<TextView
+				android:id="@+id/setword_help"
 				android:layout_width="wrap_content"
-				android:layout_height="48dp"
-				android:layout_gravity="right"
-				android:drawablePadding="5dp"
-				android:paddingRight="5dp"
-				android:text="@string/default_score"
-				android:textColor="@color/header_text"
-				android:textSize="40sp" />
+				android:layout_height="wrap_content"
+				android:text="@string/setword_help"
+				android:textColor="@color/setword_text" />
 
 			<ImageView
-				android:id="@+id/oppAvatar"
-				android:layout_width="48dp"
-				android:layout_height="48dp"
-				android:contentDescription="@string/oppavatar"
-				android:src="@drawable/person" />
+				android:id="@+id/triangle_right"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginLeft="20dp"
+				android:src="@drawable/triangle"
+				android:contentDescription="@string/triangle" />
+
 		</LinearLayout>
 
-		<RelativeLayout
-			android:id="@+id/footer"
-			android:layout_width="match_parent"
+		<LinearLayout
+			android:layout_width="wrap_content"
 			android:layout_height="50dp"
 			android:layout_alignParentBottom="true"
-			android:background="@color/footer_bar" >
+			android:orientation="vertical"
+			android:paddingLeft="10dp" >
 
-			<LinearLayout
-				android:id="@+id/setword_msg"
-				android:layout_width="fill_parent"
-				android:layout_height="20dp"
-				android:layout_alignParentTop="true"
-				android:layout_marginBottom="50dp"
-				android:background="@color/setword_bg"
-				android:gravity="center"
-				android:orientation="horizontal" >
-
-				<ImageView
-					android:id="@+id/triangle_left"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:layout_marginRight="20dp"
-					android:src="@drawable/triangle"
-					android:contentDescription="@string/triangle" />
-
-				<TextView
-					android:id="@+id/setword_help"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:text="@string/setword_help"
-					android:textColor="@color/setword_text" />
-
-				<ImageView
-					android:id="@+id/triangle_right"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:layout_marginLeft="20dp"
-					android:src="@drawable/triangle"
-					android:contentDescription="@string/triangle" />
-
-			</LinearLayout>
-
-			<LinearLayout
-				android:layout_width="wrap_content"
-				android:layout_height="50dp"
-				android:layout_alignParentBottom="true"
-				android:orientation="vertical"
-				android:paddingLeft="10dp" >
-
-				<uk.co.thomasc.wordmaster.view.RussoText
-					android:id="@+id/turnTitle"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:text="@string/turn"
-					android:textColor="@color/footer_text" />
-
-				<uk.co.thomasc.wordmaster.view.RussoText
-					android:id="@+id/turn"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:layout_gravity="center"
-					android:layout_marginTop="-10dp"
-					android:text="@string/default_turn"
-					android:textColor="@color/footer_text"
-					android:textSize="36sp" />
-			</LinearLayout>
-
-			<LinearLayout
-				android:layout_width="wrap_content"
-				android:layout_height="50dp"
-				android:layout_alignParentBottom="true"
-				android:layout_centerHorizontal="true"
-				android:layout_centerInParent="false" >
-
-				<uk.co.thomasc.wordmaster.view.InputRussoText
-					android:id="@+id/char0"
-					style="@style/inputchar" />
-
-				<uk.co.thomasc.wordmaster.view.InputRussoText
-					android:id="@+id/char1"
-					style="@style/inputchar" />
-
-				<uk.co.thomasc.wordmaster.view.InputRussoText
-					android:id="@+id/char2"
-					style="@style/inputchar" />
-
-				<uk.co.thomasc.wordmaster.view.InputRussoText
-					android:id="@+id/char3"
-					style="@style/inputchar" />
-			</LinearLayout>
-
-			<ProgressBar
-				android:id="@+id/turn_progress"
-				android:layout_width="36dp"
-				android:layout_height="wrap_content"
-				android:layout_alignParentBottom="true"
-				android:layout_alignParentRight="true"
-				android:layout_centerVertical="true"
-				android:layout_marginBottom="4dp"
-				android:layout_marginRight="4dp"
-				android:visibility="gone" />
-
-			<ImageView
-				android:id="@+id/guess_button"
+			<uk.co.thomasc.wordmaster.view.RussoText
+				android:id="@+id/turnTitle"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_alignParentBottom="true"
-				android:layout_alignParentRight="true"
-				android:layout_marginBottom="4dp"
-				android:layout_marginRight="4dp"
-				android:contentDescription="@string/guess"
-				android:src="@drawable/guess_disabled" />
+				android:text="@string/turn"
+				android:textColor="@color/footer_text" />
 
-		</RelativeLayout>
+			<uk.co.thomasc.wordmaster.view.RussoText
+				android:id="@+id/turn"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center"
+				android:layout_marginTop="-10dp"
+				android:text="@string/default_turn"
+				android:textColor="@color/footer_text"
+				android:textSize="36sp" />
+		</LinearLayout>
 
-		<android.support.v4.view.ViewPager
-			xmlns:android="http://schemas.android.com/apk/res/android"
-			android:id="@+id/pager"
-			android:layout_width="match_parent"
-			android:layout_height="fill_parent"
-			android:layout_below="@id/header"
-			android:layout_above="@id/footer"
-			android:background="@color/mainbg" >
-		</android.support.v4.view.ViewPager>
+		<LinearLayout
+			android:layout_width="wrap_content"
+			android:layout_height="50dp"
+			android:layout_alignParentBottom="true"
+			android:layout_centerHorizontal="true"
+			android:layout_centerInParent="false" >
 
-		<uk.co.thomasc.wordmaster.view.DialogPanel
-			android:id="@+id/errorMessage"
-			android:layout_width="fill_parent"
+			<uk.co.thomasc.wordmaster.view.InputRussoText
+				android:id="@+id/char0"
+				style="@style/inputchar" />
+
+			<uk.co.thomasc.wordmaster.view.InputRussoText
+				android:id="@+id/char1"
+				style="@style/inputchar" />
+
+			<uk.co.thomasc.wordmaster.view.InputRussoText
+				android:id="@+id/char2"
+				style="@style/inputchar" />
+
+			<uk.co.thomasc.wordmaster.view.InputRussoText
+				android:id="@+id/char3"
+				style="@style/inputchar" />
+		</LinearLayout>
+
+		<ProgressBar
+			android:id="@+id/turn_progress"
+			android:layout_width="36dp"
 			android:layout_height="wrap_content"
-			android:layout_below="@id/header" >
-		</uk.co.thomasc.wordmaster.view.DialogPanel>
-		
-		<EditText
-			android:id="@+id/guess_input"
-			android:layout_width="match_parent"
-			android:layout_height="0dp"
-			android:alpha="0"
-			android:ems="10"
-			android:imeOptions="actionNone"
-			android:inputType="textCapCharacters|textNoSuggestions"
-			android:maxLength="4"
-			android:visibility="visible" >
-			
-			<requestFocus />
-		</EditText>
-	
+			android:layout_alignParentBottom="true"
+			android:layout_alignParentRight="true"
+			android:layout_centerVertical="true"
+			android:layout_marginBottom="4dp"
+			android:layout_marginRight="4dp"
+			android:visibility="gone" />
+
+		<ImageView
+			android:id="@+id/guess_button"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentBottom="true"
+			android:layout_alignParentRight="true"
+			android:layout_marginBottom="4dp"
+			android:layout_marginRight="4dp"
+			android:contentDescription="@string/guess"
+			android:src="@drawable/guess_disabled" />
+
 	</RelativeLayout>
+
+	<android.support.v4.view.ViewPager
+		android:id="@+id/pager"
+		android:layout_width="match_parent"
+		android:layout_height="fill_parent"
+		android:layout_below="@id/header"
+		android:layout_above="@id/footer" >
+	</android.support.v4.view.ViewPager>
+
+	<uk.co.thomasc.wordmaster.view.DialogPanel
+		android:id="@+id/errorMessage"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/header" >
+	</uk.co.thomasc.wordmaster.view.DialogPanel>
+	
+	<EditText
+		android:id="@+id/guess_input"
+		android:layout_width="match_parent"
+		android:layout_height="0dp"
+		android:alpha="0"
+		android:ems="10"
+		android:imeOptions="actionNone"
+		android:inputType="textCapCharacters|textNoSuggestions"
+		android:maxLength="4"
+		android:visibility="visible" >
+		
+		<requestFocus />
+	</EditText>
 
 </uk.co.thomasc.wordmaster.view.game.GameLayout>

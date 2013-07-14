@@ -4,9 +4,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
-public class GameLayout extends LinearLayout {
+public class GameLayout extends RelativeLayout {
 
 	private Activity playActivity;
 

@@ -33,5 +33,33 @@
 		<item name="android:layout_gravity">center</item>
 		<item name="android:gravity">center</item>
 	</style>
+	
+	<style name="gamelayout_simple">
+		<item name="android:layout_width">0dp</item>
+		<item name="android:layout_height">match_parent</item>
+		<item name="android:background">@color/mainbg</item>
+		<item name="android:visibility">visible</item>
+	</style>
+	
+	<style name="gamelayout" parent="gamelayout_simple">
+		<item name="android:layout_weight">1</item>
+	</style>
+	
+	<style name="divider_simple">
+		<item name="android:layout_width">2dp</item>
+		<item name="android:layout_height">fill_parent</item>
+		<item name="android:src">@color/divider</item>
+	</style>
+	
+	<style name="divider" parent="divider_simple">
+		<item name="android:visibility">gone</item>
+	</style>
+	
+	<style name="empty">
+		<item name="android:layout_width">fill_parent</item>
+		<item name="android:layout_height">fill_parent</item>
+		<item name="android:background">@color/mainbg</item>
+		<item name="android:baselineAligned">false</item>
+	</style>
 
 </resources>

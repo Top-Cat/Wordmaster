@@ -6,12 +6,8 @@
 
 	<LinearLayout
 		android:id="@+id/empty"
-		android:layout_width="fill_parent"
-		android:layout_height="fill_parent"
-		android:background="@color/mainbg"
-		android:baselineAligned="false"
-		android:orientation="horizontal"
-		android:weightSum="2" >
+		style="@style/empty"
+		android:orientation="horizontal" >
 
 	</LinearLayout>
 

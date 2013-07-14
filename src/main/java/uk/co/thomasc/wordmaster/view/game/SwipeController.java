@@ -8,7 +8,6 @@ import android.content.SharedPreferences.Editor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,12 +31,19 @@ import uk.co.thomasc.wordmaster.view.menu.MenuDetailFragment;
 public class SwipeController extends FragmentStatePagerAdapter {
 
 	private static String gid;
+	private float pageWidth = 1.0f;
 
-	public SwipeController(FragmentManager fm, String gameid) {
-		super(fm);
+	public SwipeController(BaseGame fm, String gameid) {
+		super(fm.getSupportFragmentManager());
+		pageWidth = fm.wideLayout ? 0.5f : 1.0f;
 		SwipeController.gid = gameid;
 	}
 
+	@Override
+	public float getPageWidth(int position) {
+		return pageWidth;
+	}
+	
 	@Override
 	public Fragment getItem(int arg0) {
 		Fragment fragment = new Pages();

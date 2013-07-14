@@ -7,12 +7,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.LinearLayout;
 
 import com.google.android.gms.plus.model.people.Person;
 
@@ -71,10 +72,7 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 
 		int screenLayoutSize = getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK;
 		wideLayout = screenLayoutSize > 2;
-		if (!wideLayout) {
-			((LinearLayout) findViewById(R.id.empty)).setWeightSum(1F);
-			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-		}
+		setRequestedOrientation(wideLayout ? ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE : ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
 		BaseGame.russo = Typeface.createFromAsset(getAssets(), "fonts/Russo_One.ttf");
 
@@ -186,7 +184,6 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 	public void onSignInFailed() {
 		getSupportFragmentManager().popBackStack("top", 0); // Close any open games
 		menuFragment.onSignInFailed();
-		System.out.println("oh noes!");
 	}
 
 	@Override
@@ -221,6 +218,7 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 			menuDetail.hideKeyboard();
 			menuDetail = null;
 			gameAdapter = null;
+			menuFragment.adapter.setSelectedGid("");
 			menuFragment.loadGames();
 		}
 		if (topId.equals("top")) {
@@ -306,6 +304,10 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 
 	public void unlockAchievement(Achievements achievement) {
 		unlockAchievement(achievement, 0);
+	}
+	
+	public static int convertDip2Pixels(Resources resources, int dip) {
+		return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dip, resources.getDisplayMetrics());
 	}
 
 	public String getUserId() {

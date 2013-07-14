@@ -23,6 +23,7 @@ import uk.co.thomasc.wordmaster.view.TimeSinceText;
 public class MenuAdapter extends ArrayAdapter<Game> {
 
 	private Activity act;
+	private String selectedGid = "";
 	final private Comparator<Game> comp;
 
 	public MenuAdapter(Activity act) {
@@ -43,6 +44,16 @@ public class MenuAdapter extends ArrayAdapter<Game> {
 			}
 		};
 	}
+	
+	public void setSelectedGid(String selectedGid) {
+		this.selectedGid = selectedGid;
+		act.runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				notifyDataSetChanged();
+			}
+		});
+	}
 
 	@Override
 	public void add(Game object) {
@@ -55,6 +66,16 @@ public class MenuAdapter extends ArrayAdapter<Game> {
 		return getItem(position).getOpponent() != null;
 	}
 	
+	@Override
+	public int getViewTypeCount() {
+		return 2;
+	}
+	
+	@Override
+	public int getItemViewType(int position) {
+		return getItem(position).getID().equals(selectedGid) ? 0 : 1;
+	}
+	
 	private Map<View, Game> checkList = new HashMap<View, Game>();
 
 	@Override
@@ -65,7 +86,18 @@ public class MenuAdapter extends ArrayAdapter<Game> {
 
 		if (rview == null) {
 			LayoutInflater vi = (LayoutInflater) act.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			rview = vi.inflate(R.layout.game_info, null);
+			
+			int viewId = 0;
+			switch (getItemViewType(position)) {
+				case 0:
+					viewId = R.layout.game_info_selected;
+					break;
+				case 1:
+					viewId = R.layout.game_info;
+					break;
+			}
+			
+			rview = vi.inflate(viewId, null);
 		}
 
 		final View view = rview;
@@ -114,8 +146,6 @@ public class MenuAdapter extends ArrayAdapter<Game> {
 		}
 
 		view.findViewById(R.id.turnindicator).setVisibility(item.isPlayersTurn() || item.needsWord() ? View.VISIBLE : View.GONE);
-
-		view.setBackgroundResource(R.drawable.itembg);
 
 		return view;
 	}

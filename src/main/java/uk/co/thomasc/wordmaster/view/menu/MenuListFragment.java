@@ -228,6 +228,8 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 	}
 
 	public void goToGame(String gameID) {
+		adapter.setSelectedGid(gameID);
+		
 		BaseGame act = (BaseGame) getActivity();
 		act.getSupportFragmentManager().popBackStack("game", 1);
 		Bundle args = new Bundle();
