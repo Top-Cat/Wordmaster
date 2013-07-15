@@ -93,9 +93,6 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 					iabAvailable = false;
 				} else {
 					iabAvailable = true;
-					// for testing purposes, tell google play we've consumed the upgrade SKUs
-					consumeUpgrades();
-					// TODO: Get rid of this before release!
 				}
 			}
 		});
