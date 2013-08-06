@@ -66,6 +66,7 @@ public class TimeSinceText extends RussoText {
 
 	public void setTimestamp(long lastUpdateTimestamp) {
 		timestamp = lastUpdateTimestamp;
+		setText(TimeUtil.timeSince(timestamp));
 		thread.interrupt();
 	}
 

@@ -62,8 +62,8 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener, T
 	}
 
 	@Override
-	public void onDestroy() {
-		super.onDestroy();
+	public void onDestroyView() {
+		super.onDestroyView();
 		if (game != null) {
 			game.removeTurnListener(this);
 		}
