@@ -181,6 +181,9 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 	public void onSignInFailed() {
 		getSupportFragmentManager().popBackStack("top", 0); // Close any open games
 		menuFragment.onSignInFailed();
+		for (Game game : Game.games.values()) {
+			game.clearTurns();
+		}
 	}
 
 	@Override

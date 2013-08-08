@@ -23,7 +23,7 @@ import uk.co.thomasc.wordmaster.util.GameHelper;
 
 public class ServerAPI {
 
-	private static final String BASE_URL = "http://thomasc.co.uk/wm/";
+	private static final String BASE_URL = "https://thomasc.co.uk/wm/";
 	private static String playerid = "";
 
 	/**
@@ -50,6 +50,7 @@ public class ServerAPI {
 							boolean needsWord = (Boolean) gameObject.get("needword");
 							int playerScore = ((Long) gameObject.get("pscore")).intValue();
 							boolean playersTurn = (Boolean) gameObject.get("turn");
+							int alpha = gameObject.containsKey("alpha") ? ((Long) gameObject.get("alpha")).intValue() : 0;
 							
 							User opp = null;
 							int opponentScore = 0;
@@ -62,10 +63,11 @@ public class ServerAPI {
 							game.setPlayersTurn(playersTurn);
 							game.setNeedsWord(needsWord);
 							game.setScore(playerScore, opponentScore);
-							if (gameObject.get("updated") != null) {
+							if (gameObject.containsKey("updated")) {
 								long updated = (Long) gameObject.get("updated");
 								game.setLastUpdateTimestamp(updated);
 							}
+							game.setAlpha(alpha);
 							games[i] = game;
 						}
 						listener.onRequestComplete(games);
@@ -91,6 +93,34 @@ public class ServerAPI {
 			@Override
 			public void run() {
 				JSONObject json = ServerAPI.makeRequest("getTurns", gameID, activityReference);
+				if (json != null) {
+					List<Turn> turns = ServerAPI.getTurns(json, activityReference);
+					if (turns != null) {
+						listener.onRequestComplete(turns);
+						return;
+					}
+				}
+				listener.onRequestFailed();
+			}
+		};
+		t.start();
+	}
+
+	/**
+	 * Calls the getTurns function on the server API. Starting from a 'pivot'
+	 * turn, retrieves a given number of turns from before or after this point.
+	 * Returns an array containing the turns.
+	 * 
+	 * @param gameID – the game ID of the game to retrieve turns from
+	 * @param turnID – the turn ID of the 'pivot' turn 
+	 * @param activityReference – a reference to the BaseGame activity, used to get avatars from Google+
+	 * @param listener – a GetTurnsRequestListener to be notified when the request finishes 
+	 */
+	public static void getTurns(final String gameID, final int turnID, final BaseGame activityReference, final GetTurnsRequestListener listener) {
+		Thread t = new Thread() {
+			@Override
+			public void run() {
+				JSONObject json = ServerAPI.makeRequest("getTurns", gameID, String.valueOf(turnID), activityReference);
 				if (json != null) {
 					List<Turn> turns = ServerAPI.getTurns(json, activityReference);
 					if (turns != null) {
@@ -241,8 +271,11 @@ public class ServerAPI {
 			@Override
 			public void run() {
 				JSONObject json = ServerAPI.makeRequest("setWord", gameID, word, activityReference);
-				int errorCode = ((Long) json.get("error")).intValue();
-
+				int errorCode = -3;
+				if (json != null) {
+					errorCode = ((Long) json.get("error")).intValue();
+				}
+				
 				listener.onSetWordComplete(errorCode);
 			}
 		};
@@ -268,7 +301,19 @@ public class ServerAPI {
 		};
 		t.start();
 	}
-	
+
+	public static void updateAlpha(final String gameID, final int alpha, final BaseGame activityReference, final UpdateAlphaRequestListener listener) {
+		Thread t = new Thread() {
+			@Override
+			public void run() {
+				JSONObject json = ServerAPI.makeRequest("updateAlpha", gameID, String.valueOf(alpha), activityReference);
+				int errorCode = ((Long) json.get("error")).intValue();
+
+				listener.onRequestComplete(errorCode, activityReference);
+			}
+		};
+		t.start();
+	}
 
 	public static void identify(final String authToken, final BaseGame activityReference, final GameHelper gameHelper) {
 		Thread t = new Thread() {
@@ -306,6 +351,7 @@ public class ServerAPI {
 
 	private static JSONObject doRequest(String url, final BaseGame activityReference) {
 		String jsonText = "";
+		System.out.println(url);
 
 		try {
 			InputStream is = new URL(url).openStream();

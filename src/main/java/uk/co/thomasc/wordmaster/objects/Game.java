@@ -9,9 +9,11 @@ import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 
 import uk.co.thomasc.wordmaster.BaseGame;
+import uk.co.thomasc.wordmaster.api.ServerAPI;
+import uk.co.thomasc.wordmaster.api.UpdateAlphaRequestListener;
 import uk.co.thomasc.wordmaster.objects.callbacks.TurnAddedListener;
 
-public class Game {
+public class Game implements UpdateAlphaRequestListener {
 
 	public static String keySegment = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApAOqKoj3zH7ADRMM9zHZkUegL8xRAoD8Qb7tl7Xz94T99y7qFiphoZ";
 
@@ -50,13 +52,15 @@ public class Game {
 	private String gameID;
 	private User player, opponent;
 	private ArrayList<Turn> turns = new ArrayList<Turn>();
-	private int latestTurnId = Integer.MIN_VALUE;
+	private int latestTurnId = -1;
 	private int oldestTurnId = Integer.MAX_VALUE;
 	private int playerScore = 0, opponentScore = 0, turnNumber = 1;
 	private String playerWord = "", opponentWord = "";
 	private boolean needsWord = true, playersTurn = false;
 	private ArrayList<TurnAddedListener> turnListeners = new ArrayList<TurnAddedListener>();
 	private long lastUpdated = 0;
+	private int alpha = 0;
+	private byte alphaStatus = 0;
 
 	/* Constructors */
 	private Game(String id, User player, User opponent) {
@@ -223,6 +227,40 @@ public class Game {
 	private void updatePreferences(Editor editor) {
 		editor.putLong("time", getLastUpdateTimestamp());
 		editor.putString("oppname", opponent.getName());
+	}
+
+	public void setAlpha(int alpha) {
+		this.alpha = alpha;
+	}
+
+	public boolean getAlpha(int j) {
+		return ((alpha >> j) & 1) == 1;
+	}
+
+	public void updateAlpha(int id, boolean strike, BaseGame activityReference) {
+		alpha ^= 1 << id;
+		if ((alphaStatus & 1) == 0) {
+			alphaStatus |= 1;
+			ServerAPI.updateAlpha(gameID, alpha, activityReference, this);
+		} else {
+			alphaStatus |= 2;
+		}
+	}
+
+	@Override
+	public void onRequestComplete(int errorCode, BaseGame activityReference) {
+		if ((alphaStatus & 2) == 2) {
+			alphaStatus = 1;
+			ServerAPI.updateAlpha(gameID, alpha, activityReference, this);
+		} else {
+			alphaStatus = 0;
+		}
+	}
+
+	public void clearTurns() {
+		turns.clear();
+		latestTurnId = -1;
+		oldestTurnId = Integer.MAX_VALUE;
 	}
 
 }

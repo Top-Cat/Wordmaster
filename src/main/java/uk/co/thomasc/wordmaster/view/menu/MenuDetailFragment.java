@@ -67,6 +67,7 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener, T
 		if (game != null) {
 			game.removeTurnListener(this);
 		}
+		refresher.interrupt();
 		running = false;
 	}
 
@@ -180,7 +181,7 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener, T
 	}
 
 	public void loadTurns() {
-		ServerAPI.getTurns(gameid, (BaseGame) getActivity(), new GetTurnsRequestListener() {
+		ServerAPI.getTurns(gameid, game.getPivotLatest(), (BaseGame) getActivity(), new GetTurnsRequestListener() {
 
 			@Override
 			public void onRequestFailed() {
@@ -261,11 +262,11 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener, T
 		@Override
 		public void run() {
 			while (running) {
-				loadTurns();
 				try {
 					Thread.sleep(30000);
+					loadTurns();
 				} catch (InterruptedException e) {
-					e.printStackTrace();
+					
 				}
 			}
 		}

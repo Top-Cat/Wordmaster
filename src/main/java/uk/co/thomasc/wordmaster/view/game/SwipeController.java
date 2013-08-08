@@ -3,8 +3,6 @@ package uk.co.thomasc.wordmaster.view.game;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -63,9 +61,7 @@ public class SwipeController extends FragmentStatePagerAdapter {
 
 	public static class Pages extends Fragment implements TurnAddedListener {
 		public static final String ARG_OBJECT = "object";
-		private static final String SP_PREF = "WM_ALPHA_";
 		private ToggleListener listener = new ToggleListener();
-		private SharedPreferences alphaPref;
 		private GameAdapter adapter;
 		private Game game;
 		private PullToRefreshListView listView;
@@ -145,16 +141,18 @@ public class SwipeController extends FragmentStatePagerAdapter {
 					});
 				}
 			} else {
-				alphaPref = getActivity().getSharedPreferences(Pages.SP_PREF + getArguments().getString(MenuDetailFragment.ARG_ITEM_ID), 0);
-
+				game = Game.getGame(SwipeController.gid);
+				
 				rootView = inflater.inflate(R.layout.alphabet, container, false);
 				LinearLayout root = (LinearLayout) rootView;
+				int index = 0;
 				for (int i = 0; i < root.getChildCount(); i++) {
 					LinearLayout child = (LinearLayout) root.getChildAt(i);
 					for (int j = 0; j < child.getChildCount(); j++) {
 						RussoText txt = (RussoText) child.getChildAt(j);
 						txt.setOnClickListener(listener);
-						boolean strike = alphaPref.getBoolean(txt.getText().toString(), false);
+						txt.setId(index);
+						boolean strike = game.getAlpha(index++);
 						txt.setTextColor(getResources().getColor(strike ? R.color.hiddenletter : R.color.maintext));
 						txt.setStrike(strike);
 					}
@@ -170,9 +168,10 @@ public class SwipeController extends FragmentStatePagerAdapter {
 				RussoText txt = (RussoText) v;
 				txt.setTextColor(getResources().getColor(txt.isStrike() ? R.color.maintext : R.color.hiddenletter));
 				txt.setStrike(!txt.isStrike());
-				Editor edit = alphaPref.edit();
+				game.updateAlpha(txt.getId(), txt.isStrike(), (BaseGame) getActivity());
+				/*Editor edit = alphaPref.edit();
 				edit.putBoolean(txt.getText().toString(), txt.isStrike());
-				edit.commit();
+				edit.commit();*/
 			}
 
 		}

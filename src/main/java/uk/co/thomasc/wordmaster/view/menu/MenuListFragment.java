@@ -266,6 +266,7 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 	public void onSignInFailed() {
 		// Clear games list
 		adapter.clear();
+		adapter.setSelectedGid("");
 
 		// Show login button
 		getView().findViewById(R.id.main_feed).setVisibility(View.GONE);
