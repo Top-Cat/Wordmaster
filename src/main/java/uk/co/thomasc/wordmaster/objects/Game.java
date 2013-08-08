@@ -249,6 +249,10 @@ public class Game implements UpdateAlphaRequestListener {
 
 	@Override
 	public void onRequestComplete(int errorCode, BaseGame activityReference) {
+		if (errorCode != 0) {
+			alphaStatus |= 2;
+		}
+		
 		if ((alphaStatus & 2) == 2) {
 			alphaStatus = 1;
 			ServerAPI.updateAlpha(gameID, alpha, activityReference, this);
