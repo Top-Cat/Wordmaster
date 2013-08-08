@@ -169,9 +169,6 @@ public class SwipeController extends FragmentStatePagerAdapter {
 				txt.setTextColor(getResources().getColor(txt.isStrike() ? R.color.maintext : R.color.hiddenletter));
 				txt.setStrike(!txt.isStrike());
 				game.updateAlpha(txt.getId(), txt.isStrike(), (BaseGame) getActivity());
-				/*Editor edit = alphaPref.edit();
-				edit.putBoolean(txt.getText().toString(), txt.isStrike());
-				edit.commit();*/
 			}
 
 		}
