@@ -307,7 +307,11 @@ public class ServerAPI {
 			@Override
 			public void run() {
 				JSONObject json = ServerAPI.makeRequest("updateAlpha", gameID, String.valueOf(alpha), activityReference);
-				int errorCode = ((Long) json.get("error")).intValue();
+				
+				int errorCode = -3;
+				if (json != null) {
+					errorCode = ((Long) json.get("error")).intValue();
+				}
 
 				listener.onRequestComplete(errorCode, activityReference);
 			}
