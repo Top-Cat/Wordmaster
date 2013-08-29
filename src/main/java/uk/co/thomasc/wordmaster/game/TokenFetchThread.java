@@ -39,9 +39,7 @@ public class TokenFetchThread extends Thread {
 				}
 			});
 			return;
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (GoogleAuthException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		activity.runOnUiThread(new Runnable() {
