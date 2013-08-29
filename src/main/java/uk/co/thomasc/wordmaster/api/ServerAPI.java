@@ -14,6 +14,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import com.google.android.gms.common.ConnectionResult;
+
 import uk.co.thomasc.wordmaster.BaseGame;
 import uk.co.thomasc.wordmaster.game.Achievements;
 import uk.co.thomasc.wordmaster.objects.Game;
@@ -208,8 +210,11 @@ public class ServerAPI {
 			@Override
 			public void run() {
 				JSONObject json = ServerAPI.makeRequest("takeTurn", gameID, word, activityReference);
-
-				int errorCode = ((Long) json.get("error")).intValue();
+				int errorCode = -3;
+				if (json != null) {
+					errorCode = ((Long) json.get("error")).intValue();
+				}
+				
 				listener.onRequestComplete(errorCode);
 			}
 		};
@@ -324,14 +329,23 @@ public class ServerAPI {
 			@Override
 			public void run() {
 				JSONObject json = ServerAPI.doRequest(ServerAPI.BASE_URL + "identify" + "/" + authToken, activityReference);
-				JSONObject response = (JSONObject) json.get("response");
-				playerid = (String) response.get("key");
-				activityReference.runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						gameHelper.onConnected(null);
-					}
-				});
+				if (json != null) {
+					JSONObject response = (JSONObject) json.get("response");
+					playerid = (String) response.get("key");
+					activityReference.runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							gameHelper.onConnected(null);
+						}
+					});
+				} else {
+					activityReference.runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							gameHelper.onConnectionFailed(new ConnectionResult(ConnectionResult.NETWORK_ERROR, null));
+						}
+					});
+				}
 			}
 		};
 		t.start();
