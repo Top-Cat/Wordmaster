@@ -138,7 +138,7 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 					} else if (item.getItemId() == R.id.show_achievements) {
 						startActivityForResult(((BaseGame) getActivity()).getGamesClient().getAchievementsIntent(), 1001);
 					} else if (item.getItemId() == R.id.action_logout) {
-						ServerAPI.registerGCM(((BaseGame) getActivity()).getUserId(), "", (BaseGame) getActivity());
+						ServerAPI.registerGCM("", (BaseGame) getActivity());
 						TurnReceiver.resetNotifications(getActivity());
 						((BaseGame) getActivity()).signOut();
 						((BaseGame) getActivity()).onSignInFailed();

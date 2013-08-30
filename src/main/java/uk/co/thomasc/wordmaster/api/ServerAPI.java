@@ -287,7 +287,7 @@ public class ServerAPI {
 		t.start();
 	}
 
-	public static void registerGCM(final String playerID, final String regid, final BaseGame activityReference) {
+	public static void registerGCM(final String regid, final BaseGame activityReference) {
 		Thread t = new Thread() {
 			@Override
 			public void run() {
