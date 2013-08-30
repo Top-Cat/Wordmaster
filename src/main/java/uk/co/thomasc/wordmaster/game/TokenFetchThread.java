@@ -1,10 +1,7 @@
 package uk.co.thomasc.wordmaster.game;
 
-import java.io.IOException;
-
 import android.app.PendingIntent;
 
-import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.common.ConnectionResult;
@@ -35,7 +32,7 @@ public class TokenFetchThread extends Thread {
 			activity.runOnUiThread(new Runnable() {
 				@Override
 				public void run() {
-					gameHelper.onConnectionFailed(new ConnectionResult(ConnectionResult.SIGN_IN_REQUIRED, intent));
+					gameHelper.onConnectionFailed(new ConnectionResult(ConnectionResult.NETWORK_ERROR, intent));
 				}
 			});
 			return;
@@ -45,7 +42,7 @@ public class TokenFetchThread extends Thread {
 		activity.runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				gameHelper.onConnectionFailed(new ConnectionResult(ConnectionResult.SIGN_IN_REQUIRED, null));
+				gameHelper.onConnectionFailed(new ConnectionResult(ConnectionResult.NETWORK_ERROR, null));
 			}
 		});
 	}

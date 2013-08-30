@@ -401,7 +401,7 @@ public class GameHelper implements GooglePlayServicesClient.ConnectionCallbacks,
 	 * process, processes it appropriately.
 	 */
 	public void onActivityResult(int requestCode, int responseCode, Intent intent) {
-		if (requestCode == GameHelper.RC_RESOLVE) {
+		if (requestCode == GameHelper.RC_RESOLVE && mExpectingActivityResult) {
 			// We're coming back from an activity that was launched to resolve a
 			// connection
 			// problem. For example, the sign-in UI.
@@ -732,10 +732,14 @@ public class GameHelper implements GooglePlayServicesClient.ConnectionCallbacks,
 	/** Returns an error dialog that's appropriate for the given error code. */
 	Dialog getErrorDialog(int errorCode) {
 		debugLog("Making error dialog for error: " + errorCode);
-		Dialog errorDialog = GooglePlayServicesUtil.getErrorDialog(errorCode, mActivity, GameHelper.RC_UNUSED, null);
+		if (errorCode == ConnectionResult.NETWORK_ERROR) {
+			return new AlertDialog.Builder(getContext()).setMessage("Error Connecting to Wordmaster Servers").setNeutralButton(android.R.string.ok, null).create();
+		} else {
+			Dialog errorDialog = GooglePlayServicesUtil.getErrorDialog(errorCode, mActivity, GameHelper.RC_UNUSED, null);
 
-		if (errorDialog != null) {
-			return errorDialog;
+			if (errorDialog != null) {
+				return errorDialog;
+			}
 		}
 
 		// as a last-resort, make a sad "unknown error" dialog.
