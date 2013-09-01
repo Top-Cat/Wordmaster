@@ -7,6 +7,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.opengl.Visibility;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -125,6 +126,7 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener, T
 			((TextView) rootView.findViewById(R.id.oppscore)).setText(Integer.toString(game.getOpponentScore()));
 
 			if (game.needsWord()) {
+				rootView.findViewById(R.id.setword_msg).setVisibility(View.VISIBLE);
 				RelativeLayout footer = (RelativeLayout) rootView.findViewById(R.id.footer);
 				footer.getLayoutParams().height = BaseGame.convertDip2Pixels(getResources(), 70);
 			}
@@ -236,6 +238,12 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener, T
 	public void onTurnAdded(Turn turn, boolean newerTurn) {
 		updateTurnCount();
 
+		getActivity().runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				getView().findViewById(R.id.setword_msg).setVisibility(game.needsWord() ? View.VISIBLE : View.GONE);
+			}
+		});
 		RelativeLayout footer = (RelativeLayout) getView().findViewById(R.id.footer);
 		footer.getLayoutParams().height = BaseGame.convertDip2Pixels(getResources(), game.needsWord() ? 70 : 50);
 	}

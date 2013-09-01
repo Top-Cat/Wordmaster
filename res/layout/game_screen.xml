@@ -70,7 +70,8 @@
 			android:layout_marginBottom="50dp"
 			android:background="@color/setword_bg"
 			android:gravity="center"
-			android:orientation="horizontal" >
+			android:orientation="horizontal"
+			android:visibility="invisible" >
 
 			<ImageView
 				android:id="@+id/triangle_left"
