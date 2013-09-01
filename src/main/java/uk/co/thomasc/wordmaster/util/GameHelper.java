@@ -679,6 +679,8 @@ public class GameHelper implements GooglePlayServicesClient.ConnectionCallbacks,
 				debugLog("SendIntentException.");
 				connectCurrentClient();
 			}
+		} else if (mConnectionResult.getErrorCode() == ConnectionResult.NETWORK_ERROR) {
+			connectCurrentClient();
 		} else {
 			// It's not a problem what we can solve, so give up and show an
 			// error.
@@ -732,14 +734,10 @@ public class GameHelper implements GooglePlayServicesClient.ConnectionCallbacks,
 	/** Returns an error dialog that's appropriate for the given error code. */
 	Dialog getErrorDialog(int errorCode) {
 		debugLog("Making error dialog for error: " + errorCode);
-		if (errorCode == ConnectionResult.NETWORK_ERROR) {
-			return new AlertDialog.Builder(getContext()).setMessage("Error Connecting to Wordmaster Servers").setNeutralButton(android.R.string.ok, null).create();
-		} else {
-			Dialog errorDialog = GooglePlayServicesUtil.getErrorDialog(errorCode, mActivity, GameHelper.RC_UNUSED, null);
+		Dialog errorDialog = GooglePlayServicesUtil.getErrorDialog(errorCode, mActivity, GameHelper.RC_UNUSED, null);
 
-			if (errorDialog != null) {
-				return errorDialog;
-			}
+		if (errorDialog != null) {
+			return errorDialog;
 		}
 
 		// as a last-resort, make a sad "unknown error" dialog.
