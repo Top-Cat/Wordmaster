@@ -102,6 +102,7 @@ public class SwipeController extends FragmentStatePagerAdapter {
 					game.addTurnListener(this);
 					((PullToRefreshListView) rootView).setAdapter(adapter);
 					listView = (PullToRefreshListView) rootView;
+					listView.setBackgroundColor(Color.WHITE);
 					listView.setCacheColorHint(Color.WHITE);
 					listView.setOnRefreshListener(new OnRefreshListener() {
 						@Override
