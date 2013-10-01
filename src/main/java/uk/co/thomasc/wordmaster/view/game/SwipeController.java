@@ -90,11 +90,12 @@ public class SwipeController extends FragmentStatePagerAdapter {
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 			View rootView;
+			game = Game.getGame(SwipeController.gid);
+			
 			if (getArguments().getBoolean(Pages.ARG_OBJECT)) {
 				rootView = new PullToRefreshListView(getActivity());
 				((BaseGame) getActivity()).gameAdapter = adapter = new GameAdapter(getActivity());
-
-				game = Game.getGame(SwipeController.gid);
+				
 				if (game != null) {
 					for (Turn t : game.getTurns()) {
 						adapter.add(t);
@@ -142,20 +143,20 @@ public class SwipeController extends FragmentStatePagerAdapter {
 					});
 				}
 			} else {
-				game = Game.getGame(SwipeController.gid);
-				
 				rootView = inflater.inflate(R.layout.alphabet, container, false);
-				LinearLayout root = (LinearLayout) rootView;
-				int index = 0;
-				for (int i = 0; i < root.getChildCount(); i++) {
-					LinearLayout child = (LinearLayout) root.getChildAt(i);
-					for (int j = 0; j < child.getChildCount(); j++) {
-						RussoText txt = (RussoText) child.getChildAt(j);
-						txt.setOnClickListener(listener);
-						txt.setId(index);
-						boolean strike = game.getAlpha(index++);
-						txt.setTextColor(getResources().getColor(strike ? R.color.hiddenletter : R.color.maintext));
-						txt.setStrike(strike);
+				if (game != null) {
+					LinearLayout root = (LinearLayout) rootView;
+					int index = 0;
+					for (int i = 0; i < root.getChildCount(); i++) {
+						LinearLayout child = (LinearLayout) root.getChildAt(i);
+						for (int j = 0; j < child.getChildCount(); j++) {
+							RussoText txt = (RussoText) child.getChildAt(j);
+							txt.setOnClickListener(listener);
+							txt.setId(index);
+							boolean strike = game.getAlpha(index++);
+							txt.setTextColor(getResources().getColor(strike ? R.color.hiddenletter : R.color.maintext));
+							txt.setStrike(strike);
+						}
 					}
 				}
 			}
