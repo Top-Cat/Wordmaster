@@ -159,6 +159,7 @@ public class Game implements UpdateAlphaRequestListener {
 			newerTurn = true;
 
 			if (turn.getTurnNum() > 0) {
+				playersTurn = turn.getUser().equals(opponent);
 				setNeedsWord(turn.getCorrectLetters() == 4);
 			}
 		}
