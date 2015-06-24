@@ -28,10 +28,12 @@ import uk.co.thomasc.wordmaster.view.menu.MenuAdapter;
 
 public class CreateGameFragment extends Fragment implements OnClickListener, OnItemClickListener {
 
+	private static int FRIENDS_PER_PAGE = 10;
+	
 	public PersonAdapter adapter;
 	private GameCreationListener listener;
 	private ResultCallback<LoadPlayersResult> peopleListener;
-	String nextPageToken;
+	boolean nextPage = true;
 
 	public CreateGameFragment() {
 
@@ -56,8 +58,9 @@ public class CreateGameFragment extends Fragment implements OnClickListener, OnI
 				}
 				
 				PlayerBuffer personBuffer = arg0.getPlayers();
+				int count = 0;
 				try {
-					int count = personBuffer.getCount();
+					count = personBuffer.getCount();
 					for (int i = 0; i < count; i++) {
 						Player person = personBuffer.get(i).freeze();
 						if (!existingOpponents.contains(person.getPlayerId())) {
@@ -66,11 +69,14 @@ public class CreateGameFragment extends Fragment implements OnClickListener, OnI
 					}
 				} finally {
 					personBuffer.close();
+					adapter.notifyDataSetChanged();
+					if (count == FRIENDS_PER_PAGE) {
+						nextPage = false;
+					}
 				}
-				adapter.notifyDataSetChanged();
 			}
 		};
-		PendingResult<LoadPlayersResult> result = Games.Players.loadInvitablePlayers(((BaseGameActivity) getActivity()).getApiClient(), 50, true);
+		PendingResult<LoadPlayersResult> result = Games.Players.loadInvitablePlayers(((BaseGameActivity) getActivity()).getApiClient(), FRIENDS_PER_PAGE, false);
 		result.setResultCallback(peopleListener);
 		users.setAdapter(adapter);
 		users.setOnItemClickListener(this);
@@ -91,9 +97,9 @@ public class CreateGameFragment extends Fragment implements OnClickListener, OnI
 		if (position == 0) {
 			listener.onCreateGame(userID, null);
 		} else if (position == adapter.getCount() - 1) {
-			if (nextPageToken != null) {
-				Games.Players.loadMoreInvitablePlayers(((BaseGameActivity) getActivity()).getApiClient(), 25).setResultCallback(peopleListener);
-				nextPageToken = null;
+			if (!nextPage) {
+				Games.Players.loadMoreInvitablePlayers(((BaseGameActivity) getActivity()).getApiClient(), FRIENDS_PER_PAGE).setResultCallback(peopleListener);
+				nextPage = true;
 			}
 		} else {
 			String oppID = adapter.getItem(position - 1).getPlayerId();

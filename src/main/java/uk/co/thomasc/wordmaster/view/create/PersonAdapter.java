@@ -42,7 +42,7 @@ public class PersonAdapter extends ArrayAdapter<Player> {
 	
 	@Override
 	public int getCount() {
-		return super.getCount() + (fragment.nextPageToken == null ? 1 : 2);
+		return super.getCount() + (fragment.nextPage ? 1 : 2);
 	}
 
 	private Map<View, User> checkList = new HashMap<View, User>();
@@ -63,7 +63,7 @@ public class PersonAdapter extends ArrayAdapter<Player> {
 			((ImageView) view.findViewById(R.id.avatar)).setImageResource(R.drawable.games_matches_green);
 			((TextView) view.findViewById(R.id.playera)).setText("Auto Match");
 			checkList.remove(view);
-		} else if (position == getCount() - 1 && fragment.nextPageToken != null) {
+		} else if (position == getCount() - 1 && !fragment.nextPage) {
 			((ImageView) view.findViewById(R.id.avatar)).setVisibility(View.INVISIBLE);
 			((TextView) view.findViewById(R.id.playera)).setText("More...");
 			checkList.remove(view);
