@@ -18,9 +18,12 @@ package uk.co.thomasc.wordmaster.util;
 
 import java.util.ArrayList;
 
+import uk.co.thomasc.wordmaster.BaseGame;
+import uk.co.thomasc.wordmaster.api.ServerAPI;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender.SendIntentException;
@@ -30,8 +33,11 @@ import android.os.Handler;
 import android.util.Log;
 
 import com.google.android.gms.appstate.AppStateManager;
+import com.google.android.gms.auth.GoogleAuthUtil;
+import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.Api.ApiOptions.NoOptions;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.drive.Drive;
@@ -740,9 +746,36 @@ public class GameHelper implements GoogleApiClient.ConnectionCallbacks,
             mTurnBasedMatch = connectionHint
                     .getParcelable(Multiplayer.EXTRA_TURN_BASED_MATCH);
         }
-
-        // we're good to go
-        succeedSignIn();
+        
+        new Thread() {
+        	@Override
+			public void run() {
+        		try {
+        			String authToken = GoogleAuthUtil.getToken(mActivity, Plus.AccountApi.getAccountName(getApiClient()), "oauth2:" + Scopes.GAMES);
+        			ServerAPI.identify(authToken, (BaseGame) mActivity, GameHelper.this);
+        			
+        	        // we're good to go
+        			mActivity.runOnUiThread(new Runnable() {
+        				@Override
+        				public void run() {
+        					succeedSignIn();
+        				}
+        			});
+        			return;
+        		} catch (UserRecoverableAuthException e) {
+        			final PendingIntent intent = PendingIntent.getActivity(mActivity, 1002, e.getIntent(), 0);
+        			mActivity.runOnUiThread(new Runnable() {
+        				@Override
+        				public void run() {
+        					onConnectionFailed(new ConnectionResult(ConnectionResult.NETWORK_ERROR, intent));
+        				}
+        			});
+        		} catch (Exception e) {
+        			e.printStackTrace();
+        		}
+        		signOut();
+			}
+		}.start();
     }
 
     void succeedSignIn() {

@@ -325,19 +325,13 @@ public class ServerAPI {
 	}
 
 	public static void identify(final String authToken, final BaseGame activityReference, final GameHelper gameHelper) {
-		Thread t = new Thread() {
+		/*Thread t = new Thread() {
 			@Override
-			public void run() {
+			public void run() {*/
 				JSONObject json = ServerAPI.doRequest(ServerAPI.BASE_URL + "identify" + "/" + authToken, activityReference);
 				if (json != null) {
 					JSONObject response = (JSONObject) json.get("response");
 					playerid = (String) response.get("key");
-					activityReference.runOnUiThread(new Runnable() {
-						@Override
-						public void run() {
-							gameHelper.onConnected(null);
-						}
-					});
 				} else {
 					activityReference.runOnUiThread(new Runnable() {
 						@Override
@@ -345,10 +339,10 @@ public class ServerAPI {
 							gameHelper.onConnectionFailed(new ConnectionResult(ConnectionResult.NETWORK_ERROR, null));
 						}
 					});
-				}
+				}/*
 			}
 		};
-		t.start();
+		t.start();*/
 	}
 
 	private static JSONObject makeRequest(String iface, String param1, String param2, String param3, BaseGame activityReference) {
