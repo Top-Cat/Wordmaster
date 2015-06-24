@@ -16,14 +16,12 @@ package uk.co.thomasc.wordmaster.util;
  * limitations under the License.
  */
 
+import uk.co.thomasc.wordmaster.util.GameHelper.SignInFailureReason;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 
-import com.google.android.gms.appstate.AppStateClient;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.games.GamesClient;
-import com.google.android.gms.plus.PlusClient;
+import com.google.android.gms.common.api.GoogleApiClient;
 
 /**
  * Example base class for games. This implementation takes care of setting up
@@ -55,12 +53,12 @@ public abstract class BaseGameActivity extends FragmentActivity implements GameH
 	public static final int CLIENT_ALL = GameHelper.CLIENT_ALL;
 
 	// Requested clients. By default, that's just the games client.
-	protected int mRequestedClients = BaseGameActivity.CLIENT_GAMES | BaseGameActivity.CLIENT_PLUS | GameHelper.CLIENT_TOKEN;
+	protected int mRequestedClients = BaseGameActivity.CLIENT_GAMES | BaseGameActivity.CLIENT_PLUS;
 
 	/** Constructs a BaseGameActivity with default client (GamesClient). */
 	protected BaseGameActivity() {
 		super();
-		mHelper = new GameHelper(this);
+		mHelper = new GameHelper(this, mRequestedClients);
 	}
 
 	/**
@@ -89,8 +87,8 @@ public abstract class BaseGameActivity extends FragmentActivity implements GameH
 	@Override
 	protected void onCreate(Bundle b) {
 		super.onCreate(b);
-		mHelper = new GameHelper(this);
-		mHelper.setup(this, mRequestedClients);
+		mHelper = new GameHelper(this, mRequestedClients);
+		mHelper.setup(this);
 	}
 
 	@Override
@@ -111,16 +109,8 @@ public abstract class BaseGameActivity extends FragmentActivity implements GameH
 		mHelper.onActivityResult(request, response, data);
 	}
 
-	public GamesClient getGamesClient() {
-		return mHelper.getGamesClient();
-	}
-
-	protected AppStateClient getAppStateClient() {
-		return mHelper.getAppStateClient();
-	}
-
-	public PlusClient getPlusClient() {
-		return mHelper.getPlusClient();
+	public GoogleApiClient getApiClient() {
+		return mHelper.getApiClient();
 	}
 
 	public boolean isSignedIn() {
@@ -135,41 +125,20 @@ public abstract class BaseGameActivity extends FragmentActivity implements GameH
 		mHelper.signOut();
 	}
 
-	protected void showAlert(String title, String message) {
-		mHelper.showAlert(title, message);
-	}
-
-	protected void showAlert(String message) {
-		mHelper.showAlert(message);
-	}
-
-	protected void enableDebugLog(boolean enabled, String tag) {
-		mHelper.enableDebugLog(enabled, tag);
-	}
-
 	protected String getInvitationId() {
 		return mHelper.getInvitationId();
 	}
 
 	protected void reconnectClients(int whichClients) {
-		mHelper.reconnectClients(whichClients);
-	}
-
-	protected String getScopes() {
-		return mHelper.getScopes();
+		mHelper.reconnectClient();
 	}
 
 	protected boolean hasSignInError() {
 		return mHelper.hasSignInError();
 	}
 
-	protected ConnectionResult getSignInError() {
+	protected SignInFailureReason getSignInError() {
 		return mHelper.getSignInError();
-	}
-
-	protected void setSignInMessages(String signingInMessage, String signingOutMessage) {
-		mHelper.setSigningInMessage(signingInMessage);
-		mHelper.setSigningOutMessage(signingOutMessage);
 	}
 
 }

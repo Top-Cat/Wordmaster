@@ -106,5 +106,10 @@
 	<string name="X">X</string>
 	<string name="Y">Y</string>
 	<string name="Z">Z</string>
-	
+
+	<string name="gamehelper_unknown_error">Unknown Error</string>
+	<string name="gamehelper_sign_in_failed">Oh dear, we couldn\'t sign in</string>
+	<string name="gamehelper_app_misconfigured">I\'ve made a boo-boo</string>
+	<string name="gamehelper_license_failed">Are you sure you bought this?</string>
+
 </resources>

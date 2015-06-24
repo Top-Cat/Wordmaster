@@ -15,7 +15,8 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.google.android.gms.plus.model.people.Person;
+import com.google.android.gms.games.Games;
+import com.google.android.gms.games.Player;
 
 import uk.co.thomasc.wordmaster.api.ServerAPI;
 import uk.co.thomasc.wordmaster.game.Achievements;
@@ -188,9 +189,9 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 
 	@Override
 	public void onSignInSucceeded() {
-		if (getPlusClient().isConnected()) {
-			Person person = getPlusClient().getCurrentPerson();
-			userId = person.getId();
+		if (getApiClient().isConnected()) {
+			Player person = Games.Players.getCurrentPlayer(getApiClient());
+			userId = person.getPlayerId();
 			User.onPlusConnected(this);
 			User.getUser(person, this); // Load local user into cache
 			loadPreferences();
@@ -282,7 +283,7 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 					menuFragment.unhideGame();
 					return true;
 				case R.id.show_achievements:
-					startActivityForResult(getGamesClient().getAchievementsIntent(), 1001);
+					startActivityForResult(Games.Achievements.getAchievementsIntent(getApiClient()), 1001);
 					return true;
 				case R.id.action_logout:
 					signOut();
@@ -295,9 +296,9 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 	public void unlockAchievement(Achievements achievement, int increment) {
 		for (String id : achievement.getIds()) {
 			if (!achievement.isIncremental()) {
-				getGamesClient().unlockAchievement(id);
+				Games.Achievements.unlock(getApiClient(), id);
 			} else if (increment > 0) {
-				getGamesClient().incrementAchievement(id, increment);
+				Games.Achievements.increment(getApiClient(), id, increment);
 			}
 		}
 	}

@@ -10,16 +10,9 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<platform.version> 4.1.1.4</platform.version>
-		<android.plugin.version>3.6.0</android.plugin.version>
+		<platform.version>4.1.1.4</platform.version>
+		<android.plugin.version>4.3.0</android.plugin.version>
 	</properties>
-	
-	<repositories>
-		<repository>
-			<id>thomasc-repo</id>
-			<url>http://repo.thomasc.co.uk</url>
-		</repository>
-	</repositories>
 	
 	<scm>
 		<connection>scm:git:https://github.com/Top-Cat/Wordmaster.git</connection>
@@ -34,14 +27,20 @@
 		</dependency>
 		<dependency>
 			<groupId>android.support</groupId>
-			<artifactId>compatibility-v4</artifactId>
-			<version>13</version>
+			<artifactId>compatibility-v13</artifactId>
+			<version>22.2.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.android.gms</groupId>
 			<artifactId>google-play-services</artifactId>
-			<version>7</version>
+			<version>25.0.0</version>
 			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>com.google.android.gms</groupId>
+			<artifactId>google-play-services</artifactId>
+			<version>25.0.0</version>
+			<type>apklib</type>
 		</dependency>
 		<dependency>
 			<groupId>com.googlecode.json-simple</groupId>
@@ -78,7 +77,7 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>com.jayway.maven.plugins.android.generation2</groupId>
+				<groupId>com.simpligility.maven.plugins</groupId>
 				<artifactId>android-maven-plugin</artifactId>
 				<version>${android.plugin.version}</version>
 				<extensions>true</extensions>
@@ -104,6 +103,10 @@
 					</execution>
 				</executions>
 				<configuration>
+					<resourceDirectory>${basedir}/res</resourceDirectory>
+					<assetsDirectory>${basedir}/assets</assetsDirectory>
+					<androidManifestFile>${basedir}/AndroidManifest.xml</androidManifestFile>
+					<genDirectory>${basedir}/gen</genDirectory>
 					<sign>
 						<debug>false</debug>
 					</sign>
@@ -111,7 +114,7 @@
 						<skip>false</skip>
 					</zipalign>
 					<sdk>
-						<platform>17</platform>
+						<platform>19</platform>
 					</sdk>
 				</configuration>
 			</plugin>
@@ -138,6 +141,27 @@
 										<ignore />
 									</action>
 								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											com.simpligility.maven.plugins
+										</groupId>
+										<artifactId>
+											android-maven-plugin
+										</artifactId>
+										<versionRange>
+											[4.3.0,)
+										</versionRange>
+										<goals>
+											<goal>proguard</goal>
+											<goal>emma</goal>
+											<goal>manifest-update</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
 							</pluginExecutions>
 						</lifecycleMappingMetadata>
 					</configuration>
@@ -155,7 +179,7 @@
 				<dependency>
 					<groupId>com.google.android.gms</groupId>
 					<artifactId>google-play-services</artifactId>
-					<version>7</version>
+					<version>25.0.0</version>
 					<type>apklib</type>
 				</dependency>
 			</dependencies>

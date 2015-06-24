@@ -13,7 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.android.gms.plus.model.people.Person;
+import com.google.android.gms.games.Player;
 
 import uk.co.thomasc.wordmaster.R;
 import uk.co.thomasc.wordmaster.objects.User;
@@ -21,7 +21,7 @@ import uk.co.thomasc.wordmaster.objects.callbacks.ImageLoadedListener;
 import uk.co.thomasc.wordmaster.objects.callbacks.NameLoadedListener;
 import uk.co.thomasc.wordmaster.util.BaseGameActivity;
 
-public class PersonAdapter extends ArrayAdapter<Person> {
+public class PersonAdapter extends ArrayAdapter<Player> {
 
 	public static String keySegment = "DB6Fpmlprf0yaYGbkfFh6XvisO25dvfq4mhyfNR5K15Xo9B6kfbnd1qQuO7zhB10ZCZaBZfRpJP5saK/jyRLWOzqi0vQIDAQAB";
 
@@ -36,7 +36,7 @@ public class PersonAdapter extends ArrayAdapter<Person> {
 	}
 
 	@Override
-	public void add(Person object) {
+	public void add(Player object) {
 		super.add(object);
 	}
 	
@@ -68,7 +68,7 @@ public class PersonAdapter extends ArrayAdapter<Person> {
 			((TextView) view.findViewById(R.id.playera)).setText("More...");
 			checkList.remove(view);
 		} else {
-			Person item = getItem(position - 1);
+			Player item = getItem(position - 1);
 			
 			final User user = User.getUser(item, (BaseGameActivity) act);
 			checkList.put(view, user);

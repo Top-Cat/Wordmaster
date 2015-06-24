@@ -10,9 +10,10 @@ import java.util.Map;
 
 import android.graphics.drawable.Drawable;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.plus.PlusClient.OnPersonLoadedListener;
-import com.google.android.gms.plus.model.people.Person;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.games.Games;
+import com.google.android.gms.games.Player;
+import com.google.android.gms.games.Players;
 
 import uk.co.thomasc.wordmaster.objects.callbacks.ImageLoadedListener;
 import uk.co.thomasc.wordmaster.objects.callbacks.NameLoadedListener;
@@ -25,12 +26,12 @@ public class User {
 	private static Map<String, User> users = new HashMap<String, User>();
 	private static boolean connected = false;
 
-	public static User getUser(Person player, BaseGameActivity activityReference) {
-		if (User.users.containsKey(player.getId())) {
-			return User.users.get(player.getId());
+	public static User getUser(Player player, BaseGameActivity activityReference) {
+		if (User.users.containsKey(player.getPlayerId())) {
+			return User.users.get(player.getPlayerId());
 		} else {
 			User user = new User(player, activityReference);
-			User.users.put(player.getId(), user);
+			User.users.put(player.getPlayerId(), user);
 			return user;
 		}
 	}
@@ -61,8 +62,8 @@ public class User {
 	private List<NameLoadedListener> userListeners = new ArrayList<NameLoadedListener>();
 	private List<ImageLoadedListener> imageListeners = new ArrayList<ImageLoadedListener>();
 
-	private User(Person person, BaseGameActivity activityReference) {
-		plusID = person.getId();
+	private User(Player person, BaseGameActivity activityReference) {
+		plusID = person.getPlayerId();
 		name = person.getDisplayName();
 		loadImage(person, activityReference);
 	}
@@ -74,9 +75,10 @@ public class User {
 
 	private void loadName(final BaseGameActivity activityReference) {
 		if (User.connected) {
-			activityReference.getPlusClient().loadPerson(new OnPersonLoadedListener() {
+			Games.Players.loadPlayer(activityReference.getApiClient(), plusID).setResultCallback(new ResultCallback<Players.LoadPlayersResult>() {
 				@Override
-				public void onPersonLoaded(ConnectionResult result, Person person) {
+				public void onResult(Players.LoadPlayersResult arg0) {
+					Player person = arg0.getPlayers().get(0);
 					name = person.getDisplayName();
 					loadImage(person, activityReference);
 
@@ -85,12 +87,12 @@ public class User {
 					}
 					userListeners.clear();
 				}
-			}, plusID);
+			});
 		}
 	}
 
-	private void loadImage(final Person person, final BaseGameActivity activityReference) {
-		final String avatarUri = person.getImage().getUrl();
+	private void loadImage(final Player person, final BaseGameActivity activityReference) {
+		final String avatarUri = person.getIconImageUrl();
 
 		new Thread() {
 			@Override
@@ -110,7 +112,7 @@ public class User {
 						return;
 					} catch (IOException e) {
 						//No internet :<
-						System.out.println("Failed to download avatar for " + person.getId());
+						System.out.println("Failed to download avatar for " + person.getPlayerId());
 					}
 					try {
 						Thread.sleep(delay);

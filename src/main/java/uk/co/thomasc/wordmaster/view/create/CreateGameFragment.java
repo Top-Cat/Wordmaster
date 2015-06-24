@@ -13,11 +13,12 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.plus.PlusClient.OnPeopleLoadedListener;
-import com.google.android.gms.plus.model.people.Person;
-import com.google.android.gms.plus.model.people.Person.Collection;
-import com.google.android.gms.plus.model.people.PersonBuffer;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.games.Games;
+import com.google.android.gms.games.Player;
+import com.google.android.gms.games.PlayerBuffer;
+import com.google.android.gms.games.Players.LoadPlayersResult;
 
 import uk.co.thomasc.wordmaster.BaseGame;
 import uk.co.thomasc.wordmaster.R;
@@ -29,7 +30,7 @@ public class CreateGameFragment extends Fragment implements OnClickListener, OnI
 
 	public PersonAdapter adapter;
 	private GameCreationListener listener;
-	private OnPeopleLoadedListener peopleListener;
+	private ResultCallback<LoadPlayersResult> peopleListener;
 	String nextPageToken;
 
 	public CreateGameFragment() {
@@ -45,21 +46,21 @@ public class CreateGameFragment extends Fragment implements OnClickListener, OnI
 
 		final ListView users = (ListView) rootView.findViewById(R.id.user_picker);
 		adapter = new PersonAdapter(getActivity(), this);
-		peopleListener = new OnPeopleLoadedListener() {
+		peopleListener = new ResultCallback<LoadPlayersResult>() {
 			@Override
-			public void onPeopleLoaded(ConnectionResult status, PersonBuffer personBuffer, String nextPageToken) {
-				CreateGameFragment.this.nextPageToken = nextPageToken;
+			public void onResult(LoadPlayersResult arg0) {
+				Set<String> existingOpponents = new HashSet<String>();
+				MenuAdapter menuAdapter = ((BaseGame) getActivity()).menuFragment.adapter;
+				for (int i = 0; i < menuAdapter.getCount(); i++) {
+					existingOpponents.add(menuAdapter.getItem(i).getOpponent().getPlusID());
+				}
+				
+				PlayerBuffer personBuffer = arg0.getPlayers();
 				try {
-					Set<String> existingOpponents = new HashSet<String>();
-					MenuAdapter menuAdapter = ((BaseGame) getActivity()).menuFragment.adapter;
-					for (int i = 0; i < menuAdapter.getCount(); i++) {
-						existingOpponents.add(menuAdapter.getItem(i).getOpponent().getPlusID());
-					}
-					
 					int count = personBuffer.getCount();
 					for (int i = 0; i < count; i++) {
-						Person person = personBuffer.get(i).freeze();
-						if (!existingOpponents.contains(person.getId())) {
+						Player person = personBuffer.get(i).freeze();
+						if (!existingOpponents.contains(person.getPlayerId())) {
 							adapter.add(personBuffer.get(i).freeze());
 						}
 					}
@@ -69,7 +70,8 @@ public class CreateGameFragment extends Fragment implements OnClickListener, OnI
 				adapter.notifyDataSetChanged();
 			}
 		};
-		((BaseGameActivity) getActivity()).getPlusClient().loadPeople(peopleListener, Collection.VISIBLE, Person.OrderBy.BEST, 50, nextPageToken);
+		PendingResult<LoadPlayersResult> result = Games.Players.loadInvitablePlayers(((BaseGameActivity) getActivity()).getApiClient(), 50, true);
+		result.setResultCallback(peopleListener);
 		users.setAdapter(adapter);
 		users.setOnItemClickListener(this);
 
@@ -90,11 +92,11 @@ public class CreateGameFragment extends Fragment implements OnClickListener, OnI
 			listener.onCreateGame(userID, null);
 		} else if (position == adapter.getCount() - 1) {
 			if (nextPageToken != null) {
-				((BaseGameActivity) getActivity()).getPlusClient().loadPeople(peopleListener, Collection.VISIBLE, Person.OrderBy.BEST, 50, nextPageToken);
+				Games.Players.loadMoreInvitablePlayers(((BaseGameActivity) getActivity()).getApiClient(), 25).setResultCallback(peopleListener);
 				nextPageToken = null;
 			}
 		} else {
-			String oppID = adapter.getItem(position - 1).getId();
+			String oppID = adapter.getItem(position - 1).getPlayerId();
 			listener.onCreateGame(userID, oppID);
 		}
 	}

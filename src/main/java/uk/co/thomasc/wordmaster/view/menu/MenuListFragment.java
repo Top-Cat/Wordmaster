@@ -27,6 +27,7 @@ import android.widget.PopupMenu.OnMenuItemClickListener;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.SignInButton;
+import com.google.android.gms.games.Games;
 
 import uk.co.thomasc.wordmaster.BaseGame;
 import uk.co.thomasc.wordmaster.R;
@@ -136,7 +137,7 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 					if (item.getItemId() == R.id.startnew) {
 						startNew();
 					} else if (item.getItemId() == R.id.show_achievements) {
-						startActivityForResult(((BaseGame) getActivity()).getGamesClient().getAchievementsIntent(), 1001);
+						startActivityForResult(Games.Achievements.getAchievementsIntent(((BaseGame) getActivity()).getApiClient()), 1001);
 					} else if (item.getItemId() == R.id.action_logout) {
 						ServerAPI.registerGCM("", (BaseGame) getActivity());
 						TurnReceiver.resetNotifications(getActivity());
