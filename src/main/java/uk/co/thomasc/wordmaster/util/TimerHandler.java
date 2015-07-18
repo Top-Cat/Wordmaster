@@ -11,7 +11,7 @@ import uk.co.thomasc.wordmaster.R.anim;
 import uk.co.thomasc.wordmaster.view.DialogPanel;
 
 public class TimerHandler extends Handler {
-	private DialogPanel dialogPanel;
+	private final DialogPanel dialogPanel;
 
 	public TimerHandler(DialogPanel dialogPanel) {
 		this.dialogPanel = dialogPanel;
@@ -28,12 +28,10 @@ public class TimerHandler extends Handler {
 				}
 
 				@Override
-				public void onAnimationRepeat(Animation animation) {
-				}
+				public void onAnimationRepeat(Animation animation) {}
 
 				@Override
-				public void onAnimationStart(Animation animation) {
-				}
+				public void onAnimationStart(Animation animation) {}
 			});
 			dialogPanel.container.startAnimation(removeAnim);
 		}

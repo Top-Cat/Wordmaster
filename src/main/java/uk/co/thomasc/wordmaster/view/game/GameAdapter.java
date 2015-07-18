@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import uk.co.thomasc.wordmaster.BaseGame;
 import uk.co.thomasc.wordmaster.R;
 import uk.co.thomasc.wordmaster.objects.Turn;
@@ -42,12 +43,12 @@ public class GameAdapter extends ArrayAdapter<Turn> {
 		super.add(object);
 		sort(comp);
 	}
-	
+
 	@Override
 	public int getViewTypeCount() {
 		return 5;
 	}
-	
+
 	@Override
 	public int getItemViewType(int position) {
 		Turn item = getItem(position);
@@ -69,11 +70,11 @@ public class GameAdapter extends ArrayAdapter<Turn> {
 		final Turn item = getItem(position);
 		User user = item.getUser();
 		boolean isPlayer = User.getCurrentUser().equals(user);
-		final boolean winningTurn = (item.getCorrectLetters() == 4);
+		final boolean winningTurn = item.getCorrectLetters() == 4;
 
 		if (view == null) {
 			LayoutInflater vi = (LayoutInflater) act.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			
+
 			int viewId = 0;
 			switch (getItemViewType(position)) {
 				case 0:
@@ -92,12 +93,12 @@ public class GameAdapter extends ArrayAdapter<Turn> {
 					viewId = R.layout.game_row_small;
 					break;
 			}
-			
+
 			view = vi.inflate(viewId, parent, false);
 		}
 
 		if (item.getTurnNum() == 0) {
-			TextView guess = ((TextView) view.findViewById(R.id.guess));
+			TextView guess = (TextView) view.findViewById(R.id.guess);
 			guess.setText(isPlayer ? "Your word is " + item.getGuess() : "");
 			guess.setVisibility(isPlayer ? View.VISIBLE : View.GONE);
 		} else {
@@ -111,7 +112,7 @@ public class GameAdapter extends ArrayAdapter<Turn> {
 						String firstName = name.substring(0, name.indexOf(' '));
 						if (winningTurn) {
 							txtview.setText(firstName + " guessed " + item.getGuess().toUpperCase(Locale.ENGLISH) +
-									"\n" + firstName + "'s word was " + item.getOpponentWord().toUpperCase(Locale.ENGLISH));
+								"\n" + firstName + "'s word was " + item.getOpponentWord().toUpperCase(Locale.ENGLISH));
 						} else {
 							txtview.setText(firstName + " guessed " + item.getGuess().toUpperCase(Locale.ENGLISH));
 						}
@@ -129,7 +130,7 @@ public class GameAdapter extends ArrayAdapter<Turn> {
 			Drawable white = ContextCompat.getDrawable(act, R.drawable.whitepeg);
 
 			if (!winningTurn) {
-				int[] pegs = { R.id.peg0, R.id.peg1, R.id.peg2, R.id.peg3 };
+				int[] pegs = {R.id.peg0, R.id.peg1, R.id.peg2, R.id.peg3};
 				for (int peg : pegs) {
 					if (goldPegs > 0) {
 						((ImageView) view.findViewById(peg)).setImageDrawable(gold);

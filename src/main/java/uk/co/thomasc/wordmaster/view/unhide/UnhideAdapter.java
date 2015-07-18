@@ -20,7 +20,7 @@ import uk.co.thomasc.wordmaster.objects.callbacks.NameLoadedListener;
 
 public class UnhideAdapter extends ArrayAdapter<Game> {
 
-	private Activity act;
+	private final Activity act;
 
 	public UnhideAdapter(Activity act) {
 		super(act, 0);
@@ -33,7 +33,7 @@ public class UnhideAdapter extends ArrayAdapter<Game> {
 		super.add(object);
 	}
 
-	private Map<View, Game> checkList = new HashMap<View, Game>();
+	private final Map<View, Game> checkList = new HashMap<View, Game>();
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {

@@ -1,9 +1,22 @@
 package uk.co.thomasc.wordmaster;
 
+import lombok.Getter;
+
 import java.util.ArrayList;
 import java.util.Set;
 
-import lombok.Getter;
+import com.google.android.gms.auth.GoogleAuthUtil;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.Scopes;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
+import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.games.Games;
+import com.google.android.gms.plus.Plus;
+import com.google.android.gms.plus.model.people.Person;
+
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
@@ -23,17 +36,6 @@ import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-
-import com.google.android.gms.auth.GoogleAuthUtil;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.common.Scopes;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
-import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
-import com.google.android.gms.games.Games;
-import com.google.android.gms.plus.Plus;
-import com.google.android.gms.plus.model.people.Person;
 
 import uk.co.thomasc.wordmaster.api.ServerAPI;
 import uk.co.thomasc.wordmaster.game.Achievements;
@@ -77,16 +79,16 @@ public class BaseGame extends FragmentActivity implements OnIabPurchaseFinishedL
 	public UpgradeFragment upgradeFragment;
 	@Getter private boolean iabAvailable;
 
-	private String PREFS = "WM_HIDDEN_GAMES_";
+	private final String PREFS = "WM_HIDDEN_GAMES_";
 	private SharedPreferences prefs;
-	
+
 	private BroadcastReceiver mRegistrationBroadcastReceiver;
-	
+
 	private GoogleApiClient mGoogleApiClient;
 	private boolean mSignInFlow = true;
 	private static final int RC_SIGN_IN = 9001;
 	private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9002;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -105,7 +107,7 @@ public class BaseGame extends FragmentActivity implements OnIabPurchaseFinishedL
 			.addApi(Plus.API).addScope(Plus.SCOPE_PLUS_LOGIN)
 			.addApi(Games.API).addScope(Games.SCOPE_GAMES)
 			.build();
-		
+
 		mRegistrationBroadcastReceiver = new BroadcastReceiver() {
 			@Override
 			public void onReceive(Context context, Intent intent) {
@@ -117,7 +119,7 @@ public class BaseGame extends FragmentActivity implements OnIabPurchaseFinishedL
 				}
 			}
 		};
-		
+
 		if (savedInstanceState != null) {
 			Game.restoreState(savedInstanceState, this);
 		} else {
@@ -145,21 +147,21 @@ public class BaseGame extends FragmentActivity implements OnIabPurchaseFinishedL
 		super.onResume();
 		LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver, new IntentFilter("open-game"));
 	}
-	
+
 	@Override
 	protected void onPause() {
 		LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
 		super.onPause();
 	}
-	
+
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		
+
 		// Pass on the activity result to the helper for handling
 		if (!BaseGame.mBHelper.handleActivityResult(requestCode, resultCode, data)) {
-			if (requestCode == RC_SIGN_IN) {
-				if (resultCode == RESULT_OK) {
+			if (requestCode == BaseGame.RC_SIGN_IN) {
+				if (resultCode == Activity.RESULT_OK) {
 					mGoogleApiClient.connect();
 				} else {
 					// Show error?
@@ -182,7 +184,7 @@ public class BaseGame extends FragmentActivity implements OnIabPurchaseFinishedL
 			goToGame(extras.getString("gameid"));
 		}
 	}
-	
+
 	private void goToGame(String gameid) {
 		if (Game.getGame(gameid) != null) {
 			menuFragment.goToGame(gameid);
@@ -286,7 +288,7 @@ public class BaseGame extends FragmentActivity implements OnIabPurchaseFinishedL
 	}
 
 	public boolean isSignedIn() {
-		return (mGoogleApiClient != null && mGoogleApiClient.isConnected());
+		return mGoogleApiClient != null && mGoogleApiClient.isConnected();
 	}
 
 	@Override
@@ -300,7 +302,7 @@ public class BaseGame extends FragmentActivity implements OnIabPurchaseFinishedL
 					menu.removeItem(R.id.unhide_game);
 				}
 			} else {
-				if (! hiddenGames.isEmpty()) {
+				if (!hiddenGames.isEmpty()) {
 					menu.add(Menu.NONE, R.id.unhide_game, Menu.NONE, R.string.unhide_title);
 				}
 			}
@@ -332,7 +334,7 @@ public class BaseGame extends FragmentActivity implements OnIabPurchaseFinishedL
 			Games.signOut(mGoogleApiClient);
 			mGoogleApiClient.disconnect();
 		}
-		
+
 		getSupportFragmentManager().popBackStack("top", 0); // Close any open games
 		menuFragment.onSignInFailed();
 		for (Game game : Game.games.values()) {
@@ -353,7 +355,7 @@ public class BaseGame extends FragmentActivity implements OnIabPurchaseFinishedL
 	public void unlockAchievement(Achievements achievement) {
 		unlockAchievement(achievement, 0);
 	}
-	
+
 	public static int convertDip2Pixels(Resources resources, int dip) {
 		return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dip, resources.getDisplayMetrics());
 	}
@@ -371,7 +373,7 @@ public class BaseGame extends FragmentActivity implements OnIabPurchaseFinishedL
 	private boolean resolveConnectionFailure(ConnectionResult result) {
 		if (result.hasResolution()) {
 			try {
-				result.startResolutionForResult(this, RC_SIGN_IN);
+				result.startResolutionForResult(this, BaseGame.RC_SIGN_IN);
 				return true;
 			} catch (IntentSender.SendIntentException e) {
 				mGoogleApiClient.connect();
@@ -379,11 +381,11 @@ public class BaseGame extends FragmentActivity implements OnIabPurchaseFinishedL
 			}
 		} else {
 			int errorCode = result.getErrorCode();
-			Dialog dialog = GooglePlayServicesUtil.getErrorDialog(errorCode, this, RC_SIGN_IN);
+			Dialog dialog = GooglePlayServicesUtil.getErrorDialog(errorCode, this, BaseGame.RC_SIGN_IN);
 			if (dialog != null) {
 				dialog.show();
 			} else {
-				(new AlertDialog.Builder(this)).setMessage(getString(R.string.signin_other_error)).setNeutralButton(android.R.string.ok, null).create().show();
+				new AlertDialog.Builder(this).setMessage(getString(R.string.signin_other_error)).setNeutralButton(android.R.string.ok, null).create().show();
 			}
 			return false;
 		}
@@ -400,7 +402,7 @@ public class BaseGame extends FragmentActivity implements OnIabPurchaseFinishedL
 						authToken = GoogleAuthUtil.getToken(BaseGame.this, Plus.AccountApi.getAccountName(getApiClient()), "oauth2:" + Scopes.GAMES);
 						ServerAPI.identify(authToken, BaseGame.this);
 					} catch (Exception e) {
-						//signOut(); - 07-16 22:25:11.171: E/AndroidRuntime(12582): java.lang.IllegalStateException: Can not perform this action after onSaveInstanceState
+						// signOut(); - 07-16 22:25:11.171: E/AndroidRuntime(12582): java.lang.IllegalStateException: Can not perform this action after onSaveInstanceState
 						e.printStackTrace();
 					}
 
@@ -417,13 +419,13 @@ public class BaseGame extends FragmentActivity implements OnIabPurchaseFinishedL
 	public void onConnectionSuspended(int arg0) {
 		mGoogleApiClient.connect();
 	}
-	
+
 	@Override
 	protected void onStart() {
 		super.onStart();
 		mGoogleApiClient.connect();
 	}
-	
+
 	@Override
 	protected void onStop() {
 		super.onStop();
@@ -434,15 +436,15 @@ public class BaseGame extends FragmentActivity implements OnIabPurchaseFinishedL
 
 	public void beginUserInitiatedSignIn() {
 		mSignInFlow = true;
-	   	mGoogleApiClient.connect();
+		mGoogleApiClient.connect();
 	}
-	
+
 	public boolean checkPlayServices() {
 		int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
 		if (resultCode != ConnectionResult.SUCCESS) {
 			if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
 				GooglePlayServicesUtil.getErrorDialog(resultCode, this,
-						PLAY_SERVICES_RESOLUTION_REQUEST).show();
+					BaseGame.PLAY_SERVICES_RESOLUTION_REQUEST).show();
 			} else {
 				finish();
 			}
@@ -461,12 +463,12 @@ public class BaseGame extends FragmentActivity implements OnIabPurchaseFinishedL
 		if (getApiClient().isConnected()) {
 			Person person = Plus.PeopleApi.getCurrentPerson(getApiClient());
 			User.onPlusConnected(BaseGame.this, person);
-			
+
 			menuFragment.onSignInSucceeded();
-			
+
 			if (checkPlayServices()) {
 				Intent intent = new Intent(this, RegistrationIntentService.class);
-		        startService(intent);
+				startService(intent);
 			}
 		}
 	}

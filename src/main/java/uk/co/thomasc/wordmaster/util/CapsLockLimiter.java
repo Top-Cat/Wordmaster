@@ -12,9 +12,9 @@ import uk.co.thomasc.wordmaster.R;
 
 public class CapsLockLimiter implements TextWatcher {
 
-	private EditText input;
-	private View rootView;
-	private Drawable enabled, disabled;
+	private final EditText input;
+	private final View rootView;
+	private final Drawable enabled, disabled;
 
 	public CapsLockLimiter(EditText input, View rootView, Drawable enabledImage, Drawable disabledImage) {
 		this.input = input;
@@ -24,12 +24,10 @@ public class CapsLockLimiter implements TextWatcher {
 	}
 
 	@Override
-	public void onTextChanged(CharSequence s, int start, int before, int count) {
-	}
+	public void onTextChanged(CharSequence s, int start, int before, int count) {}
 
 	@Override
-	public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-	}
+	public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
 	@Override
 	public void afterTextChanged(Editable s) {

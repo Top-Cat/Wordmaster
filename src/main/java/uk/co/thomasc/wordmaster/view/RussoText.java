@@ -1,18 +1,20 @@
 package uk.co.thomasc.wordmaster.view;
 
 import lombok.Getter;
+
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.widget.TextView;
+
 import uk.co.thomasc.wordmaster.BaseGame;
 import uk.co.thomasc.wordmaster.R;
 
 public class RussoText extends TextView {
 
 	@Getter private boolean strike;
-	private Paint paint = new Paint();
+	private final Paint paint = new Paint();
 
 	public RussoText(Context context) {
 		super(context);

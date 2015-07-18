@@ -1,5 +1,7 @@
 package uk.co.thomasc.wordmaster.objects;
 
+import lombok.Getter;
+
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -10,13 +12,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import lombok.Getter;
-import android.graphics.drawable.Drawable;
-
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.plus.People.LoadPeopleResult;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
+
+import android.graphics.drawable.Drawable;
 
 import uk.co.thomasc.wordmaster.BaseGame;
 import uk.co.thomasc.wordmaster.objects.callbacks.ImageLoadedListener;
@@ -30,14 +31,14 @@ public class User {
 	private static Map<String, User> users = new HashMap<String, User>();
 	private static boolean connected = false;
 	public static User none = new User("");
-	private static User me = none;
-	
+	private static User me = User.none;
+
 	static {
-		User.users.put("", none);
+		User.users.put("", User.none);
 	}
 
 	public static User getUser(Person player, BaseGame activity) {
-		return getUser(player.getId(), activity).update(player);
+		return User.getUser(player.getId(), activity).update(player);
 	}
 
 	public static User getUser(String plusID, BaseGame activity) {
@@ -46,22 +47,22 @@ public class User {
 		}
 		return User.users.get(plusID);
 	}
-	
+
 	public static User getCurrentUser() {
-		return me;
+		return User.me;
 	}
 
 	public static void onPlusConnected(final BaseGame activity, Person person) {
 		User.connected = true;
 		User.me = User.getUser(person, activity);
-		
-		if (notLoaded.size() > 0) {
-			Plus.PeopleApi.load(activity.getApiClient(), notLoaded).setResultCallback(new ResultCallback<LoadPeopleResult>() {
+
+		if (User.notLoaded.size() > 0) {
+			Plus.PeopleApi.load(activity.getApiClient(), User.notLoaded).setResultCallback(new ResultCallback<LoadPeopleResult>() {
 				@Override
 				public void onResult(LoadPeopleResult arg0) {
 					try {
 						for (Person p : arg0.getPersonBuffer()) {
-							getUser(p, activity);
+							User.getUser(p, activity);
 						}
 					} finally {
 						arg0.getPersonBuffer().release();
@@ -72,13 +73,13 @@ public class User {
 	}
 
 	/* Properties */
-	@Getter private String plusID;
+	@Getter private final String plusID;
 	@Getter private String name;
-	
+
 	private String avatarUri;
 	private Drawable drawable;
-	private List<NameLoadedListener> userListeners = new ArrayList<NameLoadedListener>();
-	private List<ImageLoadedListener> imageListeners = new ArrayList<ImageLoadedListener>();
+	private final List<NameLoadedListener> userListeners = new ArrayList<NameLoadedListener>();
+	private final List<ImageLoadedListener> imageListeners = new ArrayList<ImageLoadedListener>();
 
 	private User(String plusID) {
 		this.plusID = plusID;
@@ -93,7 +94,7 @@ public class User {
 						Person person = arg0.getPersonBuffer().get(0);
 						name = person.getDisplayName();
 						loadImage(person);
-	
+
 						for (NameLoadedListener listener : userListeners) {
 							listener.onNameLoaded(name);
 						}
@@ -104,24 +105,26 @@ public class User {
 				}
 			});
 		} else {
-			notLoaded.add(getPlusID());
+			User.notLoaded.add(getPlusID());
 		}
-		
+
 		return this;
 	}
-	
+
 	public User update(Person person) {
 		if (person.getId().equals(plusID)) {
 			setName(person.getDisplayName());
 			loadImage(person);
 		}
-		
+
 		return this;
 	}
 
 	private User loadImage(final Person person) {
-		if (avatarUri != null) return this;
-		
+		if (avatarUri != null) {
+			return this;
+		}
+
 		avatarUri = person.getImage().getUrl();
 
 		new Thread() {
@@ -140,7 +143,7 @@ public class User {
 						imageListeners.clear();
 						return;
 					} catch (IOException e) {
-						//No internet :<
+						// No internet :<
 						System.out.println("Failed to download avatar for " + person.getId());
 						System.out.println(avatarUri);
 					}
@@ -155,7 +158,7 @@ public class User {
 				}
 			}
 		}.start();
-		
+
 		return this;
 	}
 
@@ -179,10 +182,10 @@ public class User {
 	public Drawable getAvatar() {
 		return drawable;
 	}
-	
+
 	public User setName(String name) {
 		this.name = name;
-		
+
 		for (NameLoadedListener listener : userListeners) {
 			listener.onNameLoaded(name);
 		}

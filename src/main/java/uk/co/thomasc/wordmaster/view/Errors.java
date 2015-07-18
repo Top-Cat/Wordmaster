@@ -2,6 +2,7 @@ package uk.co.thomasc.wordmaster.view;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+
 import uk.co.thomasc.wordmaster.R;
 
 @AllArgsConstructor

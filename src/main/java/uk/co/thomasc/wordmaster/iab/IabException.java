@@ -23,7 +23,7 @@ package uk.co.thomasc.wordmaster.iab;
  */
 public class IabException extends Exception {
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = -3303374348172018695L;
 	IabResult mResult;

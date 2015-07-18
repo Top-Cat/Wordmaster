@@ -3,6 +3,13 @@ package uk.co.thomasc.wordmaster.view.create;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.plus.People;
+import com.google.android.gms.plus.People.LoadPeopleResult;
+import com.google.android.gms.plus.Plus;
+import com.google.android.gms.plus.model.people.Person;
+import com.google.android.gms.plus.model.people.PersonBuffer;
+
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -13,13 +20,6 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.plus.People;
-import com.google.android.gms.plus.Plus;
-import com.google.android.gms.plus.People.LoadPeopleResult;
-import com.google.android.gms.plus.model.people.Person;
-import com.google.android.gms.plus.model.people.PersonBuffer;
-
 import uk.co.thomasc.wordmaster.BaseGame;
 import uk.co.thomasc.wordmaster.R;
 import uk.co.thomasc.wordmaster.objects.User;
@@ -27,7 +27,7 @@ import uk.co.thomasc.wordmaster.objects.callbacks.GameCreationListener;
 import uk.co.thomasc.wordmaster.view.menu.MenuAdapter;
 
 public class CreateGameFragment extends Fragment implements OnClickListener, OnItemClickListener {
-	
+
 	public PersonAdapter adapter;
 	private GameCreationListener listener;
 	private ResultCallback<LoadPeopleResult> peopleListener;
@@ -57,7 +57,7 @@ public class CreateGameFragment extends Fragment implements OnClickListener, OnI
 						existingOpponents.add(opponent.getPlusID());
 					}
 				}
-				
+
 				PersonBuffer personBuffer = arg0.getPersonBuffer();
 				int count = 0;
 				try {
@@ -81,7 +81,7 @@ public class CreateGameFragment extends Fragment implements OnClickListener, OnI
 
 		return rootView;
 	}
-	
+
 	@Override
 	public void onClick(View v) {
 		if (v.getId() == R.id.action_close) {

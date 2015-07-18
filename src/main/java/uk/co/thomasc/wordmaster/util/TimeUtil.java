@@ -13,11 +13,11 @@ public class TimeUtil {
 		} else if (diff / 60 == 0) {
 			return diff + "s";
 		} else if (diff / 3600 == 0) {
-			return (diff / 60) + "m";
+			return diff / 60 + "m";
 		} else if (diff / 86400 == 0) {
-			return (diff / 3600) + "h";
+			return diff / 3600 + "h";
 		} else {
-			return (diff / 86400) + "d";
+			return diff / 86400 + "d";
 		}
 	}
 

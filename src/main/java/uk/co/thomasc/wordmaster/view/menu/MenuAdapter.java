@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import uk.co.thomasc.wordmaster.R;
 import uk.co.thomasc.wordmaster.objects.Game;
 import uk.co.thomasc.wordmaster.objects.callbacks.ImageLoadedListener;
@@ -34,11 +35,11 @@ public class MenuAdapter extends ArrayAdapter<Game> {
 			@Override
 			public int compare(Game e1, Game e2) {
 				int r = (e2.isTurn() ? 1 : 0) - (e1.isTurn() ? 1 : 0);
-				return r != 0 ? r : ((e2.getLastUpdateTimestamp() - e1.getLastUpdateTimestamp()) > 0 ? 1 : -1) * (e1.isPlayersTurn() ? -1 : 1);
+				return r != 0 ? r : (e2.getLastUpdateTimestamp() - e1.getLastUpdateTimestamp() > 0 ? 1 : -1) * (e1.isPlayersTurn() ? -1 : 1);
 			}
 		};
 	}
-	
+
 	public void setSelectedGid(String selectedGid) {
 		this.selectedGid = selectedGid;
 		act.runOnUiThread(new Runnable() {
@@ -59,34 +60,34 @@ public class MenuAdapter extends ArrayAdapter<Game> {
 	public boolean isEnabled(int position) {
 		return getItem(position).getOpponent() != null;
 	}
-	
+
 	@Override
 	public int getViewTypeCount() {
 		return 1;
 	}
-	
+
 	@Override
 	public int getItemViewType(int position) {
 		return 0;
 	}
-	
-	private Map<View, Game> checkList = new HashMap<View, Game>();
+
+	private final Map<View, Game> checkList = new HashMap<View, Game>();
 
 	private View newView(int position, ViewGroup parent) {
 		LayoutInflater vi = (LayoutInflater) act.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		View view = vi.inflate(R.layout.game_info, parent, false);
 		((TextView) view.findViewById(R.id.playera)).setText("Loading...");
-		
+
 		return view;
 	}
-	
+
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		final Game item = getItem(position);
 		final View view = convertView == null ? newView(position, parent) : convertView;
 
 		checkList.put(view, item);
-		
+
 		if (item.getID().equals(selectedGid)) {
 			view.setBackgroundResource(R.drawable.selectedbg);
 			((TextView) view.findViewById(R.id.playera)).setTextColor(act.getResources().getColor(R.color.selectedtext));

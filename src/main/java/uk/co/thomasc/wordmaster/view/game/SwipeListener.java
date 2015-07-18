@@ -7,7 +7,7 @@ import uk.co.thomasc.wordmaster.R;
 
 public class SwipeListener implements OnPageChangeListener {
 
-	private ImageView indicator;
+	private final ImageView indicator;
 
 	public SwipeListener(ImageView indicator) {
 		this.indicator = indicator;

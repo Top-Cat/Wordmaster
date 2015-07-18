@@ -18,14 +18,15 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
 import uk.co.thomasc.wordmaster.BaseGame;
 import uk.co.thomasc.wordmaster.R;
 import uk.co.thomasc.wordmaster.api.TakeTurnSpinnerListener;
 import uk.co.thomasc.wordmaster.objects.Game;
 import uk.co.thomasc.wordmaster.objects.Turn;
 import uk.co.thomasc.wordmaster.objects.User;
-import uk.co.thomasc.wordmaster.objects.callbacks.ImageLoadedListener;
 import uk.co.thomasc.wordmaster.objects.callbacks.GameListener;
+import uk.co.thomasc.wordmaster.objects.callbacks.ImageLoadedListener;
 import uk.co.thomasc.wordmaster.util.CapsLockLimiter;
 import uk.co.thomasc.wordmaster.util.TurnMaker;
 import uk.co.thomasc.wordmaster.view.game.GameLayout;
@@ -79,7 +80,7 @@ public class MenuDetailFragment extends Fragment implements GameListener, TakeTu
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		final View rootView = inflater.inflate(R.layout.game_screen, container, false);
-		
+
 		((BaseGame) getActivity()).menuDetail = this;
 
 		game = Game.getGame(gameid);
@@ -134,17 +135,17 @@ public class MenuDetailFragment extends Fragment implements GameListener, TakeTu
 
 			SwipeController swipe = new SwipeController((BaseGame) getActivity(), gameid);
 			ViewPager mPager = (ViewPager) rootView.findViewById(R.id.pager);
-			
+
 			mPager.setPageMargin(BaseGame.convertDip2Pixels(getResources(), 2));
 			mPager.setPageMarginDrawable(R.color.divider);
-			
+
 			if (((BaseGame) getActivity()).wideLayout) {
 				mPager.setOnTouchListener(this);
 				rootView.findViewById(R.id.indicator).setVisibility(View.INVISIBLE);
 			} else {
 				mPager.addOnPageChangeListener(new SwipeListener((ImageView) rootView.findViewById(R.id.indicator)));
 			}
-			
+
 			mPager.setAdapter(swipe);
 
 			showKeyboard();
@@ -170,9 +171,9 @@ public class MenuDetailFragment extends Fragment implements GameListener, TakeTu
 
 	@Override
 	public void onTurnAdded(Game game, Turn turn) {
-		updateTurnCount(); //TODO: Combine functions?
+		updateTurnCount(); // TODO: Combine functions?
 	}
-	
+
 	@Override
 	public void onGameUpdated(final Game game) {
 		getView().post(new Runnable() {
@@ -201,13 +202,13 @@ public class MenuDetailFragment extends Fragment implements GameListener, TakeTu
 			}
 		});
 	}
-	
+
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {
 		if (event.getAction() == MotionEvent.ACTION_UP) {
 			v.performClick();
 		}
-			
+
 		return true;
 	}
 }

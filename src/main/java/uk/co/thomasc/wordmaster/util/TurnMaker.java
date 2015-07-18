@@ -3,6 +3,7 @@ package uk.co.thomasc.wordmaster.util;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
+
 import uk.co.thomasc.wordmaster.BaseGame;
 import uk.co.thomasc.wordmaster.R;
 import uk.co.thomasc.wordmaster.api.ServerAPI;
@@ -15,11 +16,11 @@ import uk.co.thomasc.wordmaster.view.Errors;
 
 public class TurnMaker implements OnClickListener, TakeTurnRequestListener, SetWordRequestListener {
 
-	private Game game;
-	private BaseGame activity;
-	private EditText input;
-	private DialogPanel errorMessage;
-	private TakeTurnSpinnerListener listener;
+	private final Game game;
+	private final BaseGame activity;
+	private final EditText input;
+	private final DialogPanel errorMessage;
+	private final TakeTurnSpinnerListener listener;
 
 	public TurnMaker(Game game, BaseGame activity, View rootView, TakeTurnSpinnerListener listener) {
 		this.game = game;
@@ -42,7 +43,7 @@ public class TurnMaker implements OnClickListener, TakeTurnRequestListener, SetW
 			}
 		}
 	}
-	
+
 	@Override
 	public void onSetWordComplete(int errorCode) {
 		game.setNeedingWord(false);
@@ -54,7 +55,7 @@ public class TurnMaker implements OnClickListener, TakeTurnRequestListener, SetW
 		game.setPlayersTurn(false);
 		onComplete(errorCode);
 	}
-	
+
 	private void onComplete(final int errorCode) {
 		input.post(new Runnable() {
 			@Override

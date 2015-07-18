@@ -1,18 +1,20 @@
 package uk.co.thomasc.wordmaster.objects;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.json.simple.JSONObject;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.util.SparseArray;
+
 import uk.co.thomasc.wordmaster.BaseGame;
 import uk.co.thomasc.wordmaster.api.ServerAPI;
 import uk.co.thomasc.wordmaster.api.UpdateAlphaRequestListener;
@@ -35,16 +37,16 @@ public class Game implements UpdateAlphaRequestListener {
 	}
 
 	/* Properties */
-	private String gameID;
+	private final String gameID;
 	@Getter private User opponent;
-	@Getter private SparseArray<Turn> turns = new SparseArray<Turn>();
+	@Getter private final SparseArray<Turn> turns = new SparseArray<Turn>();
 	private int latestTurnId = -1;
 	private int oldestTurnId = Integer.MAX_VALUE;
 	@Getter private int playerScore = 0, opponentScore = 0;
 	@Getter @Setter private int turnNumber = 1;
 	@Getter @Setter private String playerWord = "", opponentWord = "";
 	@Getter @Setter private boolean needingWord = true, playersTurn = false;
-	private ArrayList<GameListener> gameListeners = new ArrayList<GameListener>();
+	private final ArrayList<GameListener> gameListeners = new ArrayList<GameListener>();
 	@Getter private long lastUpdateTimestamp = 0;
 	private int alpha = 0;
 	private byte alphaStatus = 0;
@@ -64,30 +66,30 @@ public class Game implements UpdateAlphaRequestListener {
 	public Game setScore(int playerScore, int opponentScore) {
 		this.playerScore = playerScore;
 		this.opponentScore = opponentScore;
-		
+
 		return this;
 	}
-	
+
 	public GameAdapter getAdapter(BaseGame activity) {
 		if (adapter == null) {
 			adapter = new GameAdapter(activity);
 		}
 		return adapter;
 	}
-	
+
 	public Game setLastUpdateTimestamp(Context c, long lastUpdateTimestamp) {
 		this.lastUpdateTimestamp = lastUpdateTimestamp;
-		
+
 		saveState(c);
-		
+
 		return this;
 	}
-	
+
 	public Game setOpponent(Context c, User opponent) {
 		this.opponent = opponent;
-		
+
 		saveState(c);
-		
+
 		return this;
 	}
 
@@ -99,20 +101,20 @@ public class Game implements UpdateAlphaRequestListener {
 		if (turns.get(id) == null) {
 			Turn turn = new Turn(id);
 			turns.put(id, turn);
-			
+
 			newTurn = true;
 		}
 		final Turn turn = turns.get(id).update(turnObj, activity);
-		
+
 		if (turn.getID() < oldestTurnId) {
 			oldestTurnId = turn.getID();
 		}
 		if (turn.getID() > latestTurnId) {
 			latestTurn = true;
-			
+
 			latestTurnId = turn.getID();
-			
-			turnNumber = (turn.getTurnNum() / 2) + 1;
+
+			turnNumber = turn.getTurnNum() / 2 + 1;
 
 			if (turn.getGuess().length() > 0) {
 				setNeedingWord(turn.getCorrectLetters() == 4);
@@ -122,7 +124,7 @@ public class Game implements UpdateAlphaRequestListener {
 				playersTurn = turn.getUser().equals(opponent);
 			}
 		}
-		
+
 		if (newTurn) {
 			activity.runOnUiThread(new Runnable() {
 				@Override
@@ -208,12 +210,12 @@ public class Game implements UpdateAlphaRequestListener {
 		if (alphaStatus == 0) {
 			this.alpha = alpha;
 		}
-		
+
 		return this;
 	}
 
 	public boolean getAlpha(int j) {
-		return ((alpha >> j) & 1) == 1;
+		return (alpha >> j & 1) == 1;
 	}
 
 	public void updateAlpha(int id, boolean strike, BaseGame activityReference) {
@@ -231,9 +233,9 @@ public class Game implements UpdateAlphaRequestListener {
 		if (errorCode != 0) {
 			alphaStatus |= 2;
 		}
-		
-		this.alphaStatus &= ~1;
-		
+
+		alphaStatus &= ~1;
+
 		if ((alphaStatus & 2) == 2) {
 			alphaStatus |= 1;
 			ServerAPI.updateAlpha(gameID, alpha, activityReference, this);
@@ -250,35 +252,35 @@ public class Game implements UpdateAlphaRequestListener {
 	public Game update(JSONObject gameObject, BaseGame activity) {
 		User opp = null;
 		int opponentScore = 0;
-		long updated = gameObject.containsKey("updated") ? ((Long) gameObject.get("updated")) : 0;
+		long updated = gameObject.containsKey("updated") ? (Long) gameObject.get("updated") : 0;
 		boolean hasUpdated = getLastUpdateTimestamp() < updated;
-		
+
 		if (gameObject.containsKey("oppid")) {
 			opp = User.getUser((String) gameObject.get("oppid"), activity);
 			opponentScore = ((Long) gameObject.get("oscore")).intValue();
 		}
-		
+
 		setOpponent(activity, opp)
 			.setPlayersTurn((Boolean) gameObject.get("turn"))
 			.setNeedingWord((Boolean) gameObject.get("needword"))
 			.setScore(((Long) gameObject.get("pscore")).intValue(), opponentScore)
 			.setAlpha(gameObject.containsKey("alpha") ? ((Long) gameObject.get("alpha")).intValue() : 0)
-			.setLastUpdateTimestamp(activity, gameObject.containsKey("updated_user") ? ((Long) gameObject.get("updated_user")) : 0)
+			.setLastUpdateTimestamp(activity, gameObject.containsKey("updated_user") ? (Long) gameObject.get("updated_user") : 0)
 			.setLoaded(true);
-		
-		updatePoint = Math.max(updatePoint, updated);
-		
+
+		Game.updatePoint = Math.max(Game.updatePoint, updated);
+
 		if (hasUpdated) {
 			getMoreTurns(activity);
 		}
-		
+
 		for (GameListener l : gameListeners) {
 			l.onGameUpdated(this);
 		}
-		
+
 		return this;
 	}
-	
+
 	private void getMoreTurns(BaseGame activity) {
 		if (getPivotLatest() < 0) {
 			ServerAPI.getTurns(getID(), activity, null);

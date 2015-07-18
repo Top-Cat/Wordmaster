@@ -12,6 +12,7 @@ import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+
 import uk.co.thomasc.wordmaster.BaseGame;
 import uk.co.thomasc.wordmaster.R;
 import uk.co.thomasc.wordmaster.api.GetTurnsRequestListener;
@@ -39,7 +40,7 @@ public class SwipeController extends FragmentStatePagerAdapter {
 	public float getPageWidth(int position) {
 		return pageWidth;
 	}
-	
+
 	@Override
 	public Fragment getItem(int arg0) {
 		Fragment fragment = new Pages();
@@ -63,7 +64,7 @@ public class SwipeController extends FragmentStatePagerAdapter {
 		private Game game;
 		private ListView listView;
 		private LinearLayout alpha;
-		
+
 		private boolean refreshTriggered = false;
 
 		@Override
@@ -90,20 +91,20 @@ public class SwipeController extends FragmentStatePagerAdapter {
 		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 			View rootView;
 			game = Game.getGame(SwipeController.gid);
-			
+
 			game.addTurnListener(this);
 
 			if (getArguments().getBoolean(Pages.ARG_OBJECT)) {
 				rootView = new ListView(getActivity());
-				
-					((BaseGame) getActivity()).gameAdapter = adapter = game.getAdapter((BaseGame) getActivity());
-					listView = (ListView) rootView;
-					listView.setAdapter(adapter);
-					listView.setBackgroundColor(Color.WHITE);
-					listView.setCacheColorHint(Color.WHITE);
-					
-					listView.setSelection(listView.getAdapter().getCount() - 1);
-					listView.setOnScrollListener(this);
+
+				((BaseGame) getActivity()).gameAdapter = adapter = game.getAdapter((BaseGame) getActivity());
+				listView = (ListView) rootView;
+				listView.setAdapter(adapter);
+				listView.setBackgroundColor(Color.WHITE);
+				listView.setCacheColorHint(Color.WHITE);
+
+				listView.setSelection(listView.getAdapter().getCount() - 1);
+				listView.setOnScrollListener(this);
 			} else {
 				rootView = inflater.inflate(R.layout.alphabet, container, false);
 
@@ -115,9 +116,9 @@ public class SwipeController extends FragmentStatePagerAdapter {
 
 		@Override
 		public void onScrollStateChanged(AbsListView view, int scrollState) {
-			
+
 		}
-		
+
 		@Override
 		public void onScroll(AbsListView view, final int firstVisibleItem, int visibleItemCount, final int totalItemCount) {
 			if (firstVisibleItem < 2 && !refreshTriggered && game.getPivotOldest() > 0) {
@@ -127,7 +128,7 @@ public class SwipeController extends FragmentStatePagerAdapter {
 					@Override
 					public void onRequestFailed() {
 						refreshTriggered = false;
-						
+
 						final DialogPanel errorMessage = (DialogPanel) getActivity().findViewById(R.id.errorMessage);
 						errorMessage.post(new Runnable() {
 							@Override
@@ -151,7 +152,7 @@ public class SwipeController extends FragmentStatePagerAdapter {
 				});
 			}
 		}
-		
+
 		@Override
 		public void onClick(View v) {
 			RussoText txt = (RussoText) v;

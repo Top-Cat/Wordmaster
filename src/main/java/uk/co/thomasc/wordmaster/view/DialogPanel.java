@@ -35,7 +35,7 @@ public class DialogPanel extends FrameLayout {
 
 	public void init() {
 		h = new TimerHandler(this);
-		
+
 		if (!isInEditMode()) {
 			View.inflate(getContext(), R.layout.network_error, this);
 			container = findViewById(R.id.network_error);
@@ -49,12 +49,10 @@ public class DialogPanel extends FrameLayout {
 			Animation showAnim = AnimationUtils.loadAnimation(getContext(), R.anim.slide_down);
 			showAnim.setAnimationListener(new AnimationListener() {
 				@Override
-				public void onAnimationStart(Animation animation) {
-				}
+				public void onAnimationStart(Animation animation) {}
 
 				@Override
-				public void onAnimationRepeat(Animation animation) {
-				}
+				public void onAnimationRepeat(Animation animation) {}
 
 				@Override
 				public void onAnimationEnd(Animation animation) {

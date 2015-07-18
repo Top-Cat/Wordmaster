@@ -1,12 +1,13 @@
 package uk.co.thomasc.wordmaster.objects;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+
 import java.util.Date;
 
 import org.json.simple.JSONObject;
 
 import uk.co.thomasc.wordmaster.BaseGame;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
 
 @EqualsAndHashCode(of = {"turnID"})
 public class Turn {
@@ -14,7 +15,7 @@ public class Turn {
 	public static String keySegment = "daP5fkiIveAqDR/auk2KsLqNVgofMp5+LweMGMcMZDwiGgedLmE+y5KzQKCI69zSzWiOz8LJerxfLFp7yHHLCNsdRjmeqHxaMS";
 
 	/* Properties */
-	private int turnID;
+	private final int turnID;
 	@Getter private int turnNum;
 	@Getter private Date timestamp;
 	@Getter private User user;
@@ -24,7 +25,7 @@ public class Turn {
 
 	/* Constructors */
 	public Turn(int id) {
-		this.turnID = id;
+		turnID = id;
 	}
 
 	/* Modifiers */
@@ -43,11 +44,11 @@ public class Turn {
 		timestamp = new Date((Long) turnObj.get("when"));
 		correctLetters = ((Long) turnObj.get("correct")).intValue();
 		displacedLetters = ((Long) turnObj.get("displaced")).intValue();
-		
+
 		if (correctLetters == 4) {
 			opponentWord = (String) turnObj.get("oppword");
 		}
-		
+
 		return this;
 	}
 }

@@ -3,6 +3,8 @@ package uk.co.thomasc.wordmaster.view.create;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.android.gms.plus.model.people.Person;
+
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -12,8 +14,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.google.android.gms.plus.model.people.Person;
 
 import uk.co.thomasc.wordmaster.BaseGame;
 import uk.co.thomasc.wordmaster.R;
@@ -25,8 +25,8 @@ public class PersonAdapter extends ArrayAdapter<Person> {
 
 	public static String keySegment = "DB6Fpmlprf0yaYGbkfFh6XvisO25dvfq4mhyfNR5K15Xo9B6kfbnd1qQuO7zhB10ZCZaBZfRpJP5saK/jyRLWOzqi0vQIDAQAB";
 
-	private Activity act;
-	private CreateGameFragment fragment;
+	private final Activity act;
+	private final CreateGameFragment fragment;
 
 	public PersonAdapter(Activity act, CreateGameFragment fragment) {
 		super(act, 0);
@@ -39,13 +39,13 @@ public class PersonAdapter extends ArrayAdapter<Person> {
 	public void add(Person object) {
 		super.add(object);
 	}
-	
+
 	@Override
 	public int getCount() {
 		return super.getCount() + (fragment.nextPage == null ? 1 : 2);
 	}
 
-	private Map<View, User> checkList = new HashMap<View, User>();
+	private final Map<View, User> checkList = new HashMap<View, User>();
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
@@ -55,10 +55,10 @@ public class PersonAdapter extends ArrayAdapter<Person> {
 			LayoutInflater vi = (LayoutInflater) act.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			rview = vi.inflate(R.layout.person, parent, false);
 		}
-		
+
 		final View view = rview;
 		((ImageView) view.findViewById(R.id.avatar)).setVisibility(View.VISIBLE);
-		
+
 		if (position == 0) {
 			((ImageView) view.findViewById(R.id.avatar)).setImageResource(R.drawable.games_matches_green);
 			((TextView) view.findViewById(R.id.playera)).setText("Auto Match");
@@ -69,10 +69,10 @@ public class PersonAdapter extends ArrayAdapter<Person> {
 			checkList.remove(view);
 		} else {
 			Person item = getItem(position - 1);
-			
+
 			final User user = User.getUser(item, (BaseGame) act);
 			checkList.put(view, user);
-	
+
 			user.listenForLoad(new NameLoadedListener() {
 				@Override
 				public void onNameLoaded(final String name) {
