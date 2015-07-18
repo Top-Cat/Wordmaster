@@ -2,80 +2,52 @@ package uk.co.thomasc.wordmaster.objects;
 
 import java.util.Date;
 
+import org.json.simple.JSONObject;
+
+import uk.co.thomasc.wordmaster.BaseGame;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+
+@EqualsAndHashCode(of = {"turnID"})
 public class Turn {
 
 	public static String keySegment = "daP5fkiIveAqDR/auk2KsLqNVgofMp5+LweMGMcMZDwiGgedLmE+y5KzQKCI69zSzWiOz8LJerxfLFp7yHHLCNsdRjmeqHxaMS";
 
 	/* Properties */
 	private int turnID;
-	private int turnNum;
-	private Date timestamp;
-	private User user;
-	private String guess;
-	private int correctLetters, displacedLetters;
-	private String opponentWord;
+	@Getter private int turnNum;
+	@Getter private Date timestamp;
+	@Getter private User user;
+	@Getter private String guess;
+	@Getter private int correctLetters, displacedLetters;
+	@Getter private String opponentWord;
 
 	/* Constructors */
-	public Turn(int id, int num, Date timestamp, User user, String guess, int correctLetters, int displacedLetters) {
-		turnID = id;
-		turnNum = num;
-		this.timestamp = timestamp;
-		this.user = user;
-		this.guess = guess;
-		this.correctLetters = correctLetters;
-		this.displacedLetters = displacedLetters;
-		opponentWord = "";
+	public Turn(int id) {
+		this.turnID = id;
 	}
 
-	public Turn(int id, int num, Date timestamp, User user, String guess, int correctLetters, int displacedLetters, String opponentWord) {
-		this(id, num, timestamp, user, guess, correctLetters, displacedLetters);
-		this.opponentWord = opponentWord;
-	}
-
-	/* Getters */
+	/* Modifiers */
 	public int getID() {
 		return turnID;
-	}
-
-	public int getTurnNum() {
-		return turnNum;
-	}
-
-	public Date getTimestamp() {
-		return timestamp;
 	}
 
 	public long getUnixTimestamp() {
 		return timestamp.getTime();
 	}
 
-	public User getUser() {
-		return user;
-	}
-
-	public String getGuess() {
-		return guess;
-	}
-
-	public int getCorrectLetters() {
-		return correctLetters;
-	}
-
-	public int getDisplacedLetters() {
-		return displacedLetters;
-	}
-
-	public String getOpponentWord() {
-		return opponentWord;
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (!(o instanceof Turn)) {
-			return false;
+	public Turn update(JSONObject turnObj, BaseGame activity) {
+		turnNum = ((Long) turnObj.get("turnnum")).intValue();
+		user = User.getUser((String) turnObj.get("playerid"), activity);
+		guess = (String) turnObj.get("guess");
+		timestamp = new Date((Long) turnObj.get("when"));
+		correctLetters = ((Long) turnObj.get("correct")).intValue();
+		displacedLetters = ((Long) turnObj.get("displaced")).intValue();
+		
+		if (correctLetters == 4) {
+			opponentWord = (String) turnObj.get("oppword");
 		}
-		Turn other = (Turn) o;
-		return other.getID() == getID();
+		
+		return this;
 	}
-
 }

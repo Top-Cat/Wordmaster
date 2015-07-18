@@ -3,17 +3,15 @@ package uk.co.thomasc.wordmaster.view.game;
 import java.util.Comparator;
 import java.util.Locale;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import uk.co.thomasc.wordmaster.BaseGame;
 import uk.co.thomasc.wordmaster.R;
 import uk.co.thomasc.wordmaster.objects.Turn;
@@ -23,10 +21,10 @@ import uk.co.thomasc.wordmaster.view.TimeSinceText;
 
 public class GameAdapter extends ArrayAdapter<Turn> {
 
-	private Activity act;
+	private BaseGame act;
 	final private Comparator<Turn> comp;
 
-	public GameAdapter(Activity act) {
+	public GameAdapter(BaseGame act) {
 		super(act, 0);
 
 		this.act = act;
@@ -56,7 +54,7 @@ public class GameAdapter extends ArrayAdapter<Turn> {
 		if (item.getTurnNum() == 0) {
 			return 0;
 		} else {
-			int v = item.getUser().getPlusID().equals(((BaseGame) act).getUserId()) ? 1 : 3;
+			int v = User.getCurrentUser().equals(item.getUser()) ? 1 : 3;
 			if (item.getCorrectLetters() < 4) {
 				v++;
 			}
@@ -70,10 +68,7 @@ public class GameAdapter extends ArrayAdapter<Turn> {
 
 		final Turn item = getItem(position);
 		User user = item.getUser();
-		boolean isPlayer = (user.getPlusID().equals(((BaseGame) act).getUserId()));
-		if (!isPlayer && item.getTurnNum() == 0) {
-			return new View(getContext());
-		}
+		boolean isPlayer = User.getCurrentUser().equals(user);
 		final boolean winningTurn = (item.getCorrectLetters() == 4);
 
 		if (view == null) {
@@ -98,12 +93,13 @@ public class GameAdapter extends ArrayAdapter<Turn> {
 					break;
 			}
 			
-			view = vi.inflate(viewId, null);
+			view = vi.inflate(viewId, parent, false);
 		}
 
 		if (item.getTurnNum() == 0) {
-			((TextView) view.findViewById(R.id.guess)).setText("Your word is " + item.getGuess());
-			view.setBackgroundResource(R.drawable.wordbg);
+			TextView guess = ((TextView) view.findViewById(R.id.guess));
+			guess.setText(isPlayer ? "Your word is " + item.getGuess() : "");
+			guess.setVisibility(isPlayer ? View.VISIBLE : View.GONE);
 		} else {
 			if (isPlayer) {
 				((TextView) view.findViewById(R.id.guess)).setText(item.getGuess().toUpperCase(Locale.ENGLISH));
@@ -128,10 +124,9 @@ public class GameAdapter extends ArrayAdapter<Turn> {
 			int goldPegs = item.getCorrectLetters();
 			int silverPegs = item.getDisplacedLetters();
 
-			Resources res = act.getResources();
-			Drawable gold = res.getDrawable(R.drawable.goldpeg);
-			Drawable silver = res.getDrawable(R.drawable.silverpeg);
-			Drawable white = res.getDrawable(R.drawable.whitepeg);
+			Drawable gold = ContextCompat.getDrawable(act, R.drawable.goldpeg);
+			Drawable silver = ContextCompat.getDrawable(act, R.drawable.silverpeg);
+			Drawable white = ContextCompat.getDrawable(act, R.drawable.whitepeg);
 
 			if (!winningTurn) {
 				int[] pegs = { R.id.peg0, R.id.peg1, R.id.peg2, R.id.peg3 };

@@ -1,9 +1,11 @@
 package uk.co.thomasc.wordmaster.view.menu;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 
 import android.annotation.SuppressLint;
-import android.app.Dialog;
+import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -24,8 +26,6 @@ import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.PopupMenu.OnMenuItemClickListener;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.games.Games;
 
@@ -38,7 +38,6 @@ import uk.co.thomasc.wordmaster.gcm.TurnReceiver;
 import uk.co.thomasc.wordmaster.objects.Game;
 import uk.co.thomasc.wordmaster.objects.callbacks.GameCreationListener;
 import uk.co.thomasc.wordmaster.objects.callbacks.UnhideGameListener;
-import uk.co.thomasc.wordmaster.util.BaseGameActivity;
 import uk.co.thomasc.wordmaster.view.DialogPanel;
 import uk.co.thomasc.wordmaster.view.Errors;
 import uk.co.thomasc.wordmaster.view.create.CreateGameFragment;
@@ -48,6 +47,8 @@ import uk.co.thomasc.wordmaster.view.upgrade.UpgradeFragment;
 public class MenuListFragment extends Fragment implements OnClickListener, GetMatchesRequestListener, OnItemClickListener, GameCreationListener, UnhideGameListener {
 
 	public MenuAdapter adapter;
+	
+	private Set<Game> games = new HashSet<Game>(); 
 
 	private CreateGameFragment createGameFragment;
 	private UnhideGameFragment unhideGameFragment;
@@ -60,6 +61,7 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 
 		SignInButton button = (SignInButton) v.findViewById(R.id.button_sign_in);
 		button.setSize(SignInButton.SIZE_WIDE); // I commend anyone who can do this in XML
+		button.setOnClickListener(this);
 
 		adapter = new MenuAdapter(getActivity());
 		ListView list = (ListView) v.findViewById(R.id.main_feed);
@@ -84,14 +86,6 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 
 		if (((BaseGame) getActivity()).isSignedIn()) {
 			onSignInSucceeded();
-		} else {
-			int services = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getActivity());
-			if (services == ConnectionResult.SUCCESS) {
-				button.setOnClickListener(this);
-			} else {
-				Dialog dialog = GooglePlayServicesUtil.getErrorDialog(services, getActivity(), 1);
-				dialog.show();
-			}
 		}
 
 		return v;
@@ -105,10 +99,11 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 	@Override
 	public void onClick(View v) {
 		if (v.getId() == R.id.button_sign_in) {
+			// TODO: ((BaseGame) getActivity()).checkPlayServices();
 			if (((BaseGame) getActivity()).isSignedIn()) {
 				onSignInSucceeded();
-			} else {
-				((BaseGameActivity) getActivity()).beginUserInitiatedSignIn();
+			} else  {
+				((BaseGame) getActivity()).beginUserInitiatedSignIn();
 			}
 		} else if (v.getId() == R.id.refresh && getView().findViewById(R.id.refresh).getVisibility() == View.VISIBLE) {
 			loadGames();
@@ -142,7 +137,6 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 						ServerAPI.registerGCM("", (BaseGame) getActivity());
 						TurnReceiver.resetNotifications(getActivity());
 						((BaseGame) getActivity()).signOut();
-						((BaseGame) getActivity()).onSignInFailed();
 					} else if (item.getItemId() == R.id.unhide_game) {
 						unhideGame();
 					}
@@ -182,19 +176,22 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 		getView().findViewById(R.id.refresh).setVisibility(View.GONE);
 		getView().findViewById(R.id.refresh_progress).setVisibility(View.VISIBLE);
 
-		ServerAPI.getMatches(((BaseGame) getActivity()).getUserId(), (BaseGame) getActivity(), this);
+		ServerAPI.getMatches((BaseGame) getActivity(), this);
 	}
 
 	@Override
-	public void onRequestComplete(final Game[] games) {
+	public void onRequestComplete(final Game[] gameResult) {
 		if (isAdded()) {
 			getActivity().runOnUiThread(new Runnable() {
 				@Override
 				public void run() {
+					games.addAll(Arrays.asList(gameResult));
+					
 					adapter.clear();
+					SharedPreferences prefs = ((BaseGame) getActivity()).getHiddenGamesPreferences();
 					for (Game game : games) {
-						if (((BaseGame) getActivity()).getHiddenGamesPreferences().contains(game.getID())) {
-							if (!((BaseGame) getActivity()).getHiddenGamesPreferences().getBoolean(game.getID(), false)) {
+						if (prefs.contains(game.getID())) {
+							if (!prefs.getBoolean(game.getID(), false)) {
 								adapter.add(game);
 							}
 						} else {
@@ -203,10 +200,11 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 					}
 					refreshOver();
 
-					String gameid = ((BaseGame) getActivity()).goToGameId;
-					if (gameid.length() > 0) {
-						((BaseGame) getActivity()).goToGameId = "";
-						goToGame(gameid);
+					if (isResumed()) {
+						String gameid = ((BaseGame) getActivity()).getGoToGameId();
+						if (gameid.length() > 0) {
+							goToGame(gameid);
+						}
 					}
 				}
 			});
@@ -214,7 +212,7 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 	}
 
 	@Override
-	public void onRequestFailed() {
+	public void onRequestFailed(int errorCode) {
 		if (isAdded()) {
 			getActivity().runOnUiThread(new Runnable() {
 				@Override
@@ -229,24 +227,31 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 	}
 
 	public void goToGame(String gameID) {
+		BaseGame act = (BaseGame) getActivity();
 		adapter.setSelectedGid(gameID);
 		
-		BaseGame act = (BaseGame) getActivity();
-		act.getSupportFragmentManager().popBackStack("game", 1);
-		Bundle args = new Bundle();
-		args.putString(MenuDetailFragment.ARG_ITEM_ID, gameID);
-		Fragment fragment = new MenuDetailFragment();
-		fragment.setArguments(args);
-		FragmentTransaction ft = act.getSupportFragmentManager().beginTransaction();
-		if (!act.wideLayout) {
-			ft.setCustomAnimations(R.anim.slide_right, R.anim.slide_left, R.anim.slide_left_2, R.anim.slide_right_2)
-					.hide(this);
-		} else {
-			ft.setCustomAnimations(R.anim.wide_in, 0, 0, R.anim.wide_out);
+		if (!isAdded()) {
+			act.getSupportFragmentManager().popBackStack("game", 1);
 		}
-		ft.addToBackStack("game")
-				.add(R.id.empty, fragment)
-				.commit();
+		
+		if (gameID.length() > 0) {
+			Bundle args = new Bundle();
+			args.putString(MenuDetailFragment.ARG_ITEM_ID, gameID);
+			
+			Fragment fragment = new MenuDetailFragment();
+			fragment.setArguments(args);
+			
+			FragmentTransaction ft = act.getSupportFragmentManager().beginTransaction();
+			if (!act.wideLayout) {
+				ft.setCustomAnimations(R.anim.slide_right, R.anim.slide_left, R.anim.slide_left_2, R.anim.slide_right_2)
+						.hide(this);
+			} else {
+				ft.setCustomAnimations(R.anim.wide_in, 0, 0, R.anim.wide_out);
+			}
+			ft.addToBackStack("game")
+					.add(R.id.empty, fragment)
+					.commit();
+		}
 	}
 
 	private void refreshOver() {
@@ -255,13 +260,34 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 	}
 
 	public void onSignInSucceeded() {
-		getView().findViewById(R.id.button_sign_in).setVisibility(View.GONE);
-		getView().findViewById(R.id.whysignin).setVisibility(View.GONE);
-		getView().findViewById(R.id.main_feed).setVisibility(View.VISIBLE);
+		getView().post(new Runnable() {
+			@Override
+			public void run() {
+				getView().findViewById(R.id.button_sign_in).setVisibility(View.GONE);
+				getView().findViewById(R.id.whysignin).setVisibility(View.GONE);
+				getView().findViewById(R.id.main_feed).setVisibility(View.VISIBLE);
+			}
+		});
 
 		enableUI();
+		
+		longPoll();
+	}
 
-		loadGames();
+	private void longPoll() {
+		ServerAPI.longPoll((BaseGame) getActivity(), Game.updatePoint, new GetMatchesRequestListener() {
+			@Override
+			public void onRequestFailed(int errorCode) {
+				if (errorCode != -2) {
+					longPoll();
+				}
+			}
+			@Override
+			public void onRequestComplete(Game[] games) {
+				MenuListFragment.this.onRequestComplete(games);
+				longPoll();
+			}
+		});
 	}
 
 	public void onSignInFailed() {
@@ -309,10 +335,11 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 	}
 
 	@Override
-	public void onCreateGame(String playerID, String opponentID) {
+	public void onCreateGame(String opponentID) {
 		getActivity().getSupportFragmentManager().popBackStack("userpicker", 1);
-		Game existingGame = Game.getGame(playerID, opponentID);
-		if (existingGame != null) {
+		//TODO: Unhide game on response from server
+		/*Game existingGame = Game.getGame(playerID, opponentID);
+		if (existingGame != null) { // TODO: This needs to use isLoaded
 			if (((BaseGame) getActivity()).getHiddenGamesPreferences().contains(existingGame.getID())) {
 				Editor editor = ((BaseGame) getActivity()).getHiddenGamesPreferences().edit();
 				editor.remove(existingGame.getID());
@@ -320,8 +347,8 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 				adapter.add(existingGame);
 			}
 			goToGame(existingGame.getID());
-		} else {
-			ServerAPI.createGame(playerID, opponentID, (BaseGame) getActivity(), new CreateGameRequestListener() {
+		} else {*/
+			ServerAPI.createGame(opponentID, (BaseGame) getActivity(), new CreateGameRequestListener() {
 				@Override
 				public void onRequestFailed(final int errorCode) {
 					if (errorCode == 4) {
@@ -360,7 +387,7 @@ public class MenuListFragment extends Fragment implements OnClickListener, GetMa
 					goToGame(game.getID());
 				}
 			});
-		}
+		//}
 	}
 
 	@Override

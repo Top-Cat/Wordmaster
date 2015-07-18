@@ -43,7 +43,7 @@ public class UnhideAdapter extends ArrayAdapter<Game> {
 
 		if (rview == null) {
 			LayoutInflater vi = (LayoutInflater) act.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			rview = vi.inflate(R.layout.person, null);
+			rview = vi.inflate(R.layout.person, parent, false);
 		}
 
 		final View view = rview;
@@ -52,7 +52,7 @@ public class UnhideAdapter extends ArrayAdapter<Game> {
 		item.getOpponent().listenForLoad(new NameLoadedListener() {
 			@Override
 			public void onNameLoaded(final String name) {
-				act.runOnUiThread(new Runnable() {
+				view.post(new Runnable() {
 					@Override
 					public void run() {
 						if (item == checkList.get(view)) {
@@ -65,7 +65,7 @@ public class UnhideAdapter extends ArrayAdapter<Game> {
 		item.getOpponent().listenForImage(new ImageLoadedListener() {
 			@Override
 			public void onImageLoaded(final Drawable image) {
-				act.runOnUiThread(new Runnable() {
+				view.post(new Runnable() {
 					@Override
 					public void run() {
 						if (item == checkList.get(view)) {

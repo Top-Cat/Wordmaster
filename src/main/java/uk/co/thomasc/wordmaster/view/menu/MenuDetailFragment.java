@@ -1,14 +1,10 @@
 package uk.co.thomasc.wordmaster.view.menu;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import android.app.Activity;
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -22,32 +18,26 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import uk.co.thomasc.wordmaster.BaseGame;
 import uk.co.thomasc.wordmaster.R;
-import uk.co.thomasc.wordmaster.api.GetTurnsRequestListener;
-import uk.co.thomasc.wordmaster.api.ServerAPI;
 import uk.co.thomasc.wordmaster.api.TakeTurnSpinnerListener;
 import uk.co.thomasc.wordmaster.objects.Game;
 import uk.co.thomasc.wordmaster.objects.Turn;
+import uk.co.thomasc.wordmaster.objects.User;
 import uk.co.thomasc.wordmaster.objects.callbacks.ImageLoadedListener;
-import uk.co.thomasc.wordmaster.objects.callbacks.TurnAddedListener;
+import uk.co.thomasc.wordmaster.objects.callbacks.GameListener;
 import uk.co.thomasc.wordmaster.util.CapsLockLimiter;
 import uk.co.thomasc.wordmaster.util.TurnMaker;
-import uk.co.thomasc.wordmaster.view.DialogPanel;
-import uk.co.thomasc.wordmaster.view.Errors;
 import uk.co.thomasc.wordmaster.view.game.GameLayout;
 import uk.co.thomasc.wordmaster.view.game.SwipeController;
 import uk.co.thomasc.wordmaster.view.game.SwipeListener;
 
-public class MenuDetailFragment extends Fragment implements TurnAddedListener, TakeTurnSpinnerListener {
+public class MenuDetailFragment extends Fragment implements GameListener, TakeTurnSpinnerListener, OnTouchListener {
 
 	public static final String ARG_ITEM_ID = "gameid";
 	private Game game;
 	private String gameid;
 	private EditText input;
-	private RefresherThread refresher;
-	private boolean running = true;
 
 	public MenuDetailFragment() {
 
@@ -67,8 +57,6 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener, T
 		if (game != null) {
 			game.removeTurnListener(this);
 		}
-		refresher.interrupt();
-		running = false;
 	}
 
 	@Override
@@ -91,16 +79,16 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener, T
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		final View rootView = inflater.inflate(R.layout.game_screen, container, false);
-
+		
 		((BaseGame) getActivity()).menuDetail = this;
 
 		game = Game.getGame(gameid);
-		if (game != null) {
+		if (game.isLoaded()) {
 
-			game.getPlayer().listenForImage(new ImageLoadedListener() {
+			User.getCurrentUser().listenForImage(new ImageLoadedListener() {
 				@Override
 				public void onImageLoaded(final Drawable image) {
-					getActivity().runOnUiThread(new Runnable() {
+					rootView.post(new Runnable() {
 						@Override
 						public void run() {
 							((ImageView) rootView.findViewById(R.id.playerAvatar)).setImageDrawable(image);
@@ -111,7 +99,7 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener, T
 			game.getOpponent().listenForImage(new ImageLoadedListener() {
 				@Override
 				public void onImageLoaded(final Drawable image) {
-					getActivity().runOnUiThread(new Runnable() {
+					rootView.post(new Runnable() {
 						@Override
 						public void run() {
 							((ImageView) rootView.findViewById(R.id.oppAvatar)).setImageDrawable(image);
@@ -124,18 +112,16 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener, T
 			((TextView) rootView.findViewById(R.id.playerscore)).setText(Integer.toString(game.getPlayerScore()));
 			((TextView) rootView.findViewById(R.id.oppscore)).setText(Integer.toString(game.getOpponentScore()));
 
-			if (game.needsWord()) {
+			if (game.isNeedingWord()) {
 				rootView.findViewById(R.id.setword_msg).setVisibility(View.VISIBLE);
 				RelativeLayout footer = (RelativeLayout) rootView.findViewById(R.id.footer);
 				footer.getLayoutParams().height = BaseGame.convertDip2Pixels(getResources(), 70);
 			}
 
-			loadTurns();
 			game.addTurnListener(this);
 
-			Resources res = getActivity().getResources();
-			Drawable guessEnabled = res.getDrawable(R.drawable.guess);
-			Drawable guessDisabled = res.getDrawable(R.drawable.guess_disabled);
+			Drawable guessEnabled = ContextCompat.getDrawable(getActivity(), R.drawable.guess);
+			Drawable guessDisabled = ContextCompat.getDrawable(getActivity(), R.drawable.guess_disabled);
 
 			input = (EditText) rootView.findViewById(R.id.guess_input);
 			input.addTextChangedListener(new CapsLockLimiter(input, rootView, guessEnabled, guessDisabled));
@@ -153,23 +139,13 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener, T
 			mPager.setPageMarginDrawable(R.color.divider);
 			
 			if (((BaseGame) getActivity()).wideLayout) {
-				
-				mPager.setOnTouchListener(new OnTouchListener() {
-					@Override
-					public boolean onTouch(View v, MotionEvent event) {
-						return true;
-					}
-				});
+				mPager.setOnTouchListener(this);
 				rootView.findViewById(R.id.indicator).setVisibility(View.INVISIBLE);
 			} else {
-				mPager.setOnPageChangeListener(new SwipeListener((ImageView) rootView.findViewById(R.id.indicator)));
+				mPager.addOnPageChangeListener(new SwipeListener((ImageView) rootView.findViewById(R.id.indicator)));
 			}
 			
 			mPager.setAdapter(swipe);
-
-			refresher = new RefresherThread();
-			running = true;
-			refresher.start();
 
 			showKeyboard();
 		} else {
@@ -181,49 +157,8 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener, T
 		return rootView;
 	}
 
-	public void loadTurns() {
-		ServerAPI.getTurns(gameid, game.getPivotLatest(), (BaseGame) getActivity(), new GetTurnsRequestListener() {
-
-			@Override
-			public void onRequestFailed() {
-				Activity act = getActivity();
-				if (act != null) {
-					act.runOnUiThread(new Runnable() {
-						@Override
-						public void run() {
-							DialogPanel errorMessage = (DialogPanel) getActivity().findViewById(R.id.errorMessage);
-							errorMessage.show(Errors.NETWORK);
-						}
-					});
-				}
-			}
-
-			@Override
-			public void onRequestComplete(List<Turn> turns) {
-				ArrayList<Turn> gameTurns = game.getTurns();
-				for (Turn turn : turns) {
-					if (!gameTurns.contains(turn)) {
-						game.addTurn(turn);
-					}
-				}
-				Activity act = getActivity();
-				if (act != null) {
-					act.runOnUiThread(new Runnable() {
-						@Override
-						public void run() {
-							input.clearFocus();
-							input.requestFocus();
-							showKeyboard();
-						}
-					});
-				}
-			}
-		});
-	}
-
 	private void updateTurnCount() {
-		BaseGame act = ((BaseGame) getActivity());
-		act.runOnUiThread(new Runnable() {
+		getView().post(new Runnable() {
 			@Override
 			public void run() {
 				if (getView() != null) {
@@ -234,17 +169,20 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener, T
 	}
 
 	@Override
-	public void onTurnAdded(Turn turn, boolean newerTurn) {
-		updateTurnCount();
-
-		getActivity().runOnUiThread(new Runnable() {
+	public void onTurnAdded(Game game, Turn turn) {
+		updateTurnCount(); //TODO: Combine functions?
+	}
+	
+	@Override
+	public void onGameUpdated(final Game game) {
+		getView().post(new Runnable() {
 			@Override
 			public void run() {
-				getView().findViewById(R.id.setword_msg).setVisibility(game.needsWord() ? View.VISIBLE : View.GONE);
+				getView().findViewById(R.id.setword_msg).setVisibility(game.isNeedingWord() ? View.VISIBLE : View.GONE);
 			}
 		});
 		RelativeLayout footer = (RelativeLayout) getView().findViewById(R.id.footer);
-		footer.getLayoutParams().height = BaseGame.convertDip2Pixels(getResources(), game.needsWord() ? 70 : 50);
+		footer.getLayoutParams().height = BaseGame.convertDip2Pixels(getResources(), game.isNeedingWord() ? 70 : 50);
 	}
 
 	@Override
@@ -255,7 +193,7 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener, T
 
 	@Override
 	public void stopSpinner() {
-		getActivity().runOnUiThread(new Runnable() {
+		getView().post(new Runnable() {
 			@Override
 			public void run() {
 				getView().findViewById(R.id.guess_button).setVisibility(View.VISIBLE);
@@ -263,20 +201,13 @@ public class MenuDetailFragment extends Fragment implements TurnAddedListener, T
 			}
 		});
 	}
-
-	private class RefresherThread extends Thread {
-
-		@Override
-		public void run() {
-			while (running) {
-				try {
-					Thread.sleep(30000);
-					loadTurns();
-				} catch (InterruptedException e) {
-					
-				}
-			}
+	
+	@Override
+	public boolean onTouch(View v, MotionEvent event) {
+		if (event.getAction() == MotionEvent.ACTION_UP) {
+			v.performClick();
 		}
-
+			
+		return true;
 	}
 }

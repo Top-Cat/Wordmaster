@@ -1,24 +1,19 @@
 package uk.co.thomasc.wordmaster.util;
 
-import java.util.List;
-
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
-
 import uk.co.thomasc.wordmaster.BaseGame;
 import uk.co.thomasc.wordmaster.R;
-import uk.co.thomasc.wordmaster.api.GetTurnsRequestListener;
 import uk.co.thomasc.wordmaster.api.ServerAPI;
 import uk.co.thomasc.wordmaster.api.SetWordRequestListener;
 import uk.co.thomasc.wordmaster.api.TakeTurnRequestListener;
 import uk.co.thomasc.wordmaster.api.TakeTurnSpinnerListener;
 import uk.co.thomasc.wordmaster.objects.Game;
-import uk.co.thomasc.wordmaster.objects.Turn;
 import uk.co.thomasc.wordmaster.view.DialogPanel;
 import uk.co.thomasc.wordmaster.view.Errors;
 
-public class TurnMaker implements OnClickListener, TakeTurnRequestListener, GetTurnsRequestListener, SetWordRequestListener {
+public class TurnMaker implements OnClickListener, TakeTurnRequestListener, SetWordRequestListener {
 
 	private Game game;
 	private BaseGame activity;
@@ -38,21 +33,19 @@ public class TurnMaker implements OnClickListener, TakeTurnRequestListener, GetT
 	public void onClick(View v) {
 		String guess = input.getText().toString();
 		if (guess.length() == 4) {
-			if (game.needsWord()) {
+			if (game.isNeedingWord()) {
 				listener.startSpinner();
-				ServerAPI.setWord(activity.getUserId(), game.getID(), guess, activity, this);
-			} else if (game.isPlayersTurn()) {
-				listener.startSpinner();
-				ServerAPI.takeTurn(activity.getUserId(), game.getID(), guess, activity, this);
+				ServerAPI.setWord(game.getID(), guess, activity, this);
 			} else {
-				errorMessage.show(Errors.TURN);
+				listener.startSpinner();
+				ServerAPI.takeTurn(game.getID(), guess, activity, this);
 			}
 		}
 	}
 	
 	@Override
 	public void onSetWordComplete(int errorCode) {
-		game.setNeedsWord(false);
+		game.setNeedingWord(false);
 		onComplete(errorCode);
 	}
 
@@ -63,16 +56,15 @@ public class TurnMaker implements OnClickListener, TakeTurnRequestListener, GetT
 	}
 	
 	private void onComplete(final int errorCode) {
-		if (errorCode == 0) {
-			int pivot = game.getPivotLatest();
-			if (pivot > 0) {
-				ServerAPI.getTurns(game.getID(), pivot, 1, activity, this);
-			} else {
-				ServerAPI.getTurns(game.getID(), activity, this);
+		input.post(new Runnable() {
+			@Override
+			public void run() {
+				input.setText("");
 			}
-		} else {
-			listener.stopSpinner();
-			activity.runOnUiThread(new Runnable() {
+		});
+		listener.stopSpinner();
+		if (errorCode != 0) {
+			errorMessage.post(new Runnable() {
 				@Override
 				public void run() {
 					if (errorCode == 1) {
@@ -92,27 +84,6 @@ public class TurnMaker implements OnClickListener, TakeTurnRequestListener, GetT
 				}
 			});
 		}
-	}
-
-	@Override
-	public void onRequestComplete(List<Turn> turns) {
-		for (Turn turn : turns) {
-			game.addTurn(turn);
-		}
-		activity.runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				activity.menuFragment.adapter.notifyDataSetChanged();
-				input.setText("");
-			}
-		});
-		listener.stopSpinner();
-	}
-
-	@Override
-	public void onRequestFailed() {
-		listener.stopSpinner();
-		errorMessage.show(Errors.NETWORK);
 	}
 
 }

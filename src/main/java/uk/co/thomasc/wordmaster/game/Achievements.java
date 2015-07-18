@@ -1,7 +1,10 @@
 package uk.co.thomasc.wordmaster.game;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import android.util.SparseArray;
 
+@AllArgsConstructor
 public enum Achievements {
 	PARTICIPANT(1, new String[] { "CgkIj_Ku7KQVEAIQBQ", "CgkIj_Ku7KQVEAIQBg", "CgkIj_Ku7KQVEAIQCA", "CgkIj_Ku7KQVEAIQBw" }, true),
 	GOLDPEGS(2, new String[] { "CgkIj_Ku7KQVEAIQCQ", "CgkIj_Ku7KQVEAIQCg", "CgkIj_Ku7KQVEAIQCw", "CgkIj_Ku7KQVEAIQDA" }, true),
@@ -18,8 +21,8 @@ public enum Achievements {
 	;
 
 	private int sid;
-	private String[] ids;
-	private boolean incremental;
+	@Getter private String[] ids;
+	@Getter private boolean incremental;
 
 	private Achievements(String id) {
 		this(0, new String[] { id });
@@ -31,20 +34,6 @@ public enum Achievements {
 
 	private Achievements(int sid, String[] ids) {
 		this(sid, ids, false);
-	}
-
-	private Achievements(int sid, String[] ids, boolean incremental) {
-		this.sid = sid;
-		this.ids = ids;
-		this.incremental = incremental;
-	}
-
-	public String[] getIds() {
-		return ids;
-	}
-
-	public boolean isIncremental() {
-		return incremental;
 	}
 
 	private static SparseArray<Achievements> apiMap = new SparseArray<Achievements>();

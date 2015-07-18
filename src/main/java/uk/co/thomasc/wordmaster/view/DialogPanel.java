@@ -35,10 +35,12 @@ public class DialogPanel extends FrameLayout {
 
 	public void init() {
 		h = new TimerHandler(this);
-
-		View.inflate(getContext(), R.layout.network_error, this);
-		container = findViewById(R.id.network_error);
-		container.setVisibility(View.GONE);
+		
+		if (!isInEditMode()) {
+			View.inflate(getContext(), R.layout.network_error, this);
+			container = findViewById(R.id.network_error);
+			container.setVisibility(View.GONE);
+		}
 	}
 
 	public void show(Errors error) {

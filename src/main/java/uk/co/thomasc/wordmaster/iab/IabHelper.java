@@ -27,6 +27,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender.SendIntentException;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -260,11 +262,12 @@ public class IabHelper {
 
 		Intent serviceIntent = new Intent("com.android.vending.billing.InAppBillingService.BIND");
 		serviceIntent.setPackage("com.android.vending");
-		if (!mContext.getPackageManager().queryIntentServices(serviceIntent, 0).isEmpty()) {
+		PackageManager pm = mContext.getPackageManager();
+		List<ResolveInfo> intentServices = pm.queryIntentServices(serviceIntent, 0);
+		if (intentServices != null && !intentServices.isEmpty()) {
 			// service available to handle that Intent
 			mContext.bindService(serviceIntent, mServiceConn, Context.BIND_AUTO_CREATE);
-		}
-		else {
+		} else {
 			// no service available to handle that Intent
 			if (listener != null) {
 				listener.onIabSetupFinished(
@@ -285,7 +288,7 @@ public class IabHelper {
 		mSetupDone = false;
 		if (mServiceConn != null) {
 			logDebug("Unbinding from service.");
-			if (mContext != null) {
+			if (mContext != null && mService!=null) {
 				mContext.unbindService(mServiceConn);
 			}
 			mServiceConn = null;

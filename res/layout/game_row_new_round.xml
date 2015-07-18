@@ -1,15 +1,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent" >
-
-	<ImageView
-		android:id="@+id/itembg"
-		android:layout_width="fill_parent"
-		android:layout_height="fill_parent"
-		android:layout_gravity="bottom"
-		android:contentDescription="@string/itembg"
-		android:src="@drawable/wordbg"
-		android:state_pressed="true" />
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content"
+	android:background="@drawable/wordbg" >
 
 	<uk.co.thomasc.wordmaster.view.RussoText
 		android:id="@+id/guess"

@@ -1,7 +1,10 @@
 package uk.co.thomasc.wordmaster.view;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import uk.co.thomasc.wordmaster.R;
 
+@AllArgsConstructor
 public enum Errors {
 	NETWORK(R.string.network_error, R.string.network_error_help),
 	TURN(R.string.turn_error, R.string.turn_error_help),
@@ -12,19 +15,5 @@ public enum Errors {
 	WORDSET(R.string.word_set_error, R.string.word_set_error_help),
 	AUTOMATCH(R.string.auto_match_error, R.string.auto_match_error_help), ;
 
-	private int title;
-	private int subtitle;
-
-	private Errors(int title, int subtitle) {
-		this.title = title;
-		this.subtitle = subtitle;
-	}
-
-	public int getTitle() {
-		return title;
-	}
-
-	public int getSubtitle() {
-		return subtitle;
-	}
+	@Getter private int title, subtitle;
 }

@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import uk.co.thomasc.wordmaster.R;
 import uk.co.thomasc.wordmaster.objects.Game;
 import uk.co.thomasc.wordmaster.objects.callbacks.ImageLoadedListener;
@@ -34,13 +33,8 @@ public class MenuAdapter extends ArrayAdapter<Game> {
 		comp = new Comparator<Game>() {
 			@Override
 			public int compare(Game e1, Game e2) {
-				int e1v = (e1.isPlayersTurn() ? 1 : 0) | (e1.needsWord() ? 2 : 0);
-				int e2v = (e2.isPlayersTurn() ? 1 : 0) | (e2.needsWord() ? 2 : 0);
-				int r = e2v - e1v;
-				if (r == 0) {
-					return (int) (e2.getLastUpdateTimestamp() - e1.getLastUpdateTimestamp());
-				}
-				return r;
+				int r = (e2.isTurn() ? 1 : 0) - (e1.isTurn() ? 1 : 0);
+				return r != 0 ? r : ((e2.getLastUpdateTimestamp() - e1.getLastUpdateTimestamp()) > 0 ? 1 : -1) * (e1.isPlayersTurn() ? -1 : 1);
 			}
 		};
 	}
@@ -68,51 +62,49 @@ public class MenuAdapter extends ArrayAdapter<Game> {
 	
 	@Override
 	public int getViewTypeCount() {
-		return 2;
+		return 1;
 	}
 	
 	@Override
 	public int getItemViewType(int position) {
-		return getItem(position).getID().equals(selectedGid) ? 0 : 1;
+		return 0;
 	}
 	
 	private Map<View, Game> checkList = new HashMap<View, Game>();
 
+	private View newView(int position, ViewGroup parent) {
+		LayoutInflater vi = (LayoutInflater) act.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		View view = vi.inflate(R.layout.game_info, parent, false);
+		((TextView) view.findViewById(R.id.playera)).setText("Loading...");
+		
+		return view;
+	}
+	
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		View rview = convertView;
-
 		final Game item = getItem(position);
-
-		if (rview == null) {
-			LayoutInflater vi = (LayoutInflater) act.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			
-			int viewId = 0;
-			switch (getItemViewType(position)) {
-				case 0:
-					viewId = R.layout.game_info_selected;
-					break;
-				case 1:
-					viewId = R.layout.game_info;
-					break;
-			}
-			
-			rview = vi.inflate(viewId, null);
-		}
-
-		final View view = rview;
+		final View view = convertView == null ? newView(position, parent) : convertView;
 
 		checkList.put(view, item);
+		
+		if (item.getID().equals(selectedGid)) {
+			view.setBackgroundResource(R.drawable.selectedbg);
+			((TextView) view.findViewById(R.id.playera)).setTextColor(act.getResources().getColor(R.color.selectedtext));
+			((TextView) view.findViewById(R.id.time)).setTextColor(act.getResources().getColor(R.color.selectedtext));
+		} else {
+			view.setBackgroundResource(R.drawable.itembg);
+			((TextView) view.findViewById(R.id.playera)).setTextColor(act.getResources().getColor(R.color.maintext));
+			((TextView) view.findViewById(R.id.time)).setTextColor(act.getResources().getColor(R.color.maintext));
+		}
 
 		if (item.getOpponent() == null) {
-			((TextView) rview.findViewById(R.id.playera)).setText("Auto Match In Progress");
+			((TextView) view.findViewById(R.id.playera)).setText("Auto Match In Progress");
 			((ImageView) view.findViewById(R.id.avatar)).setImageResource(R.drawable.games_matches_green);
 		} else {
-			((TextView) rview.findViewById(R.id.playera)).setText("Loading...");
 			item.getOpponent().listenForLoad(new NameLoadedListener() {
 				@Override
 				public void onNameLoaded(final String name) {
-					act.runOnUiThread(new Runnable() {
+					view.post(new Runnable() {
 						@Override
 						public void run() {
 							if (item == checkList.get(view)) {
@@ -125,7 +117,7 @@ public class MenuAdapter extends ArrayAdapter<Game> {
 			item.getOpponent().listenForImage(new ImageLoadedListener() {
 				@Override
 				public void onImageLoaded(final Drawable image) {
-					act.runOnUiThread(new Runnable() {
+					view.post(new Runnable() {
 						@Override
 						public void run() {
 							if (item == checkList.get(view)) {
@@ -145,7 +137,7 @@ public class MenuAdapter extends ArrayAdapter<Game> {
 			view.findViewById(R.id.time).setVisibility(View.GONE);
 		}
 
-		view.findViewById(R.id.turnindicator).setVisibility(item.isPlayersTurn() || item.needsWord() ? View.VISIBLE : View.GONE);
+		view.findViewById(R.id.turnindicator).setVisibility(item.isTurn() ? View.VISIBLE : View.GONE);
 
 		return view;
 	}

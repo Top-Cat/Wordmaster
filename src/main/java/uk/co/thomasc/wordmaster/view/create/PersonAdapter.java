@@ -13,15 +13,15 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.android.gms.games.Player;
+import com.google.android.gms.plus.model.people.Person;
 
+import uk.co.thomasc.wordmaster.BaseGame;
 import uk.co.thomasc.wordmaster.R;
 import uk.co.thomasc.wordmaster.objects.User;
 import uk.co.thomasc.wordmaster.objects.callbacks.ImageLoadedListener;
 import uk.co.thomasc.wordmaster.objects.callbacks.NameLoadedListener;
-import uk.co.thomasc.wordmaster.util.BaseGameActivity;
 
-public class PersonAdapter extends ArrayAdapter<Player> {
+public class PersonAdapter extends ArrayAdapter<Person> {
 
 	public static String keySegment = "DB6Fpmlprf0yaYGbkfFh6XvisO25dvfq4mhyfNR5K15Xo9B6kfbnd1qQuO7zhB10ZCZaBZfRpJP5saK/jyRLWOzqi0vQIDAQAB";
 
@@ -36,13 +36,13 @@ public class PersonAdapter extends ArrayAdapter<Player> {
 	}
 
 	@Override
-	public void add(Player object) {
+	public void add(Person object) {
 		super.add(object);
 	}
 	
 	@Override
 	public int getCount() {
-		return super.getCount() + (fragment.nextPage ? 1 : 2);
+		return super.getCount() + (fragment.nextPage == null ? 1 : 2);
 	}
 
 	private Map<View, User> checkList = new HashMap<View, User>();
@@ -53,7 +53,7 @@ public class PersonAdapter extends ArrayAdapter<Player> {
 
 		if (rview == null) {
 			LayoutInflater vi = (LayoutInflater) act.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			rview = vi.inflate(R.layout.person, null);
+			rview = vi.inflate(R.layout.person, parent, false);
 		}
 		
 		final View view = rview;
@@ -63,14 +63,14 @@ public class PersonAdapter extends ArrayAdapter<Player> {
 			((ImageView) view.findViewById(R.id.avatar)).setImageResource(R.drawable.games_matches_green);
 			((TextView) view.findViewById(R.id.playera)).setText("Auto Match");
 			checkList.remove(view);
-		} else if (position == getCount() - 1 && !fragment.nextPage) {
+		} else if (position == getCount() - 1 && fragment.nextPage != null) {
 			((ImageView) view.findViewById(R.id.avatar)).setVisibility(View.INVISIBLE);
 			((TextView) view.findViewById(R.id.playera)).setText("More...");
 			checkList.remove(view);
 		} else {
-			Player item = getItem(position - 1);
+			Person item = getItem(position - 1);
 			
-			final User user = User.getUser(item, (BaseGameActivity) act);
+			final User user = User.getUser(item, (BaseGame) act);
 			checkList.put(view, user);
 	
 			user.listenForLoad(new NameLoadedListener() {

@@ -1,8 +1,5 @@
 package uk.co.thomasc.wordmaster.view.game;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -11,19 +8,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
 import android.widget.LinearLayout;
-
+import android.widget.ListView;
 import uk.co.thomasc.wordmaster.BaseGame;
 import uk.co.thomasc.wordmaster.R;
 import uk.co.thomasc.wordmaster.api.GetTurnsRequestListener;
 import uk.co.thomasc.wordmaster.api.ServerAPI;
 import uk.co.thomasc.wordmaster.objects.Game;
 import uk.co.thomasc.wordmaster.objects.Turn;
-import uk.co.thomasc.wordmaster.objects.callbacks.TurnAddedListener;
+import uk.co.thomasc.wordmaster.objects.callbacks.GameListener;
 import uk.co.thomasc.wordmaster.view.DialogPanel;
 import uk.co.thomasc.wordmaster.view.Errors;
 import uk.co.thomasc.wordmaster.view.RussoText;
-import uk.co.thomasc.wordmaster.view.game.PullToRefreshListView.OnRefreshListener;
 import uk.co.thomasc.wordmaster.view.menu.MenuDetailFragment;
 
 public class SwipeController extends FragmentStatePagerAdapter {
@@ -59,12 +57,14 @@ public class SwipeController extends FragmentStatePagerAdapter {
 		return 2;
 	}
 
-	public static class Pages extends Fragment implements TurnAddedListener {
+	public static class Pages extends Fragment implements GameListener, OnScrollListener, OnClickListener {
 		public static final String ARG_OBJECT = "object";
-		private ToggleListener listener = new ToggleListener();
 		private GameAdapter adapter;
 		private Game game;
-		private PullToRefreshListView listView;
+		private ListView listView;
+		private LinearLayout alpha;
+		
+		private boolean refreshTriggered = false;
 
 		@Override
 		public void onDestroy() {
@@ -75,16 +75,15 @@ public class SwipeController extends FragmentStatePagerAdapter {
 		}
 
 		@Override
-		public void onTurnAdded(final Turn turn, final boolean newerTurn) {
-			getActivity().runOnUiThread(new Runnable() {
-				@Override
-				public void run() {
-					adapter.add(turn);
-					if (newerTurn) {
-						listView.scrollToBottom();
+		public void onTurnAdded(final Game game, final Turn turn) {
+			if (listView != null) {
+				listView.post(new Runnable() {
+					@Override
+					public void run() {
+						listView.setSelection(listView.getAdapter().getCount() - 1);
 					}
-				}
-			});
+				});
+			}
 		}
 
 		@Override
@@ -92,87 +91,96 @@ public class SwipeController extends FragmentStatePagerAdapter {
 			View rootView;
 			game = Game.getGame(SwipeController.gid);
 			
+			game.addTurnListener(this);
+
 			if (getArguments().getBoolean(Pages.ARG_OBJECT)) {
-				rootView = new PullToRefreshListView(getActivity());
-				((BaseGame) getActivity()).gameAdapter = adapter = new GameAdapter(getActivity());
+				rootView = new ListView(getActivity());
 				
-				if (game != null) {
-					for (Turn t : game.getTurns()) {
-						adapter.add(t);
-					}
-					game.addTurnListener(this);
-					((PullToRefreshListView) rootView).setAdapter(adapter);
-					listView = (PullToRefreshListView) rootView;
+					((BaseGame) getActivity()).gameAdapter = adapter = game.getAdapter((BaseGame) getActivity());
+					listView = (ListView) rootView;
+					listView.setAdapter(adapter);
 					listView.setBackgroundColor(Color.WHITE);
 					listView.setCacheColorHint(Color.WHITE);
-					listView.setOnRefreshListener(new OnRefreshListener() {
-						@Override
-						public void onRefresh() {
-							int pivot = game.getPivotOldest();
-							ServerAPI.getTurns(game.getID(), pivot, -10, (BaseGame) getActivity(), new GetTurnsRequestListener() {
-	
-								@Override
-								public void onRequestFailed() {
-									getActivity().runOnUiThread(new Runnable() {
-										@Override
-										public void run() {
-											listView.onRefreshComplete();
-											DialogPanel errorMessage = (DialogPanel) getActivity().findViewById(R.id.errorMessage);
-											errorMessage.show(Errors.NETWORK);
-										}
-									});
-								}
-	
-								@Override
-								public void onRequestComplete(List<Turn> turns) {
-									ArrayList<Turn> gameTurns = game.getTurns();
-									for (Turn turn : turns) {
-										if (!gameTurns.contains(turn)) {
-											game.addTurn(turn);
-										}
-									}
-									getActivity().runOnUiThread(new Runnable() {
-										@Override
-										public void run() {
-											listView.onRefreshComplete();
-										}
-									});
-								}
-							});
-						}
-					});
-				}
+					
+					listView.setSelection(listView.getAdapter().getCount() - 1);
+					listView.setOnScrollListener(this);
 			} else {
 				rootView = inflater.inflate(R.layout.alphabet, container, false);
-				if (game != null) {
-					LinearLayout root = (LinearLayout) rootView;
-					int index = 0;
-					for (int i = 0; i < root.getChildCount(); i++) {
-						LinearLayout child = (LinearLayout) root.getChildAt(i);
-						for (int j = 0; j < child.getChildCount(); j++) {
-							RussoText txt = (RussoText) child.getChildAt(j);
-							txt.setOnClickListener(listener);
-							txt.setId(index);
-							boolean strike = game.getAlpha(index++);
-							txt.setTextColor(getResources().getColor(strike ? R.color.hiddenletter : R.color.maintext));
-							txt.setStrike(strike);
-						}
-					}
-				}
+
+				alpha = (LinearLayout) rootView;
+				onGameUpdated(game);
 			}
 			return rootView;
 		}
 
-		private class ToggleListener implements OnClickListener {
+		@Override
+		public void onScrollStateChanged(AbsListView view, int scrollState) {
+			
+		}
+		
+		@Override
+		public void onScroll(AbsListView view, final int firstVisibleItem, int visibleItemCount, final int totalItemCount) {
+			if (firstVisibleItem < 2 && !refreshTriggered && game.getPivotOldest() > 0) {
+				refreshTriggered = true;
+				ServerAPI.getTurns(game.getID(), game.getPivotOldest(), -10, (BaseGame) getActivity(), new GetTurnsRequestListener() {
 
-			@Override
-			public void onClick(View v) {
-				RussoText txt = (RussoText) v;
-				txt.setTextColor(getResources().getColor(txt.isStrike() ? R.color.maintext : R.color.hiddenletter));
-				txt.setStrike(!txt.isStrike());
-				game.updateAlpha(txt.getId(), txt.isStrike(), (BaseGame) getActivity());
+					@Override
+					public void onRequestFailed() {
+						refreshTriggered = false;
+						
+						final DialogPanel errorMessage = (DialogPanel) getActivity().findViewById(R.id.errorMessage);
+						errorMessage.post(new Runnable() {
+							@Override
+							public void run() {
+								errorMessage.show(Errors.NETWORK);
+							}
+						});
+					}
+
+					@Override
+					public void onRequestComplete() {
+						listView.clearFocus();
+						listView.post(new Runnable() {
+							@Override
+							public void run() {
+								listView.setSelection(firstVisibleItem - totalItemCount + adapter.getCount());
+							}
+						});
+						refreshTriggered = false;
+					}
+				});
 			}
+		}
+		
+		@Override
+		public void onClick(View v) {
+			RussoText txt = (RussoText) v;
+			txt.setTextColor(getResources().getColor(txt.isStrike() ? R.color.maintext : R.color.hiddenletter));
+			txt.setStrike(!txt.isStrike());
+			game.updateAlpha(txt.getId(), txt.isStrike(), (BaseGame) getActivity());
+		}
 
+		@Override
+		public void onGameUpdated(final Game game) {
+			if (alpha != null) {
+				alpha.post(new Runnable() {
+					@Override
+					public void run() {
+						int index = 0;
+						for (int i = 0; i < alpha.getChildCount(); i++) {
+							LinearLayout child = (LinearLayout) alpha.getChildAt(i);
+							for (int j = 0; j < child.getChildCount(); j++) {
+								RussoText txt = (RussoText) child.getChildAt(j);
+								txt.setOnClickListener(Pages.this);
+								txt.setId(index);
+								boolean strike = game.getAlpha(index++);
+								txt.setTextColor(getResources().getColor(strike ? R.color.hiddenletter : R.color.maintext));
+								txt.setStrike(strike);
+							}
+						}
+					}
+				});
+			}
 		}
 	}
 

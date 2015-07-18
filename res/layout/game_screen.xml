@@ -199,5 +199,13 @@
 		
 		<requestFocus />
 	</EditText>
+	
+	<android.inputmethodservice.KeyboardView
+	    android:id="@+id/keyboard_view"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_below="@id/errorMessage"
+	    >
+	</android.inputmethodservice.KeyboardView>
 
 </uk.co.thomasc.wordmaster.view.game.GameLayout>

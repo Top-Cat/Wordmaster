@@ -1,82 +1,86 @@
 package uk.co.thomasc.wordmaster.gcm;
 
-import android.app.Activity;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.RingtoneManager;
+import android.net.Uri;
+import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationCompat.InboxStyle;
 
-import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.google.android.gms.gcm.GcmListenerService;
 
 import uk.co.thomasc.wordmaster.BaseGame;
 import uk.co.thomasc.wordmaster.R;
 import uk.co.thomasc.wordmaster.objects.Game;
 
-public class TurnReceiver extends BroadcastReceiver {
+public class TurnReceiver extends GcmListenerService {
 
 	@Override
-	public void onReceive(Context context, Intent intent) {
-		GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(context);
+	public void onMessageReceived(String from, Bundle intent) {
+		String gameid = intent.getString("gameid");
+		String word = intent.getString("word");
+		long timestamp = Long.valueOf(intent.getString("time"));
+		
+		System.out.println("notify: " + gameid + ", " + timestamp);
 
-		String messageType = gcm.getMessageType(intent);
-		if (GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE.equals(messageType)) {
-			String gameid = intent.getStringExtra("gameid");
-			long timestamp = Long.valueOf(intent.getStringExtra("time"));
+		Game game = Game.getGame(gameid);
 
-			Game game = Game.getGame(gameid);
-			String opponentName;
-			long lastupdate;
-
-			if (game == null) {
-				SharedPreferences prefs = context.getSharedPreferences("wordmaster.game." + gameid, Context.MODE_PRIVATE);
-				lastupdate = prefs.getLong("time", 0);
-				opponentName = prefs.getString("oppname", "");
-			} else {
+		SharedPreferences gPrefs = getSharedPreferences("wordmaster.game." + gameid, Context.MODE_PRIVATE);
+		long lastupdate = gPrefs.getLong("time", 0);
+		String opponentName = gPrefs.getString("oppname", "Unknown");
+		
+		if (game.isLoaded()) {
+			if (game.getOpponent().getName() != null) {
 				opponentName = game.getOpponent().getName();
-				lastupdate = game.getLastUpdateTimestamp();
 			}
-
-			if (lastupdate > 0 && lastupdate < timestamp) {
-				//Remember
-				SharedPreferences prefs = TurnReceiver.getBuildupPrefs(context);
-				SharedPreferences.Editor editor = prefs.edit();
-				editor.putString(gameid, opponentName);
-				editor.commit();
-
-				int count = 0;
-				String longMessage = "";
-				for (String key : prefs.getAll().keySet()) {
-					count++;
-					if (longMessage.length() > 0) {
-						longMessage += "\n";
-					}
-					longMessage += "vs " + prefs.getString(key, "");
-				}
-
-				// Tell Everybody
-				NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-				Intent i = new Intent(context, BaseGame.class);
-				if (count == 1) {
-					i.putExtra("gameid", gameid);
-				}
-				PendingIntent contentIntent = PendingIntent.getActivity(context, gameid.hashCode(), i, 0);
-
-				NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
-						.setSmallIcon(R.drawable.ic_launcher)
-						.setContentTitle("It's your turn!")
-						.setStyle(new NotificationCompat.BigTextStyle().bigText(longMessage))
-						.setContentInfo(count + "")
-						.setContentText("vs " + opponentName + (count > 1 ? " and others" : ""))
-						.setAutoCancel(true);
-
-				mBuilder.setContentIntent(contentIntent);
-				mNotificationManager.notify(1, mBuilder.build());
-			}
+			lastupdate = game.getLastUpdateTimestamp();
 		}
-		setResultCode(Activity.RESULT_OK);
+
+		if (lastupdate > 0 && lastupdate < timestamp) {
+			SharedPreferences prefs = TurnReceiver.getBuildupPrefs(this);
+			SharedPreferences.Editor editor = prefs.edit();
+			editor.putString(gameid, word + " - " + opponentName);
+			editor.commit();
+
+			int count = 0;
+			InboxStyle style = new InboxStyle();
+			for (String key : prefs.getAll().keySet()) {
+				count++;
+				style.addLine(prefs.getString(key, ""));
+			}
+
+			// Tell Everybody
+			NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+			Intent i = new Intent(this, BaseGame.class);
+			if (count == 1) {
+				i.putExtra("gameid", gameid);
+			}
+			
+			Uri ringTonUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+			Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
+			PendingIntent contentIntent = PendingIntent.getActivity(this, 9000, i, 0);
+
+			NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
+					.setSmallIcon(R.drawable.noteicon)
+					.setLargeIcon(bm)
+					.setContentTitle("It's your turn")
+					.setContentInfo(count + "")
+					.setColor(getResources().getColor(R.color.notif_color))
+					.setStyle(style)
+					.setSound(ringTonUri)
+					.setNumber(count)
+					.setContentText(opponentName + (count == 2 ? " and 1 other" : (count > 2 ? " and " + count + " others" : "")))
+					.setAutoCancel(true)
+					.setContentIntent(contentIntent);
+			
+			mNotificationManager.notify(1, mBuilder.build());
+		}
 	}
 
 	private static SharedPreferences getBuildupPrefs(Context context) {

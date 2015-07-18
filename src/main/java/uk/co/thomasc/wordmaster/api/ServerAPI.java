@@ -5,9 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -19,64 +16,72 @@ import com.google.android.gms.common.ConnectionResult;
 import uk.co.thomasc.wordmaster.BaseGame;
 import uk.co.thomasc.wordmaster.game.Achievements;
 import uk.co.thomasc.wordmaster.objects.Game;
-import uk.co.thomasc.wordmaster.objects.Turn;
 import uk.co.thomasc.wordmaster.objects.User;
-import uk.co.thomasc.wordmaster.util.GameHelper;
 
+@SuppressWarnings("unchecked")
 public class ServerAPI {
 
 	private static final String BASE_URL = "https://thomasc.co.uk/wm/";
 	private static String playerid = "";
+	private static JSONObject notIdentifiedResponse = new JSONObject();
+	
+	static {
+		notIdentifiedResponse.put("error", -2);
+	}
 
 	/**
 	 * Calls the getMatches function of the server API. Retrieves
 	 * a list of all the games a player is involved in.
 	 * 
 	 * @param playerID – the Google+ ID of the player to retrieve games for
-	 * @param activityReference – a reference to the BaseGame activity, used to get avatars from Google+
+	 * @param activity – a reference to the BaseGame activity, used to get avatars from Google+
 	 * @param listener – a GetMatchesRequestListener to be notified when the request finishes 
 	 */
-	public static void getMatches(final String playerID, final BaseGame activityReference, final GetMatchesRequestListener listener) {
+	public static void getMatches(final BaseGame activity, final GetMatchesRequestListener listener) {
 		Thread t = new Thread() {
 			@Override
 			public void run() {
-				JSONObject json = ServerAPI.makeRequest("getMatches", activityReference);
+				JSONObject json = ServerAPI.makeRequest("getMatches", new String[] {}, activity);
+				int errorCode = -3;
 				if (json != null) {
-					int errorCode = ((Long) json.get("error")).intValue();
+					errorCode = ((Long) json.get("error")).intValue();
 					if (errorCode == 0) {
 						JSONArray response = (JSONArray) json.get("response");
 						Game[] games = new Game[response.size()];
 						for (int i = 0; i < response.size(); i++) {
 							JSONObject gameObject = (JSONObject) response.get(i);
-							String gameID = (String) gameObject.get("gameid");
-							boolean needsWord = (Boolean) gameObject.get("needword");
-							int playerScore = ((Long) gameObject.get("pscore")).intValue();
-							boolean playersTurn = (Boolean) gameObject.get("turn");
-							int alpha = gameObject.containsKey("alpha") ? ((Long) gameObject.get("alpha")).intValue() : 0;
-							
-							User opp = null;
-							int opponentScore = 0;
-							if (gameObject.containsKey("oppid")) {
-								opp = User.getUser((String) gameObject.get("oppid"), activityReference);
-								opponentScore = ((Long) gameObject.get("oscore")).intValue();
-							}
-							
-							Game game = Game.getGame(gameID, User.getUser(playerID, activityReference), opp);
-							game.setPlayersTurn(playersTurn);
-							game.setNeedsWord(needsWord);
-							game.setScore(playerScore, opponentScore);
-							if (gameObject.containsKey("updated")) {
-								long updated = (Long) gameObject.get("updated");
-								game.setLastUpdateTimestamp(updated);
-							}
-							game.setAlpha(alpha);
-							games[i] = game;
+							games[i] = Game.getGame((String) gameObject.get("gameid")).update(gameObject, activity);
 						}
 						listener.onRequestComplete(games);
 						return;
 					}
 				}
-				listener.onRequestFailed();
+				listener.onRequestFailed(errorCode);
+			}
+		};
+		t.start();
+	}
+	
+	public static void longPoll(final BaseGame activity, final long updated, final GetMatchesRequestListener listener) {
+		Thread t = new Thread() {
+			@Override
+			public void run() {
+				JSONObject json = ServerAPI.makeRequest("longPoll", new String[] {String.valueOf(updated)}, activity);
+				int errorCode = -3;
+				if (json != null) {
+					errorCode = ((Long) json.get("error")).intValue();
+					if (errorCode == 0) {
+						JSONArray response = (JSONArray) json.get("response");
+						Game[] games = new Game[response.size()];
+						for (int i = 0; i < response.size(); i++) {
+							JSONObject gameObject = (JSONObject) response.get(i);
+							games[i] = Game.getGame((String) gameObject.get("gameid")).update(gameObject, activity);
+						}
+						listener.onRequestComplete(games);
+						return;
+					}
+				}
+				listener.onRequestFailed(errorCode);
 			}
 		};
 		t.start();
@@ -87,22 +92,15 @@ public class ServerAPI {
 	 * containing all the turns taken in the game.
 	 * 
 	 * @param gameID – the game ID of the game to retrieve turns from
-	 * @param activityReference – a reference to the BaseGame activity, used to get avatars from Google+
+	 * @param activity – a reference to the BaseGame activity, used to get avatars from Google+
 	 * @param listener – a GetTurnsRequestListener to be notified when the request finishes 
 	 */
-	public static void getTurns(final String gameID, final BaseGame activityReference, final GetTurnsRequestListener listener) {
+	public static void getTurns(final String gameID, final BaseGame activity, final GetTurnsRequestListener listener) {
 		Thread t = new Thread() {
 			@Override
 			public void run() {
-				JSONObject json = ServerAPI.makeRequest("getTurns", gameID, activityReference);
-				if (json != null) {
-					List<Turn> turns = ServerAPI.getTurns(json, activityReference);
-					if (turns != null) {
-						listener.onRequestComplete(turns);
-						return;
-					}
-				}
-				listener.onRequestFailed();
+				JSONObject json = ServerAPI.makeRequest("getTurns", new String[] {gameID}, activity);
+				getTurns(json, gameID, listener, activity);
 			}
 		};
 		t.start();
@@ -115,22 +113,15 @@ public class ServerAPI {
 	 * 
 	 * @param gameID – the game ID of the game to retrieve turns from
 	 * @param turnID – the turn ID of the 'pivot' turn 
-	 * @param activityReference – a reference to the BaseGame activity, used to get avatars from Google+
+	 * @param activity – a reference to the BaseGame activity, used to get avatars from Google+
 	 * @param listener – a GetTurnsRequestListener to be notified when the request finishes 
 	 */
-	public static void getTurns(final String gameID, final int turnID, final BaseGame activityReference, final GetTurnsRequestListener listener) {
+	public static void getTurns(final String gameID, final int turnID, final BaseGame activity, final GetTurnsRequestListener listener) {
 		Thread t = new Thread() {
 			@Override
 			public void run() {
-				JSONObject json = ServerAPI.makeRequest("getTurns", gameID, String.valueOf(turnID), activityReference);
-				if (json != null) {
-					List<Turn> turns = ServerAPI.getTurns(json, activityReference);
-					if (turns != null) {
-						listener.onRequestComplete(turns);
-						return;
-					}
-				}
-				listener.onRequestFailed();
+				JSONObject json = ServerAPI.makeRequest("getTurns", new String[] {gameID, String.valueOf(turnID)}, activity);
+				getTurns(json, gameID, listener, activity);
 			}
 		};
 		t.start();
@@ -144,55 +135,33 @@ public class ServerAPI {
 	 * @param gameID – the game ID of the game to retrieve turns from
 	 * @param turnID – the turn ID of the 'pivot' turn
 	 * @param number – the number of turns to retrieve (negative for less recent, positive for more recent) 
-	 * @param activityReference – a reference to the BaseGame activity, used to get avatars from Google+
+	 * @param activity – a reference to the BaseGame activity, used to get avatars from Google+
 	 * @param listener – a GetTurnsRequestListener to be notified when the request finishes 
 	 */
-	public static void getTurns(final String gameID, final int turnID, final int number, final BaseGame activityReference, final GetTurnsRequestListener listener) {
+	public static void getTurns(final String gameID, final int turnID, final int number, final BaseGame activity, final GetTurnsRequestListener listener) {
 		Thread t = new Thread() {
 			@Override
 			public void run() {
-				JSONObject json = ServerAPI.makeRequest("getTurns", gameID, String.valueOf(turnID), Integer.toString(number), activityReference);
-				if (json != null) {
-					List<Turn> turns = ServerAPI.getTurns(json, activityReference);
-					if (turns != null) {
-						listener.onRequestComplete(turns);
-						return;
-					}
-				}
-				listener.onRequestFailed();
+				JSONObject json = ServerAPI.makeRequest("getTurns", new String[] {gameID, String.valueOf(turnID), Integer.toString(number)}, activity);
+				getTurns(json, gameID, listener, activity);
 			}
 		};
 		t.start();
 	}
 
-	private static List<Turn> getTurns(JSONObject json, BaseGame activityReference) {
-		int errorCode = ((Long) json.get("error")).intValue();
-		if (errorCode == 0) {
-			JSONArray response = (JSONArray) json.get("response");
-			List<Turn> turns = new ArrayList<Turn>();
-			for (int i = 0; i < response.size(); i++) {
-				JSONObject turnObject = (JSONObject) response.get(i);
-				int id = ((Long) turnObject.get("turnid")).intValue();
-				int num = ((Long) turnObject.get("turnnum")).intValue();
-				String playerID = (String) turnObject.get("playerid");
-				String guess = (String) turnObject.get("guess");
-				long when = (Long) turnObject.get("when");
-				int correct = ((Long) turnObject.get("correct")).intValue();
-				int displaced = ((Long) turnObject.get("displaced")).intValue();
-
-				Turn turn;
-				if (correct == 4) {
-					String opponentWord = (String) turnObject.get("oppword");
-					turn = new Turn(id, num, new Date(when), User.getUser(playerID, activityReference), guess, correct, displaced, opponentWord);
-				} else {
-					turn = new Turn(id, num, new Date(when), User.getUser(playerID, activityReference), guess, correct, displaced);
+	private static void getTurns(JSONObject json, String gameID, GetTurnsRequestListener listener, BaseGame activity) {
+		if (json != null) {
+			int errorCode = ((Long) json.get("error")).intValue();
+			if (errorCode == 0) {
+				JSONArray turns = (JSONArray) json.get("response");
+				for (int i = 0; i < turns.size(); i++) {
+					Game.getGame(gameID).addTurn((JSONObject) turns.get(i), activity);
 				}
-				turns.add(turn);
+				if (listener != null) listener.onRequestComplete();
+				return;
 			}
-			return turns;
-		} else {
-			return null;
 		}
+		if (listener != null) listener.onRequestFailed();
 	}
 
 	/**
@@ -205,11 +174,11 @@ public class ServerAPI {
 	 * @param word – the guess the player has made
 	 * @param listener – a TakeTurnRequestListener to be notified when the request finishes 
 	 */
-	public static void takeTurn(final String playerID, final String gameID, final String word, final BaseGame activityReference, final TakeTurnRequestListener listener) {
+	public static void takeTurn(final String gameID, final String word, final BaseGame activity, final TakeTurnRequestListener listener) {
 		Thread t = new Thread() {
 			@Override
 			public void run() {
-				JSONObject json = ServerAPI.makeRequest("takeTurn", gameID, word, activityReference);
+				JSONObject json = ServerAPI.makeRequest("takeTurn", new String[] {gameID, word}, activity);
 				int errorCode = -3;
 				if (json != null) {
 					errorCode = ((Long) json.get("error")).intValue();
@@ -228,18 +197,18 @@ public class ServerAPI {
 	 * 
 	 * @param playerID – the Google+ ID of the user
 	 * @param opponentID – the Google+ ID of the opponent (null for automatch)
-	 * @param activityReference – reference to the BaseGame activity, used to get avatars from Google+
+	 * @param activity – reference to the BaseGame activity, used to get avatars from Google+
 	 * @param listener – a CreateGameRequestListener to be notified when the request finishes 
 	 */
-	public static void createGame(final String playerID, final String opponentID, final BaseGame activityReference, final CreateGameRequestListener listener) {
+	public static void createGame(final String opponentID, final BaseGame activity, final CreateGameRequestListener listener) {
 		Thread t = new Thread() {
 			@Override
 			public void run() {
 				JSONObject json;
 				if (opponentID == null) {
-					json = ServerAPI.makeRequest("createGame", activityReference);
+					json = ServerAPI.makeRequest("createGame", new String[] {}, activity);
 				} else {
-					json = ServerAPI.makeRequest("createGame", opponentID, activityReference);
+					json = ServerAPI.makeRequest("createGame", new String[] {opponentID}, activity);
 				}
 				int errorCode = ((Long) json.get("error")).intValue();
 				if (errorCode == 0) {
@@ -248,10 +217,10 @@ public class ServerAPI {
 					
 					User opp = null;
 					if (opponentID != null) {
-						opp = User.getUser(opponentID, activityReference);
+						opp = User.getUser(opponentID, activity);
 					}
 					
-					Game game = Game.getGame(gameID, User.getUser(playerID, activityReference), opp);
+					Game game = Game.getGame(gameID).setOpponent(activity, opp);
 					listener.onRequestComplete(game);
 				} else {
 					listener.onRequestFailed(errorCode);
@@ -271,11 +240,11 @@ public class ServerAPI {
 	 * @param word – the word the player wishes to use
 	 * @param listener – a SetWordRequestListener to be notified when the request finishes 
 	 */
-	public static void setWord(final String playerID, final String gameID, final String word, final BaseGame activityReference, final SetWordRequestListener listener) {
+	public static void setWord(final String gameID, final String word, final BaseGame activity, final SetWordRequestListener listener) {
 		Thread t = new Thread() {
 			@Override
 			public void run() {
-				JSONObject json = ServerAPI.makeRequest("setWord", gameID, word, activityReference);
+				JSONObject json = ServerAPI.makeRequest("setWord", new String[] {gameID, word}, activity);
 				int errorCode = -3;
 				if (json != null) {
 					errorCode = ((Long) json.get("error")).intValue();
@@ -287,21 +256,21 @@ public class ServerAPI {
 		t.start();
 	}
 
-	public static void registerGCM(final String regid, final BaseGame activityReference) {
+	public static void registerGCM(final String regid, final BaseGame activity) {
 		Thread t = new Thread() {
 			@Override
 			public void run() {
-				ServerAPI.makeRequest("registerGCM", regid, activityReference);
+				ServerAPI.makeRequest("registerGCM", new String[] {regid}, activity);
 			}
 		};
 		t.start();
 	}
 
-	public static void upgradePurchased(final String token, final BaseGame activityReference) {
+	public static void upgradePurchased(final String token, final BaseGame activity) {
 		Thread t = new Thread() {
 			@Override
 			public void run() {
-				ServerAPI.makeRequest("upgradePurchased", token, activityReference);
+				ServerAPI.makeRequest("upgradePurchased", new String[] {token}, activity);
 			}
 		};
 		t.start();
@@ -311,7 +280,7 @@ public class ServerAPI {
 		Thread t = new Thread() {
 			@Override
 			public void run() {
-				JSONObject json = ServerAPI.makeRequest("updateAlpha", gameID, String.valueOf(alpha), activityReference);
+				JSONObject json = ServerAPI.makeRequest("updateAlpha", new String[] {gameID, String.valueOf(alpha)}, activityReference);
 				
 				int errorCode = -3;
 				if (json != null) {
@@ -324,41 +293,45 @@ public class ServerAPI {
 		t.start();
 	}
 
-	public static void identify(final String authToken, final BaseGame activityReference, final GameHelper gameHelper) {
-		/*Thread t = new Thread() {
-			@Override
-			public void run() {*/
-				JSONObject json = ServerAPI.doRequest(ServerAPI.BASE_URL + "identify" + "/" + authToken, activityReference);
-				if (json != null) {
-					JSONObject response = (JSONObject) json.get("response");
-					playerid = (String) response.get("key");
-				} else {
-					activityReference.runOnUiThread(new Runnable() {
-						@Override
-						public void run() {
-							gameHelper.onConnectionFailed(new ConnectionResult(ConnectionResult.NETWORK_ERROR, null));
-						}
-					});
-				}/*
-			}
-		};
-		t.start();*/
-	}
-
-	private static JSONObject makeRequest(String iface, String param1, String param2, String param3, BaseGame activityReference) {
-		return ServerAPI.doRequest(ServerAPI.BASE_URL + iface + "/" + playerid + "/" + param1 + "/" + param2 + "/" + param3, activityReference);
-	}
-
-	private static JSONObject makeRequest(String iface, String param1, String param2, BaseGame activityReference) {
-		return ServerAPI.doRequest(ServerAPI.BASE_URL + iface + "/" + playerid + "/" + param1 + "/" + param2, activityReference);
-	}
-
-	private static JSONObject makeRequest(String iface, String param1, BaseGame activityReference) {
-		return ServerAPI.doRequest(ServerAPI.BASE_URL + iface + "/" + playerid + "/" + param1, activityReference);
+	public static void identify(final String authToken, final BaseGame activity) {
+		JSONObject json = ServerAPI.doRequest(ServerAPI.BASE_URL + "identify" + "/" + authToken, activity);
+		if (json != null) {
+			JSONObject response = (JSONObject) json.get("response");
+			playerid = (String) response.get("key");
+			
+			activity.onIdentified();
+		} else {
+			activity.runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					activity.onConnectionFailed(new ConnectionResult(ConnectionResult.NETWORK_ERROR, null));
+				}
+			});
+		}
 	}
 	
-	private static JSONObject makeRequest(String iface, BaseGame activityReference) {
-		return ServerAPI.doRequest(ServerAPI.BASE_URL + iface + "/" + playerid, activityReference);
+	public static void revoke() {
+		playerid = "";
+	}
+
+	private static JSONObject makeRequest(String iface, String[] params, BaseGame activity) {
+		return playerid == null ? notIdentifiedResponse : ServerAPI.doRequest(ServerAPI.BASE_URL + iface + "/" + playerid + implode("/", params), activity);
+	}
+	
+	public static String implode(String separator, String... data) {
+		StringBuilder sb = new StringBuilder();
+		if (data.length > 0) {
+			sb.append(separator);
+			for (int i = 0; i < data.length - 1; i++) {
+			//data.length - 1 => to not add separator at the end
+			    if (!data[i].matches(" *")) {//empty string are ""; " "; "  "; and so on
+			        sb.append(data[i]);
+			        sb.append(separator);
+			    }
+			}
+			sb.append(data[data.length - 1].trim());
+		}
+		return sb.toString();
 	}
 
 	private static JSONObject doRequest(String url, final BaseGame activityReference) {

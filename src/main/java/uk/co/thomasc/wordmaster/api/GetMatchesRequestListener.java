@@ -6,6 +6,6 @@ public interface GetMatchesRequestListener {
 
 	public void onRequestComplete(Game[] games);
 
-	public void onRequestFailed();
+	public void onRequestFailed(int errorCode);
 
 }

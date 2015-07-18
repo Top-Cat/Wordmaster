@@ -3,24 +3,41 @@ package uk.co.thomasc.wordmaster;
 import java.util.ArrayList;
 import java.util.Set;
 
+import lombok.Getter;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.google.android.gms.auth.GoogleAuthUtil;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.Scopes;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
+import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import com.google.android.gms.games.Games;
-import com.google.android.gms.games.Player;
+import com.google.android.gms.plus.Plus;
+import com.google.android.gms.plus.model.people.Person;
 
 import uk.co.thomasc.wordmaster.api.ServerAPI;
 import uk.co.thomasc.wordmaster.game.Achievements;
-import uk.co.thomasc.wordmaster.gcm.RegisterThread;
+import uk.co.thomasc.wordmaster.gcm.RegistrationIntentService;
 import uk.co.thomasc.wordmaster.gcm.TurnReceiver;
 import uk.co.thomasc.wordmaster.iab.IabHelper;
 import uk.co.thomasc.wordmaster.iab.IabHelper.OnIabPurchaseFinishedListener;
@@ -32,7 +49,6 @@ import uk.co.thomasc.wordmaster.iab.Purchase;
 import uk.co.thomasc.wordmaster.objects.Game;
 import uk.co.thomasc.wordmaster.objects.Turn;
 import uk.co.thomasc.wordmaster.objects.User;
-import uk.co.thomasc.wordmaster.util.BaseGameActivity;
 import uk.co.thomasc.wordmaster.view.create.PersonAdapter;
 import uk.co.thomasc.wordmaster.view.game.GameAdapter;
 import uk.co.thomasc.wordmaster.view.menu.MenuDetailFragment;
@@ -45,7 +61,7 @@ import uk.co.thomasc.wordmaster.view.upgrade.UpgradeFragment;
  *
  * @see SystemUiHider
  */
-public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedListener {
+public class BaseGame extends FragmentActivity implements OnIabPurchaseFinishedListener, ConnectionCallbacks, OnConnectionFailedListener {
 
 	public static Typeface russo;
 
@@ -54,17 +70,23 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 	public GameAdapter gameAdapter;
 	public boolean wideLayout = false;
 
-	private String userId = "";
-	public String goToGameId = "";
+	private String goToGameId = "";
 
 	public static IabHelper mBHelper;
 	public static String upgradeSKU = "wordmaster_upgrade";
 	public UpgradeFragment upgradeFragment;
-	private boolean iabAvailable;
+	@Getter private boolean iabAvailable;
 
 	private String PREFS = "WM_HIDDEN_GAMES_";
 	private SharedPreferences prefs;
-
+	
+	private BroadcastReceiver mRegistrationBroadcastReceiver;
+	
+	private GoogleApiClient mGoogleApiClient;
+	private boolean mSignInFlow = true;
+	private static final int RC_SIGN_IN = 9001;
+	private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9002;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -77,6 +99,25 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 
 		BaseGame.russo = Typeface.createFromAsset(getAssets(), "fonts/Russo_One.ttf");
 
+		mGoogleApiClient = new GoogleApiClient.Builder(this)
+			.addConnectionCallbacks(this)
+			.addOnConnectionFailedListener(this)
+			.addApi(Plus.API).addScope(Plus.SCOPE_PLUS_LOGIN)
+			.addApi(Games.API).addScope(Games.SCOPE_GAMES)
+			.build();
+		
+		mRegistrationBroadcastReceiver = new BroadcastReceiver() {
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				Bundle extras = intent.getExtras();
+				if (extras != null && extras.containsKey("id")) {
+					goToGame(intent.getExtras().getString("id"));
+				} else {
+					goToGame(goToGameId);
+				}
+			}
+		};
+		
 		if (savedInstanceState != null) {
 			Game.restoreState(savedInstanceState, this);
 		} else {
@@ -100,12 +141,30 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 	}
 
 	@Override
+	protected void onResume() {
+		super.onResume();
+		LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver, new IntentFilter("open-game"));
+	}
+	
+	@Override
+	protected void onPause() {
+		LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
+		super.onPause();
+	}
+	
+	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-
+		
 		// Pass on the activity result to the helper for handling
 		if (!BaseGame.mBHelper.handleActivityResult(requestCode, resultCode, data)) {
-			super.onActivityResult(requestCode, resultCode, data);
+			if (requestCode == RC_SIGN_IN) {
+				if (resultCode == RESULT_OK) {
+					mGoogleApiClient.connect();
+				} else {
+					// Show error?
+				}
+			}
 		}
 	}
 
@@ -120,12 +179,15 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 
 		Bundle extras = intent.getExtras();
 		if (extras != null && extras.containsKey("gameid")) {
-			String gameid = extras.getString("gameid");
-			if (Game.getGame(gameid) != null) {
-				menuFragment.goToGame(gameid);
-			} else {
-				goToGameId = gameid;
-			}
+			goToGame(extras.getString("gameid"));
+		}
+	}
+	
+	private void goToGame(String gameid) {
+		if (Game.getGame(gameid) != null) {
+			menuFragment.goToGame(gameid);
+		} else {
+			goToGameId = gameid;
 		}
 	}
 
@@ -139,7 +201,7 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 	}
 
 	public void buyUpgrade() {
-		BaseGame.mBHelper.launchPurchaseFlow(this, BaseGame.upgradeSKU, 1902, this, userId);
+		BaseGame.mBHelper.launchPurchaseFlow(this, BaseGame.upgradeSKU, 1902, this, User.getCurrentUser().getPlusID());
 	}
 
 	public static void consumeUpgrades() {
@@ -175,41 +237,10 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		Game.saveState(outState);
-		Game.saveState(this);
-	}
-
-	@Override
-	public void onSignInFailed() {
-		getSupportFragmentManager().popBackStack("top", 0); // Close any open games
-		menuFragment.onSignInFailed();
-		for (Game game : Game.games.values()) {
-			game.clearTurns();
-		}
-	}
-
-	@Override
-	public void onSignInSucceeded() {
-		if (getApiClient().isConnected()) {
-			Player person = Games.Players.getCurrentPlayer(getApiClient());
-			userId = person.getPlayerId();
-			User.onPlusConnected(this);
-			User.getUser(person, this); // Load local user into cache
-			loadPreferences();
-			menuFragment.onSignInSucceeded();
-			if (gameAdapter != null) {
-				menuDetail.loadTurns();
-				gameAdapter.notifyDataSetChanged();
-			}
-			new RegisterThread(this).start();
-		}
-	}
-
-	private void loadPreferences() {
-		prefs = getSharedPreferences(PREFS + userId, 0);
 	}
 
 	public SharedPreferences getHiddenGamesPreferences() {
-		return prefs;
+		return getSharedPreferences(PREFS + User.getCurrentUser().getPlusID(), 0);
 	}
 
 	@Override
@@ -220,7 +251,6 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 			menuDetail = null;
 			gameAdapter = null;
 			menuFragment.adapter.setSelectedGid("");
-			menuFragment.loadGames();
 		}
 		if (topId.equals("top")) {
 			finish();
@@ -253,6 +283,10 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 			return true;
 		}
 		return super.onCreateOptionsMenu(menu);
+	}
+
+	public boolean isSignedIn() {
+		return (mGoogleApiClient != null && mGoogleApiClient.isConnected());
 	}
 
 	@Override
@@ -293,6 +327,19 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 		return super.onOptionsItemSelected(item);
 	}
 
+	public void signOut() {
+		if (mGoogleApiClient.isConnected()) {
+			Games.signOut(mGoogleApiClient);
+			mGoogleApiClient.disconnect();
+		}
+		
+		getSupportFragmentManager().popBackStack("top", 0); // Close any open games
+		menuFragment.onSignInFailed();
+		for (Game game : Game.games.values()) {
+			game.clearTurns();
+		}
+	}
+
 	public void unlockAchievement(Achievements achievement, int increment) {
 		for (String id : achievement.getIds()) {
 			if (!achievement.isIncremental()) {
@@ -311,12 +358,117 @@ public class BaseGame extends BaseGameActivity implements OnIabPurchaseFinishedL
 		return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dip, resources.getDisplayMetrics());
 	}
 
-	public String getUserId() {
-		return userId;
+	@Override
+	public void onConnectionFailed(ConnectionResult arg0) {
+		if (mSignInFlow) {
+			mSignInFlow = false;
+			if (!resolveConnectionFailure(arg0)) {
+				signOut();
+			}
+		}
 	}
 
-	public boolean isIabAvailable() {
-		return iabAvailable;
+	private boolean resolveConnectionFailure(ConnectionResult result) {
+		if (result.hasResolution()) {
+			try {
+				result.startResolutionForResult(this, RC_SIGN_IN);
+				return true;
+			} catch (IntentSender.SendIntentException e) {
+				mGoogleApiClient.connect();
+				return false;
+			}
+		} else {
+			int errorCode = result.getErrorCode();
+			Dialog dialog = GooglePlayServicesUtil.getErrorDialog(errorCode, this, RC_SIGN_IN);
+			if (dialog != null) {
+				dialog.show();
+			} else {
+				(new AlertDialog.Builder(this)).setMessage(getString(R.string.signin_other_error)).setNeutralButton(android.R.string.ok, null).create().show();
+			}
+			return false;
+		}
+	}
+
+	@Override
+	public void onConnected(Bundle arg0) {
+		if (getApiClient().isConnected()) {
+			new Thread() {
+				@Override
+				public void run() {
+					String authToken;
+					try {
+						authToken = GoogleAuthUtil.getToken(BaseGame.this, Plus.AccountApi.getAccountName(getApiClient()), "oauth2:" + Scopes.GAMES);
+						ServerAPI.identify(authToken, BaseGame.this);
+					} catch (Exception e) {
+						//signOut(); - 07-16 22:25:11.171: E/AndroidRuntime(12582): java.lang.IllegalStateException: Can not perform this action after onSaveInstanceState
+						e.printStackTrace();
+					}
+
+				}
+			}.start();
+		}
+	}
+
+	public GoogleApiClient getApiClient() {
+		return mGoogleApiClient;
+	}
+
+	@Override
+	public void onConnectionSuspended(int arg0) {
+		mGoogleApiClient.connect();
+	}
+	
+	@Override
+	protected void onStart() {
+		super.onStart();
+		mGoogleApiClient.connect();
+	}
+	
+	@Override
+	protected void onStop() {
+		super.onStop();
+		if (mGoogleApiClient.isConnected()) {
+			mGoogleApiClient.disconnect();
+		}
+	}
+
+	public void beginUserInitiatedSignIn() {
+		mSignInFlow = true;
+	   	mGoogleApiClient.connect();
+	}
+	
+	public boolean checkPlayServices() {
+		int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+		if (resultCode != ConnectionResult.SUCCESS) {
+			if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
+				GooglePlayServicesUtil.getErrorDialog(resultCode, this,
+						PLAY_SERVICES_RESOLUTION_REQUEST).show();
+			} else {
+				finish();
+			}
+			return false;
+		}
+		return true;
+	}
+
+	public String getGoToGameId() {
+		String temp = goToGameId;
+		goToGameId = "";
+		return temp;
+	}
+
+	public void onIdentified() {
+		if (getApiClient().isConnected()) {
+			Person person = Plus.PeopleApi.getCurrentPerson(getApiClient());
+			User.onPlusConnected(BaseGame.this, person);
+			
+			menuFragment.onSignInSucceeded();
+			
+			if (checkPlayServices()) {
+				Intent intent = new Intent(this, RegistrationIntentService.class);
+		        startService(intent);
+			}
+		}
 	}
 
 }

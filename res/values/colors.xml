@@ -23,4 +23,6 @@
 	<color name="menu_header_text">#FF444444</color>
 	<color name="whysignin">#FF666666</color>
 	
+	<color name="notif_color">#FCBD26</color>
+	
 </resources>

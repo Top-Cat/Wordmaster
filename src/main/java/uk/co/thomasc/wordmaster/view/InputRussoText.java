@@ -9,7 +9,7 @@ import uk.co.thomasc.wordmaster.R;
 
 public class InputRussoText extends RussoText {
 
-	Paint paint = new Paint();
+	private Paint paint = new Paint();
 
 	public InputRussoText(Context context) {
 		super(context);
