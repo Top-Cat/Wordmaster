@@ -9,7 +9,7 @@
 		android:layout_height="wrap_content"
 		android:background="@color/header" >
 
-		<ImageView
+		<uk.co.thomasc.wordmaster.view.AvatarView
 			android:id="@+id/playerAvatar"
 			android:layout_width="48dp"
 			android:layout_height="48dp"
@@ -47,7 +47,7 @@
 			android:textColor="@color/header_text"
 			android:textSize="40sp" />
 
-		<ImageView
+		<uk.co.thomasc.wordmaster.view.AvatarView
 			android:id="@+id/oppAvatar"
 			android:layout_width="48dp"
 			android:layout_height="48dp"

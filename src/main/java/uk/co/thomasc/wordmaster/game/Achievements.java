@@ -3,7 +3,11 @@ package uk.co.thomasc.wordmaster.game;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import org.json.simple.JSONObject;
+
 import android.util.SparseArray;
+
+import uk.co.thomasc.wordmaster.BaseGame;
 
 @AllArgsConstructor
 public enum Achievements {
@@ -45,6 +49,18 @@ public enum Achievements {
 
 	public static Achievements forServerId(int sid) {
 		return Achievements.apiMap.get(sid);
+	}
+
+	public static void process(JSONObject json) {
+		JSONObject achievements = (JSONObject) json.get("achievements");
+		for (Object key : achievements.keySet()) {
+			int sid = Integer.parseInt((String) key);
+			Achievements achievement = Achievements.forServerId(sid);
+			if (achievement != null) {
+				int increment = ((Long) achievements.get(key)).intValue();
+				BaseGame.unlockAchievement(achievement, increment);
+			}
+		}
 	}
 
 }

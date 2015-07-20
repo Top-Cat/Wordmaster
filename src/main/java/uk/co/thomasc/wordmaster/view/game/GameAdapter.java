@@ -17,7 +17,7 @@ import uk.co.thomasc.wordmaster.BaseGame;
 import uk.co.thomasc.wordmaster.R;
 import uk.co.thomasc.wordmaster.objects.Turn;
 import uk.co.thomasc.wordmaster.objects.User;
-import uk.co.thomasc.wordmaster.objects.callbacks.NameLoadedListener;
+import uk.co.thomasc.wordmaster.objects.callbacks.UserListener;
 import uk.co.thomasc.wordmaster.view.TimeSinceText;
 
 public class GameAdapter extends ArrayAdapter<Turn> {
@@ -33,9 +33,18 @@ public class GameAdapter extends ArrayAdapter<Turn> {
 		comp = new Comparator<Turn>() {
 			@Override
 			public int compare(Turn e1, Turn e2) {
-				return (int) (e1.getUnixTimestamp() - e2.getUnixTimestamp());
+				return e1.getID() - e2.getID();
 			}
 		};
+	}
+
+	public void addOnUiThread(final Turn turn) {
+		act.runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				add(turn);
+			}
+		});
 	}
 
 	@Override
@@ -106,16 +115,20 @@ public class GameAdapter extends ArrayAdapter<Turn> {
 				((TextView) view.findViewById(R.id.guess)).setText(item.getGuess().toUpperCase(Locale.ENGLISH));
 			} else {
 				final TextView txtview = (TextView) view.findViewById(R.id.guess);
-				user.listenForLoad(new NameLoadedListener() {
+				user.addListener(new UserListener() {
 					@Override
-					public void onNameLoaded(String name) {
-						String firstName = name.substring(0, name.indexOf(' '));
+					public void onNameLoaded(User user) {
+						String firstName = user.getFirstName();
 						if (winningTurn) {
-							txtview.setText(firstName + " guessed " + item.getGuess().toUpperCase(Locale.ENGLISH) +
-								"\n" + firstName + "'s word was " + item.getOpponentWord().toUpperCase(Locale.ENGLISH));
+							txtview.setText(firstName + " guessed " + item.getGuess().toUpperCase(Locale.ENGLISH) + "\n" + firstName + "'s word was " + item.getOpponentWord().toUpperCase(Locale.ENGLISH));
 						} else {
 							txtview.setText(firstName + " guessed " + item.getGuess().toUpperCase(Locale.ENGLISH));
 						}
+					}
+
+					@Override
+					public void onImageLoaded(User user) {
+
 					}
 				});
 			}

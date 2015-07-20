@@ -12,14 +12,14 @@ import android.widget.ListView;
 
 import uk.co.thomasc.wordmaster.R;
 import uk.co.thomasc.wordmaster.objects.Game;
-import uk.co.thomasc.wordmaster.objects.callbacks.UnhideGameListener;
+import uk.co.thomasc.wordmaster.view.menu.MenuListFragment;
 
 public class UnhideGameFragment extends Fragment implements OnClickListener, OnItemClickListener {
 
 	public static final String ARG_ID = "hidden_games";
 
 	public UnhideAdapter adapter;
-	private UnhideGameListener listener;
+	private MenuListFragment listener;
 	private String[] hiddenGames;
 
 	public UnhideGameFragment() {
@@ -63,7 +63,7 @@ public class UnhideGameFragment extends Fragment implements OnClickListener, OnI
 		listener.onUnhideGame(adapter.getItem(position));
 	}
 
-	public void setUnhideGameListener(UnhideGameListener listener) {
+	public void setUnhideGameListener(MenuListFragment listener) {
 		this.listener = listener;
 	}
 

@@ -10,7 +10,7 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.util.Log;
 
-import uk.co.thomasc.wordmaster.api.ServerAPI;
+import uk.co.thomasc.wordmaster.BaseGame;
 
 public class RegistrationIntentService extends IntentService {
 
@@ -28,7 +28,7 @@ public class RegistrationIntentService extends IntentService {
 				InstanceID instanceID = InstanceID.getInstance(this);
 				String token = instanceID.getToken("731445442831", GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
 
-				ServerAPI.registerGCM(token, null);
+				BaseGame.getServerApi().registerGCM(token, null);
 
 				subscribeTopics(token);
 			}

@@ -5,18 +5,17 @@ import java.util.Map;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import uk.co.thomasc.wordmaster.R;
 import uk.co.thomasc.wordmaster.objects.Game;
-import uk.co.thomasc.wordmaster.objects.callbacks.ImageLoadedListener;
-import uk.co.thomasc.wordmaster.objects.callbacks.NameLoadedListener;
+import uk.co.thomasc.wordmaster.objects.User;
+import uk.co.thomasc.wordmaster.objects.callbacks.UserListener;
+import uk.co.thomasc.wordmaster.view.AvatarView;
 
 public class UnhideAdapter extends ArrayAdapter<Game> {
 
@@ -49,32 +48,25 @@ public class UnhideAdapter extends ArrayAdapter<Game> {
 		final View view = rview;
 		checkList.put(view, item);
 
-		item.getOpponent().listenForLoad(new NameLoadedListener() {
+		item.getOpponent().addListener(new UserListener() {
 			@Override
-			public void onNameLoaded(final String name) {
+			public void onNameLoaded(final User user) {
 				view.post(new Runnable() {
 					@Override
 					public void run() {
 						if (item == checkList.get(view)) {
-							((TextView) view.findViewById(R.id.playera)).setText(name);
+							((TextView) view.findViewById(R.id.playera)).setText(user.getName());
 						}
 					}
 				});
 			}
-		});
-		item.getOpponent().listenForImage(new ImageLoadedListener() {
+
 			@Override
-			public void onImageLoaded(final Drawable image) {
-				view.post(new Runnable() {
-					@Override
-					public void run() {
-						if (item == checkList.get(view)) {
-							((ImageView) view.findViewById(R.id.avatar)).setImageDrawable(image);
-						}
-					}
-				});
+			public void onImageLoaded(User user) {
+
 			}
 		});
+		((AvatarView) view.findViewById(R.id.avatar)).setUser(item.getOpponent());
 
 		return view;
 	}

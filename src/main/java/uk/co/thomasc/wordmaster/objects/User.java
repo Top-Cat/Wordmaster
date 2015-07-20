@@ -20,8 +20,7 @@ import com.google.android.gms.plus.model.people.Person;
 import android.graphics.drawable.Drawable;
 
 import uk.co.thomasc.wordmaster.BaseGame;
-import uk.co.thomasc.wordmaster.objects.callbacks.ImageLoadedListener;
-import uk.co.thomasc.wordmaster.objects.callbacks.NameLoadedListener;
+import uk.co.thomasc.wordmaster.objects.callbacks.UserListener;
 
 public class User {
 
@@ -37,13 +36,13 @@ public class User {
 		User.users.put("", User.none);
 	}
 
-	public static User getUser(Person player, BaseGame activity) {
-		return User.getUser(player.getId(), activity).update(player);
+	public static User getUser(Person player) {
+		return User.getUser(player.getId()).update(player);
 	}
 
-	public static User getUser(String plusID, BaseGame activity) {
+	public static User getUser(String plusID) {
 		if (!User.users.containsKey(plusID)) {
-			User.users.put(plusID, new User(plusID).loadName(activity));
+			User.users.put(plusID, new User(plusID).loadName());
 		}
 		return User.users.get(plusID);
 	}
@@ -52,17 +51,17 @@ public class User {
 		return User.me;
 	}
 
-	public static void onPlusConnected(final BaseGame activity, Person person) {
+	public static void onPlusConnected(Person person) {
 		User.connected = true;
-		User.me = User.getUser(person, activity);
+		User.me = User.getUser(person);
 
 		if (User.notLoaded.size() > 0) {
-			Plus.PeopleApi.load(activity.getApiClient(), User.notLoaded).setResultCallback(new ResultCallback<LoadPeopleResult>() {
+			Plus.PeopleApi.load(BaseGame.getApiClient(), User.notLoaded).setResultCallback(new ResultCallback<LoadPeopleResult>() {
 				@Override
 				public void onResult(LoadPeopleResult arg0) {
 					try {
 						for (Person p : arg0.getPersonBuffer()) {
-							User.getUser(p, activity);
+							User.getUser(p);
 						}
 					} finally {
 						arg0.getPersonBuffer().release();
@@ -78,16 +77,15 @@ public class User {
 
 	private String avatarUri;
 	private Drawable drawable;
-	private final List<NameLoadedListener> userListeners = new ArrayList<NameLoadedListener>();
-	private final List<ImageLoadedListener> imageListeners = new ArrayList<ImageLoadedListener>();
+	private final List<UserListener> listeners = new ArrayList<UserListener>();
 
 	private User(String plusID) {
 		this.plusID = plusID;
 	}
 
-	private User loadName(BaseGame activity) {
+	private User loadName() {
 		if (User.connected) {
-			Plus.PeopleApi.load(activity.getApiClient(), plusID).setResultCallback(new ResultCallback<LoadPeopleResult>() {
+			Plus.PeopleApi.load(BaseGame.getApiClient(), plusID).setResultCallback(new ResultCallback<LoadPeopleResult>() {
 				@Override
 				public void onResult(LoadPeopleResult arg0) {
 					try {
@@ -95,10 +93,9 @@ public class User {
 						name = person.getDisplayName();
 						loadImage(person);
 
-						for (NameLoadedListener listener : userListeners) {
-							listener.onNameLoaded(name);
+						for (UserListener listener : listeners) {
+							listener.onNameLoaded(User.this);
 						}
-						userListeners.clear();
 					} finally {
 						arg0.getPersonBuffer().release();
 					}
@@ -137,10 +134,9 @@ public class User {
 						conn.connect();
 						drawable = Drawable.createFromStream(conn.getInputStream(), "player avatar");
 
-						for (ImageLoadedListener listener : imageListeners) {
-							listener.onImageLoaded(drawable);
+						for (UserListener listener : listeners) {
+							listener.onImageLoaded(User.this);
 						}
-						imageListeners.clear();
 						return;
 					} catch (IOException e) {
 						// No internet :<
@@ -162,22 +158,6 @@ public class User {
 		return this;
 	}
 
-	public void listenForLoad(NameLoadedListener listener) {
-		if (name != null) {
-			listener.onNameLoaded(name);
-		} else {
-			userListeners.add(listener);
-		}
-	}
-
-	public void listenForImage(ImageLoadedListener listener) {
-		if (drawable != null) {
-			listener.onImageLoaded(drawable);
-		} else {
-			imageListeners.add(listener);
-		}
-	}
-
 	/* Getters */
 	public Drawable getAvatar() {
 		return drawable;
@@ -186,11 +166,29 @@ public class User {
 	public User setName(String name) {
 		this.name = name;
 
-		for (NameLoadedListener listener : userListeners) {
-			listener.onNameLoaded(name);
+		for (UserListener listener : listeners) {
+			listener.onNameLoaded(this);
 		}
-		userListeners.clear();
 		return this;
+	}
+
+	public void addListener(UserListener listener) {
+		listeners.add(listener);
+
+		if (getAvatar() != null) {
+			listener.onImageLoaded(this);
+		}
+		if (getName() != null) {
+			listener.onNameLoaded(this);
+		}
+	}
+
+	public void removeListener(UserListener listener) {
+		listeners.remove(listener);
+	}
+
+	public String getFirstName() {
+		return getName().substring(0, getName().indexOf(' '));
 	}
 
 }

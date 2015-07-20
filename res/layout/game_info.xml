@@ -4,7 +4,7 @@
 	android:background="@drawable/itembg"
 	android:padding="10dp">
 
-	<ImageView
+	<uk.co.thomasc.wordmaster.view.AvatarView
 		android:id="@+id/avatar"
 		android:layout_width="48dp"
 		android:layout_height="48dp"

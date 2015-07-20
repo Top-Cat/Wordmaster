@@ -6,6 +6,8 @@ import lombok.experimental.Accessors;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.json.simple.JSONObject;
 
@@ -16,13 +18,13 @@ import android.os.Bundle;
 import android.util.SparseArray;
 
 import uk.co.thomasc.wordmaster.BaseGame;
-import uk.co.thomasc.wordmaster.api.ServerAPI;
-import uk.co.thomasc.wordmaster.api.UpdateAlphaRequestListener;
+import uk.co.thomasc.wordmaster.api.GetTurnsResponse;
+import uk.co.thomasc.wordmaster.api.SimpleResponse;
 import uk.co.thomasc.wordmaster.objects.callbacks.GameListener;
 import uk.co.thomasc.wordmaster.view.game.GameAdapter;
 
 @Accessors(chain = true)
-public class Game implements UpdateAlphaRequestListener {
+public class Game extends SimpleResponse {
 
 	public static String keySegment = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApAOqKoj3zH7ADRMM9zHZkUegL8xRAoD8Qb7tl7Xz94T99y7qFiphoZ";
 
@@ -38,8 +40,9 @@ public class Game implements UpdateAlphaRequestListener {
 
 	/* Properties */
 	private final String gameID;
-	@Getter private User opponent;
+	@Getter @Setter private User opponent;
 	@Getter private final SparseArray<Turn> turns = new SparseArray<Turn>();
+	@Getter private final Set<Turn> newTurns = new HashSet<Turn>();
 	private int latestTurnId = -1;
 	private int oldestTurnId = Integer.MAX_VALUE;
 	@Getter private int playerScore = 0, opponentScore = 0;
@@ -47,7 +50,7 @@ public class Game implements UpdateAlphaRequestListener {
 	@Getter @Setter private String playerWord = "", opponentWord = "";
 	@Getter @Setter private boolean needingWord = true, playersTurn = false;
 	private final ArrayList<GameListener> gameListeners = new ArrayList<GameListener>();
-	@Getter private long lastUpdateTimestamp = 0;
+	@Getter @Setter private long lastUpdateTimestamp = 0;
 	private int alpha = 0;
 	private byte alphaStatus = 0;
 	private GameAdapter adapter;
@@ -73,28 +76,15 @@ public class Game implements UpdateAlphaRequestListener {
 	public GameAdapter getAdapter(BaseGame activity) {
 		if (adapter == null) {
 			adapter = new GameAdapter(activity);
+			for (Turn t : newTurns) {
+				adapter.add(t);
+			}
 		}
 		return adapter;
 	}
 
-	public Game setLastUpdateTimestamp(Context c, long lastUpdateTimestamp) {
-		this.lastUpdateTimestamp = lastUpdateTimestamp;
-
-		saveState(c);
-
-		return this;
-	}
-
-	public Game setOpponent(Context c, User opponent) {
-		this.opponent = opponent;
-
-		saveState(c);
-
-		return this;
-	}
-
 	/* Other Methods */
-	public void addTurn(JSONObject turnObj, final BaseGame activity) {
+	public void addTurn(JSONObject turnObj) {
 		int id = ((Long) turnObj.get("turnid")).intValue();
 		boolean newTurn = false;
 		boolean latestTurn = false;
@@ -104,7 +94,7 @@ public class Game implements UpdateAlphaRequestListener {
 
 			newTurn = true;
 		}
-		final Turn turn = turns.get(id).update(turnObj, activity);
+		final Turn turn = turns.get(id).update(turnObj);
 
 		if (turn.getID() < oldestTurnId) {
 			oldestTurnId = turn.getID();
@@ -126,12 +116,7 @@ public class Game implements UpdateAlphaRequestListener {
 		}
 
 		if (newTurn) {
-			activity.runOnUiThread(new Runnable() {
-				@Override
-				public void run() {
-					getAdapter(activity).add(turn);
-				}
-			});
+			addTurnToAdapter(turn);
 		}
 		if (latestTurn) {
 			for (GameListener l : gameListeners) {
@@ -140,6 +125,14 @@ public class Game implements UpdateAlphaRequestListener {
 		}
 		for (GameListener l : gameListeners) {
 			l.onGameUpdated(this);
+		}
+	}
+
+	private void addTurnToAdapter(Turn turn) {
+		if (adapter == null) {
+			newTurns.add(turn);
+		} else {
+			adapter.addOnUiThread(turn);
 		}
 	}
 
@@ -168,6 +161,12 @@ public class Game implements UpdateAlphaRequestListener {
 		}
 	}
 
+	public static void saveStates(Context context) {
+		for (String gameid : Game.games.keySet()) {
+			Game.games.get(gameid).saveState(context);
+		}
+	}
+
 	public static void saveState(Bundle outState) {
 		for (String gameid : Game.games.keySet()) {
 			outState.putBundle(gameid, Game.games.get(gameid).toBundle());
@@ -175,12 +174,12 @@ public class Game implements UpdateAlphaRequestListener {
 		outState.putStringArray("games", Game.games.keySet().toArray(new String[Game.games.size()]));
 	}
 
-	public static void restoreState(Bundle inState, BaseGame activity) {
+	public static void restoreState(Bundle inState) {
 		String[] gameids = inState.getStringArray("games");
 		for (String gameid : gameids) {
 			Bundle gameData = inState.getBundle(gameid);
 			Game.getGame(gameid)
-				.setOpponent(activity, User.getUser(gameData.getString("opponentid"), activity))
+				.setOpponent(User.getUser(gameData.getString("opponentid")))
 				.setPlayersTurn(gameData.getBoolean("playersturn"))
 				.setNeedingWord(gameData.getBoolean("needsword"))
 				.setScore(gameData.getInt("playerscore"), gameData.getInt("opponentscore"))
@@ -218,27 +217,29 @@ public class Game implements UpdateAlphaRequestListener {
 		return (alpha >> j & 1) == 1;
 	}
 
-	public void updateAlpha(int id, boolean strike, BaseGame activityReference) {
+	public void updateAlpha(int id, boolean strike) {
 		alpha ^= 1 << id;
 		if ((alphaStatus & 1) == 0) {
 			alphaStatus |= 1;
-			ServerAPI.updateAlpha(gameID, alpha, activityReference, this);
+			BaseGame.getServerApi().updateAlpha(gameID, alpha, this);
 		} else {
 			alphaStatus |= 2;
 		}
 	}
 
 	@Override
-	public void onRequestComplete(int errorCode, BaseGame activityReference) {
-		if (errorCode != 0) {
-			alphaStatus |= 2;
-		}
+	public void onRequestFailed(int errorCode) {
+		alphaStatus |= 2;
+		onRequestComplete(null);
+	}
 
+	@Override
+	public void onRequestComplete(Object obj) {
 		alphaStatus &= ~1;
 
 		if ((alphaStatus & 2) == 2) {
 			alphaStatus |= 1;
-			ServerAPI.updateAlpha(gameID, alpha, activityReference, this);
+			BaseGame.getServerApi().updateAlpha(gameID, alpha, this);
 		}
 		alphaStatus &= ~2;
 	}
@@ -249,29 +250,29 @@ public class Game implements UpdateAlphaRequestListener {
 		oldestTurnId = Integer.MAX_VALUE;
 	}
 
-	public Game update(JSONObject gameObject, BaseGame activity) {
+	public Game update(JSONObject gameObject) {
 		User opp = null;
 		int opponentScore = 0;
 		long updated = gameObject.containsKey("updated") ? (Long) gameObject.get("updated") : 0;
 		boolean hasUpdated = getLastUpdateTimestamp() < updated;
 
 		if (gameObject.containsKey("oppid")) {
-			opp = User.getUser((String) gameObject.get("oppid"), activity);
+			opp = User.getUser((String) gameObject.get("oppid"));
 			opponentScore = ((Long) gameObject.get("oscore")).intValue();
 		}
 
-		setOpponent(activity, opp)
+		setOpponent(opp)
 			.setPlayersTurn((Boolean) gameObject.get("turn"))
 			.setNeedingWord((Boolean) gameObject.get("needword"))
 			.setScore(((Long) gameObject.get("pscore")).intValue(), opponentScore)
 			.setAlpha(gameObject.containsKey("alpha") ? ((Long) gameObject.get("alpha")).intValue() : 0)
-			.setLastUpdateTimestamp(activity, gameObject.containsKey("updated_user") ? (Long) gameObject.get("updated_user") : 0)
+			.setLastUpdateTimestamp(gameObject.containsKey("updated_user") ? (Long) gameObject.get("updated_user") : 0)
 			.setLoaded(true);
 
 		Game.updatePoint = Math.max(Game.updatePoint, updated);
 
 		if (hasUpdated) {
-			getMoreTurns(activity);
+			getMoreTurns();
 		}
 
 		for (GameListener l : gameListeners) {
@@ -281,11 +282,11 @@ public class Game implements UpdateAlphaRequestListener {
 		return this;
 	}
 
-	private void getMoreTurns(BaseGame activity) {
+	private void getMoreTurns() {
 		if (getPivotLatest() < 0) {
-			ServerAPI.getTurns(getID(), activity, null);
+			BaseGame.getServerApi().getTurns(getID(), new SimpleGetTurnsResponse(this));
 		} else {
-			ServerAPI.getTurns(getID(), getPivotLatest(), 10, activity, null);
+			BaseGame.getServerApi().getTurns(getID(), getPivotLatest(), 10, new SimpleGetTurnsResponse(this));
 		}
 	}
 
@@ -293,4 +294,21 @@ public class Game implements UpdateAlphaRequestListener {
 		return isNeedingWord() || isPlayersTurn();
 	}
 
+	class SimpleGetTurnsResponse extends GetTurnsResponse {
+
+		public SimpleGetTurnsResponse(Game game) {
+			super(game);
+		}
+
+		@Override
+		public void onRequestComplete(Object obj) {
+
+		}
+
+		@Override
+		public void onRequestFailed(int errorCode) {
+
+		}
+
+	}
 }

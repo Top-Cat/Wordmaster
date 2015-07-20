@@ -1,6 +1,8 @@
 package uk.co.thomasc.wordmaster.view.game;
 
+import android.annotation.SuppressLint;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -8,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.LinearLayout;
@@ -15,8 +18,7 @@ import android.widget.ListView;
 
 import uk.co.thomasc.wordmaster.BaseGame;
 import uk.co.thomasc.wordmaster.R;
-import uk.co.thomasc.wordmaster.api.GetTurnsRequestListener;
-import uk.co.thomasc.wordmaster.api.ServerAPI;
+import uk.co.thomasc.wordmaster.api.GetTurnsResponse;
 import uk.co.thomasc.wordmaster.objects.Game;
 import uk.co.thomasc.wordmaster.objects.Turn;
 import uk.co.thomasc.wordmaster.objects.callbacks.GameListener;
@@ -58,37 +60,37 @@ public class SwipeController extends FragmentStatePagerAdapter {
 		return 2;
 	}
 
-	public static class Pages extends Fragment implements GameListener, OnScrollListener, OnClickListener {
+	public static class Pages extends Fragment implements GameListener, OnScrollListener, OnClickListener, OnGlobalLayoutListener {
 		public static final String ARG_OBJECT = "object";
 		private GameAdapter adapter;
 		private Game game;
 		private ListView listView;
 		private LinearLayout alpha;
+		private boolean firstLayout = true;
 
 		private boolean refreshTriggered = false;
 
+		@SuppressLint("NewApi")
 		@Override
 		public void onDestroy() {
 			super.onDestroy();
 			if (game != null) {
 				game.removeTurnListener(this);
 			}
-		}
-
-		@Override
-		public void onTurnAdded(final Game game, final Turn turn) {
-			if (listView != null) {
-				listView.post(new Runnable() {
-					@Override
-					public void run() {
-						listView.setSelection(listView.getAdapter().getCount() - 1);
-					}
-				});
+			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+				getView().getViewTreeObserver().removeGlobalOnLayoutListener(this);
+			} else {
+				getView().getViewTreeObserver().removeOnGlobalLayoutListener(this);
 			}
 		}
 
 		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		public void onTurnAdded(final Game game, final Turn turn) {
+			firstLayout = true;
+		}
+
+		@Override
+		public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
 			View rootView;
 			game = Game.getGame(SwipeController.gid);
 
@@ -97,13 +99,13 @@ public class SwipeController extends FragmentStatePagerAdapter {
 			if (getArguments().getBoolean(Pages.ARG_OBJECT)) {
 				rootView = new ListView(getActivity());
 
-				((BaseGame) getActivity()).gameAdapter = adapter = game.getAdapter((BaseGame) getActivity());
+				adapter = game.getAdapter((BaseGame) getActivity());
 				listView = (ListView) rootView;
 				listView.setAdapter(adapter);
 				listView.setBackgroundColor(Color.WHITE);
 				listView.setCacheColorHint(Color.WHITE);
 
-				listView.setSelection(listView.getAdapter().getCount() - 1);
+				rootView.getViewTreeObserver().addOnGlobalLayoutListener(this);
 				listView.setOnScrollListener(this);
 			} else {
 				rootView = inflater.inflate(R.layout.alphabet, container, false);
@@ -115,18 +117,37 @@ public class SwipeController extends FragmentStatePagerAdapter {
 		}
 
 		@Override
+		public void onGlobalLayout() {
+			if (firstLayout && getView().getRootView().getHeight() - getView().getRootView().findViewById(R.id.screen_game).getHeight() > 150) {
+				firstLayout = false;
+				listView.setSelection(listView.getAdapter().getCount() - 1);
+			}
+		}
+
+		@Override
 		public void onScrollStateChanged(AbsListView view, int scrollState) {
 
 		}
 
 		@Override
 		public void onScroll(AbsListView view, final int firstVisibleItem, int visibleItemCount, final int totalItemCount) {
-			if (firstVisibleItem < 2 && !refreshTriggered && game.getPivotOldest() > 0) {
+			if (firstVisibleItem < 2 && !firstLayout && !refreshTriggered && game.getPivotOldest() > 0) {
 				refreshTriggered = true;
-				ServerAPI.getTurns(game.getID(), game.getPivotOldest(), -10, (BaseGame) getActivity(), new GetTurnsRequestListener() {
+				BaseGame.getServerApi().getTurns(game.getID(), game.getPivotOldest(), -10, new GetTurnsResponse(game) {
+					@Override
+					public void onRequestComplete(Object obj) {
+						listView.clearFocus();
+						listView.post(new Runnable() {
+							@Override
+							public void run() {
+								listView.setSelection(firstVisibleItem - totalItemCount + adapter.getCount());
+							}
+						});
+						refreshTriggered = false;
+					}
 
 					@Override
-					public void onRequestFailed() {
+					public void onRequestFailed(int errorCode) {
 						refreshTriggered = false;
 
 						final DialogPanel errorMessage = (DialogPanel) getActivity().findViewById(R.id.errorMessage);
@@ -137,18 +158,6 @@ public class SwipeController extends FragmentStatePagerAdapter {
 							}
 						});
 					}
-
-					@Override
-					public void onRequestComplete() {
-						listView.clearFocus();
-						listView.post(new Runnable() {
-							@Override
-							public void run() {
-								listView.setSelection(firstVisibleItem - totalItemCount + adapter.getCount());
-							}
-						});
-						refreshTriggered = false;
-					}
 				});
 			}
 		}
@@ -158,7 +167,7 @@ public class SwipeController extends FragmentStatePagerAdapter {
 			RussoText txt = (RussoText) v;
 			txt.setTextColor(getResources().getColor(txt.isStrike() ? R.color.maintext : R.color.hiddenletter));
 			txt.setStrike(!txt.isStrike());
-			game.updateAlpha(txt.getId(), txt.isStrike(), (BaseGame) getActivity());
+			game.updateAlpha(txt.getId(), txt.isStrike());
 		}
 
 		@Override

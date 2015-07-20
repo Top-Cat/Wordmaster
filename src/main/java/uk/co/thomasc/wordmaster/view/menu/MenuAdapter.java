@@ -6,7 +6,6 @@ import java.util.Map;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,8 +15,9 @@ import android.widget.TextView;
 
 import uk.co.thomasc.wordmaster.R;
 import uk.co.thomasc.wordmaster.objects.Game;
-import uk.co.thomasc.wordmaster.objects.callbacks.ImageLoadedListener;
-import uk.co.thomasc.wordmaster.objects.callbacks.NameLoadedListener;
+import uk.co.thomasc.wordmaster.objects.User;
+import uk.co.thomasc.wordmaster.objects.callbacks.UserListener;
+import uk.co.thomasc.wordmaster.view.AvatarView;
 import uk.co.thomasc.wordmaster.view.TimeSinceText;
 
 public class MenuAdapter extends ArrayAdapter<Game> {
@@ -35,7 +35,7 @@ public class MenuAdapter extends ArrayAdapter<Game> {
 			@Override
 			public int compare(Game e1, Game e2) {
 				int r = (e2.isTurn() ? 1 : 0) - (e1.isTurn() ? 1 : 0);
-				return r != 0 ? r : (e2.getLastUpdateTimestamp() - e1.getLastUpdateTimestamp() > 0 ? 1 : -1) * (e1.isPlayersTurn() ? -1 : 1);
+				return r != 0 ? r : (e2.getLastUpdateTimestamp() > e1.getLastUpdateTimestamp() ? 1 : -1) * (e1.isPlayersTurn() ? -1 : 1);
 			}
 		};
 	}
@@ -102,32 +102,25 @@ public class MenuAdapter extends ArrayAdapter<Game> {
 			((TextView) view.findViewById(R.id.playera)).setText("Auto Match In Progress");
 			((ImageView) view.findViewById(R.id.avatar)).setImageResource(R.drawable.games_matches_green);
 		} else {
-			item.getOpponent().listenForLoad(new NameLoadedListener() {
+			item.getOpponent().addListener(new UserListener() {
 				@Override
-				public void onNameLoaded(final String name) {
+				public void onNameLoaded(final User user) {
 					view.post(new Runnable() {
 						@Override
 						public void run() {
 							if (item == checkList.get(view)) {
-								((TextView) view.findViewById(R.id.playera)).setText("vs " + name);
+								((TextView) view.findViewById(R.id.playera)).setText("vs " + user.getName());
 							}
 						}
 					});
 				}
-			});
-			item.getOpponent().listenForImage(new ImageLoadedListener() {
+
 				@Override
-				public void onImageLoaded(final Drawable image) {
-					view.post(new Runnable() {
-						@Override
-						public void run() {
-							if (item == checkList.get(view)) {
-								((ImageView) view.findViewById(R.id.avatar)).setImageDrawable(image);
-							}
-						}
-					});
+				public void onImageLoaded(User user) {
+
 				}
 			});
+			((AvatarView) view.findViewById(R.id.avatar)).setUser(item.getOpponent());
 		}
 
 		long time = item.getLastUpdateTimestamp();

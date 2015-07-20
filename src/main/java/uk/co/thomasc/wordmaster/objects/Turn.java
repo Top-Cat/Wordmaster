@@ -7,8 +7,6 @@ import java.util.Date;
 
 import org.json.simple.JSONObject;
 
-import uk.co.thomasc.wordmaster.BaseGame;
-
 @EqualsAndHashCode(of = {"turnID"})
 public class Turn {
 
@@ -37,9 +35,9 @@ public class Turn {
 		return timestamp.getTime();
 	}
 
-	public Turn update(JSONObject turnObj, BaseGame activity) {
+	public Turn update(JSONObject turnObj) {
 		turnNum = ((Long) turnObj.get("turnnum")).intValue();
-		user = User.getUser((String) turnObj.get("playerid"), activity);
+		user = User.getUser((String) turnObj.get("playerid"));
 		guess = (String) turnObj.get("guess");
 		timestamp = new Date((Long) turnObj.get("when"));
 		correctLetters = ((Long) turnObj.get("correct")).intValue();

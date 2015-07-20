@@ -9,9 +9,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.RingtoneManager;
-import android.net.Uri;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationCompat.InboxStyle;
 
@@ -62,7 +62,6 @@ public class TurnReceiver extends GcmListenerService {
 				i.putExtra("gameid", gameid);
 			}
 
-			Uri ringTonUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 			Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
 			PendingIntent contentIntent = PendingIntent.getActivity(this, 9000, i, 0);
 
@@ -73,7 +72,9 @@ public class TurnReceiver extends GcmListenerService {
 				.setContentInfo(count + "")
 				.setColor(getResources().getColor(R.color.notif_color))
 				.setStyle(style)
-				.setSound(ringTonUri)
+				.setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
+				.setVibrate(new long[] {1000, 1000})
+				.setLights(Color.YELLOW, 3000, 3000)
 				.setNumber(count)
 				.setContentText(opponentName + (count == 2 ? " and 1 other" : count > 2 ? " and " + count + " others" : ""))
 				.setAutoCancel(true)

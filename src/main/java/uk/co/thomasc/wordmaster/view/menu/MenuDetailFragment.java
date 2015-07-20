@@ -21,19 +21,18 @@ import android.widget.TextView;
 
 import uk.co.thomasc.wordmaster.BaseGame;
 import uk.co.thomasc.wordmaster.R;
-import uk.co.thomasc.wordmaster.api.TakeTurnSpinnerListener;
 import uk.co.thomasc.wordmaster.objects.Game;
 import uk.co.thomasc.wordmaster.objects.Turn;
 import uk.co.thomasc.wordmaster.objects.User;
 import uk.co.thomasc.wordmaster.objects.callbacks.GameListener;
-import uk.co.thomasc.wordmaster.objects.callbacks.ImageLoadedListener;
 import uk.co.thomasc.wordmaster.util.CapsLockLimiter;
 import uk.co.thomasc.wordmaster.util.TurnMaker;
+import uk.co.thomasc.wordmaster.view.AvatarView;
 import uk.co.thomasc.wordmaster.view.game.GameLayout;
 import uk.co.thomasc.wordmaster.view.game.SwipeController;
 import uk.co.thomasc.wordmaster.view.game.SwipeListener;
 
-public class MenuDetailFragment extends Fragment implements GameListener, TakeTurnSpinnerListener, OnTouchListener {
+public class MenuDetailFragment extends Fragment implements GameListener, OnTouchListener {
 
 	public static final String ARG_ITEM_ID = "gameid";
 	private Game game;
@@ -81,33 +80,10 @@ public class MenuDetailFragment extends Fragment implements GameListener, TakeTu
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		final View rootView = inflater.inflate(R.layout.game_screen, container, false);
 
-		((BaseGame) getActivity()).menuDetail = this;
-
 		game = Game.getGame(gameid);
 		if (game.isLoaded()) {
-
-			User.getCurrentUser().listenForImage(new ImageLoadedListener() {
-				@Override
-				public void onImageLoaded(final Drawable image) {
-					rootView.post(new Runnable() {
-						@Override
-						public void run() {
-							((ImageView) rootView.findViewById(R.id.playerAvatar)).setImageDrawable(image);
-						}
-					});
-				}
-			});
-			game.getOpponent().listenForImage(new ImageLoadedListener() {
-				@Override
-				public void onImageLoaded(final Drawable image) {
-					rootView.post(new Runnable() {
-						@Override
-						public void run() {
-							((ImageView) rootView.findViewById(R.id.oppAvatar)).setImageDrawable(image);
-						}
-					});
-				}
-			});
+			((AvatarView) rootView.findViewById(R.id.playerAvatar)).setUser(User.getCurrentUser());
+			((AvatarView) rootView.findViewById(R.id.oppAvatar)).setUser(game.getOpponent());
 
 			((TextView) rootView.findViewById(R.id.turn)).setText(Integer.toString(game.getTurnNumber()));
 			((TextView) rootView.findViewById(R.id.playerscore)).setText(Integer.toString(game.getPlayerScore()));
@@ -129,7 +105,7 @@ public class MenuDetailFragment extends Fragment implements GameListener, TakeTu
 
 			rootView.clearFocus();
 
-			((ImageView) rootView.findViewById(R.id.guess_button)).setOnClickListener(new TurnMaker(game, (BaseGame) getActivity(), rootView, this));
+			((ImageView) rootView.findViewById(R.id.guess_button)).setOnClickListener(new TurnMaker(game, rootView, this));
 
 			((GameLayout) rootView.findViewById(R.id.screen_game)).setActivity(getActivity());
 
@@ -158,7 +134,8 @@ public class MenuDetailFragment extends Fragment implements GameListener, TakeTu
 		return rootView;
 	}
 
-	private void updateTurnCount() {
+	@Override
+	public void onTurnAdded(final Game game, Turn turn) {
 		getView().post(new Runnable() {
 			@Override
 			public void run() {
@@ -167,11 +144,6 @@ public class MenuDetailFragment extends Fragment implements GameListener, TakeTu
 				}
 			}
 		});
-	}
-
-	@Override
-	public void onTurnAdded(Game game, Turn turn) {
-		updateTurnCount(); // TODO: Combine functions?
 	}
 
 	@Override
@@ -186,13 +158,16 @@ public class MenuDetailFragment extends Fragment implements GameListener, TakeTu
 		footer.getLayoutParams().height = BaseGame.convertDip2Pixels(getResources(), game.isNeedingWord() ? 70 : 50);
 	}
 
-	@Override
 	public void startSpinner() {
-		getView().findViewById(R.id.turn_progress).setVisibility(View.VISIBLE);
-		getView().findViewById(R.id.guess_button).setVisibility(View.GONE);
+		getView().post(new Runnable() {
+			@Override
+			public void run() {
+				getView().findViewById(R.id.turn_progress).setVisibility(View.VISIBLE);
+				getView().findViewById(R.id.guess_button).setVisibility(View.GONE);
+			}
+		});
 	}
 
-	@Override
 	public void stopSpinner() {
 		getView().post(new Runnable() {
 			@Override
