@@ -3,7 +3,6 @@ package uk.co.thomasc.wordmaster;
 import lombok.Getter;
 
 import java.util.ArrayList;
-import java.util.Set;
 
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.common.ConnectionResult;
@@ -24,7 +23,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.IntentSender;
-import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -55,7 +53,6 @@ import uk.co.thomasc.wordmaster.objects.User;
 import uk.co.thomasc.wordmaster.view.create.PersonAdapter;
 import uk.co.thomasc.wordmaster.view.menu.MenuDetailFragment;
 import uk.co.thomasc.wordmaster.view.menu.MenuListFragment;
-import uk.co.thomasc.wordmaster.view.upgrade.UpgradeFragment;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -66,17 +63,13 @@ import uk.co.thomasc.wordmaster.view.upgrade.UpgradeFragment;
 public class BaseGame extends FragmentActivity implements OnIabPurchaseFinishedListener, ConnectionCallbacks, OnConnectionFailedListener {
 
 	public static Typeface russo;
-	public boolean wideLayout = false;
+	public static boolean wideLayout = false;
 
 	private String goToGameId = "";
 
 	public static IabHelper mBHelper;
 	public static String upgradeSKU = "wordmaster_upgrade";
-	public UpgradeFragment upgradeFragment;
 	@Getter private boolean iabAvailable;
-
-	private final String PREFS = "WM_HIDDEN_GAMES_";
-	private SharedPreferences prefs;
 
 	private BroadcastReceiver mRegistrationBroadcastReceiver;
 
@@ -123,7 +116,7 @@ public class BaseGame extends FragmentActivity implements OnIabPurchaseFinishedL
 		if (savedInstanceState != null) {
 			Game.restoreState(savedInstanceState);
 		} else {
-			getSupportFragmentManager().beginTransaction().add(R.id.empty, new MenuListFragment(), "screen_menu").addToBackStack("top").commit();
+			getSupportFragmentManager().beginTransaction().add(R.id.empty, new MenuListFragment(), MenuListFragment.TAG).addToBackStack("top").commit();
 		}
 
 		checkIntent(getIntent());
@@ -185,7 +178,7 @@ public class BaseGame extends FragmentActivity implements OnIabPurchaseFinishedL
 		}
 	}
 
-	private void goToGame(String gameid) {
+	public void goToGame(String gameid) {
 		if (Game.getGame(gameid) != null) {
 			getMenuFragment().goToGame(gameid);
 		} else {
@@ -221,10 +214,10 @@ public class BaseGame extends FragmentActivity implements OnIabPurchaseFinishedL
 	public void onIabPurchaseFinished(IabResult result, Purchase info) {
 		if (result.isFailure()) {
 			if (result.getResponse() != IabHelper.IABHELPER_USER_CANCELLED) {
-				upgradeFragment.upgradeFailed();
+				getMenuFragment().getUpgradeFragment().upgradeFailed();
 			}
 		} else {
-			upgradeFragment.upgradeComplete();
+			getMenuFragment().getUpgradeFragment().upgradeComplete();
 			BaseGame.getServerApi().upgradePurchased(info.getToken());
 		}
 	}
@@ -239,10 +232,6 @@ public class BaseGame extends FragmentActivity implements OnIabPurchaseFinishedL
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		Game.saveState(outState);
-	}
-
-	public SharedPreferences getHiddenGamesPreferences() {
-		return getSharedPreferences(PREFS + User.getCurrentUser().getPlusID(), 0);
 	}
 
 	@Override
@@ -276,8 +265,7 @@ public class BaseGame extends FragmentActivity implements OnIabPurchaseFinishedL
 		int currentapiVersion = android.os.Build.VERSION.SDK_INT;
 		if (currentapiVersion < android.os.Build.VERSION_CODES.HONEYCOMB && BaseGame.isSignedIn() && topId.equals("top")) {
 			getMenuInflater().inflate(R.menu.main_menu, menu);
-			final Set<String> hiddenGames = prefs.getAll().keySet();
-			if (hiddenGames.isEmpty()) {
+			if (!getMenuFragment().isHiddenGames()) {
 				menu.removeItem(R.id.unhide_game);
 			}
 			return true;
@@ -294,13 +282,12 @@ public class BaseGame extends FragmentActivity implements OnIabPurchaseFinishedL
 		String topId = getSupportFragmentManager().getBackStackEntryAt(getSupportFragmentManager().getBackStackEntryCount() - 1).getName();
 		int currentapiVersion = android.os.Build.VERSION.SDK_INT;
 		if (currentapiVersion < android.os.Build.VERSION_CODES.HONEYCOMB && BaseGame.isSignedIn() && topId.equals("top")) {
-			final Set<String> hiddenGames = prefs.getAll().keySet();
 			if (menu.findItem(R.id.unhide_game) != null) {
-				if (hiddenGames.isEmpty()) {
+				if (!getMenuFragment().isHiddenGames()) {
 					menu.removeItem(R.id.unhide_game);
 				}
 			} else {
-				if (!hiddenGames.isEmpty()) {
+				if (getMenuFragment().isHiddenGames()) {
 					menu.add(Menu.NONE, R.id.unhide_game, Menu.NONE, R.string.unhide_title);
 				}
 			}
@@ -486,13 +473,13 @@ public class BaseGame extends FragmentActivity implements OnIabPurchaseFinishedL
 			}
 		}
 	}
-
+	
 	public MenuListFragment getMenuFragment() {
-		return (MenuListFragment) getSupportFragmentManager().findFragmentByTag("screen_menu");
+		return (MenuListFragment) getSupportFragmentManager().findFragmentByTag(MenuListFragment.TAG);
 	}
 
 	public MenuDetailFragment getGameFragment() {
-		return (MenuDetailFragment) getSupportFragmentManager().findFragmentByTag("screen_game");
+		return (MenuDetailFragment) getSupportFragmentManager().findFragmentByTag(MenuDetailFragment.TAG);
 	}
 
 }

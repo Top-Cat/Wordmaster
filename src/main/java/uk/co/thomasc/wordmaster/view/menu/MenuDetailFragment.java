@@ -33,6 +33,8 @@ import uk.co.thomasc.wordmaster.view.game.SwipeController;
 import uk.co.thomasc.wordmaster.view.game.SwipeListener;
 
 public class MenuDetailFragment extends Fragment implements GameListener, OnTouchListener {
+	
+	public static final String TAG = "MenuDetailFragment";
 
 	public static final String ARG_ITEM_ID = "gameid";
 	private Game game;
@@ -115,7 +117,7 @@ public class MenuDetailFragment extends Fragment implements GameListener, OnTouc
 			mPager.setPageMargin(BaseGame.convertDip2Pixels(getResources(), 2));
 			mPager.setPageMarginDrawable(R.color.divider);
 
-			if (((BaseGame) getActivity()).wideLayout) {
+			if (BaseGame.wideLayout) {
 				mPager.setOnTouchListener(this);
 				rootView.findViewById(R.id.indicator).setVisibility(View.INVISIBLE);
 			} else {
@@ -126,9 +128,7 @@ public class MenuDetailFragment extends Fragment implements GameListener, OnTouc
 
 			showKeyboard();
 		} else {
-
-			getActivity().getSupportFragmentManager().popBackStack("top", 0);
-
+			getFragmentManager().popBackStack("top", 0);
 		}
 
 		return rootView;

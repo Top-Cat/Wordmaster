@@ -10,16 +10,16 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
+import uk.co.thomasc.wordmaster.BaseGame;
 import uk.co.thomasc.wordmaster.R;
 import uk.co.thomasc.wordmaster.objects.Game;
-import uk.co.thomasc.wordmaster.view.menu.MenuListFragment;
 
 public class UnhideGameFragment extends Fragment implements OnClickListener, OnItemClickListener {
 
+	public static final String TAG = "UnhideGameFragment";
 	public static final String ARG_ID = "hidden_games";
 
 	public UnhideAdapter adapter;
-	private MenuListFragment listener;
 	private String[] hiddenGames;
 
 	public UnhideGameFragment() {
@@ -54,17 +54,14 @@ public class UnhideGameFragment extends Fragment implements OnClickListener, OnI
 	@Override
 	public void onClick(View v) {
 		if (v.getId() == R.id.action_close) {
-			getActivity().getSupportFragmentManager().popBackStack("unhide", 1);
+			getFragmentManager().popBackStack("unhide", 1);
 		}
 	}
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-		listener.onUnhideGame(adapter.getItem(position));
-	}
-
-	public void setUnhideGameListener(MenuListFragment listener) {
-		this.listener = listener;
+		BaseGame.getServerApi().setGameVisible(adapter.getItem(position).getID(), true, null);
+		getFragmentManager().popBackStack("unhide", 1);
 	}
 
 }

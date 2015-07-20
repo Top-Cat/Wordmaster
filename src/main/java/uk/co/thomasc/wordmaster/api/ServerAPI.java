@@ -143,6 +143,10 @@ public class ServerAPI {
 		makeRequest("setWord", new String[] {gameID, word}, listener);
 	}
 
+	public void setGameVisible(String gameID, boolean visible, SimpleResponse listener) {
+		makeRequest("setGameVisible", new String[] {gameID, visible ? "1" : "0"}, listener);
+	}
+
 	public void registerGCM(final String regid, SimpleResponse listener) {
 		makeRequest("registerGCM", new String[] {regid}, listener);
 	}

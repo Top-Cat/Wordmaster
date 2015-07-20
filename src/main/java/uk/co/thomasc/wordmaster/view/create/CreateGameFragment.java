@@ -24,12 +24,12 @@ import uk.co.thomasc.wordmaster.BaseGame;
 import uk.co.thomasc.wordmaster.R;
 import uk.co.thomasc.wordmaster.objects.User;
 import uk.co.thomasc.wordmaster.view.menu.MenuAdapter;
-import uk.co.thomasc.wordmaster.view.menu.MenuListFragment;
 
 public class CreateGameFragment extends Fragment implements OnClickListener, OnItemClickListener {
 
+	public static final String TAG = "CreateGameFragment";
+	
 	public PersonAdapter adapter;
-	private MenuListFragment listener;
 	private ResultCallback<LoadPeopleResult> peopleListener;
 	String nextPage = null;
 
@@ -85,25 +85,30 @@ public class CreateGameFragment extends Fragment implements OnClickListener, OnI
 	@Override
 	public void onClick(View v) {
 		if (v.getId() == R.id.action_close) {
-			getActivity().getSupportFragmentManager().popBackStack("userpicker", 1);
+			getFragmentManager().popBackStack("userpicker", 1);
 		}
 	}
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
 		if (position == 0) {
-			listener.onCreateGame(User.none);
+			onCreateGame(User.none);
 		} else if (position == adapter.getCount() - 1 && nextPage != null) {
 			Plus.PeopleApi.loadVisible(BaseGame.getApiClient(), People.OrderBy.BEST, nextPage).setResultCallback(peopleListener);
 			nextPage = null;
 		} else {
 			User user = User.getUser(adapter.getItem(position - 1));
-			listener.onCreateGame(user);
+			onCreateGame(user);
 		}
 	}
 
-	public void setGameCreatedListener(MenuListFragment listener) {
-		this.listener = listener;
+	private void onCreateGame(User opponent) {
+		getFragmentManager().popBackStack("userpicker", 1);
+		if (opponent != User.none) {
+			BaseGame.getServerApi().createGame(opponent.getPlusID(), new SimpleCreateResponse(this, opponent));
+		} else {
+			BaseGame.getServerApi().createGame(new SimpleCreateResponse(this, opponent));
+		}
 	}
 
 }

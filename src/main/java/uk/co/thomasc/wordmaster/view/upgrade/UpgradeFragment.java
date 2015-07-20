@@ -17,7 +17,8 @@ import uk.co.thomasc.wordmaster.iab.Inventory;
 
 public class UpgradeFragment extends Fragment implements OnClickListener, QueryInventoryFinishedListener {
 
-	private View rootView;
+	public static final String TAG = "UpgradeFragment";
+	
 	private boolean completed = false;
 	private boolean iabAvailable = true;
 
@@ -27,7 +28,7 @@ public class UpgradeFragment extends Fragment implements OnClickListener, QueryI
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		rootView = inflater.inflate(R.layout.upgrade_screen, container, false);
+		View rootView = inflater.inflate(R.layout.upgrade_screen, container, false);
 
 		rootView.setOnClickListener(this);
 		rootView.findViewById(R.id.buy_upgrade).setOnClickListener(this);
@@ -46,38 +47,38 @@ public class UpgradeFragment extends Fragment implements OnClickListener, QueryI
 	public void onClick(View v) {
 		if (v.getId() == R.id.buy_upgrade) {
 			if (completed) {
-				getActivity().getSupportFragmentManager().popBackStack("upgrade", 1);
+				getFragmentManager().popBackStack("upgrade", 1);
 			} else if (iabAvailable) {
 				((BaseGame) getActivity()).buyUpgrade();
 			} else {
 				upgradeFailed();
 			}
 		} else if (v.getId() == R.id.cancel_upgrade) {
-			getActivity().getSupportFragmentManager().popBackStack("upgrade", 1);
+			getFragmentManager().popBackStack("upgrade", 1);
 		}
 	}
 
 	@Override
 	public void onQueryInventoryFinished(IabResult result, Inventory inv) {
 		if (!result.isFailure()) {
-			Button button = (Button) rootView.findViewById(R.id.buy_upgrade);
+			Button button = (Button) getView().findViewById(R.id.buy_upgrade);
 			button.setText(button.getText() + " - " + inv.getSkuDetails(BaseGame.upgradeSKU).getPrice());
 		}
 	}
 
 	public void upgradeComplete() {
 		completed = true;
-		rootView.findViewById(R.id.cancel_upgrade).setVisibility(View.GONE);
-		((Button) rootView.findViewById(R.id.buy_upgrade)).setText(R.string.OK);
-		((TextView) rootView.findViewById(R.id.why_upgrade)).setText(R.string.upgrade_thanks);
-		((TextView) rootView.findViewById(R.id.why_upgrade_cont)).setText(R.string.upgrade_thanks_cont);
+		getView().findViewById(R.id.cancel_upgrade).setVisibility(View.GONE);
+		((Button) getView().findViewById(R.id.buy_upgrade)).setText(R.string.OK);
+		((TextView) getView().findViewById(R.id.why_upgrade)).setText(R.string.upgrade_thanks);
+		((TextView) getView().findViewById(R.id.why_upgrade_cont)).setText(R.string.upgrade_thanks_cont);
 	}
 
 	public void upgradeFailed() {
 		completed = false;
-		((Button) rootView.findViewById(R.id.buy_upgrade)).setText(R.string.try_again);
-		((TextView) rootView.findViewById(R.id.why_upgrade)).setText(R.string.upgrade_error);
-		((TextView) rootView.findViewById(R.id.why_upgrade_cont)).setText(R.string.upgrade_error_cont);
+		((Button) getView().findViewById(R.id.buy_upgrade)).setText(R.string.try_again);
+		((TextView) getView().findViewById(R.id.why_upgrade)).setText(R.string.upgrade_error);
+		((TextView) getView().findViewById(R.id.why_upgrade_cont)).setText(R.string.upgrade_error_cont);
 	}
 
 }

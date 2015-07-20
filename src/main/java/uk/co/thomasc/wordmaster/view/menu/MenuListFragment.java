@@ -1,15 +1,17 @@
 package uk.co.thomasc.wordmaster.view.menu;
 
+import lombok.Getter;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.games.Games;
 
 import android.annotation.SuppressLint;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -31,11 +33,9 @@ import android.widget.PopupMenu.OnMenuItemClickListener;
 
 import uk.co.thomasc.wordmaster.BaseGame;
 import uk.co.thomasc.wordmaster.R;
-import uk.co.thomasc.wordmaster.api.CreateResponse;
 import uk.co.thomasc.wordmaster.api.GetMatchesResponse;
 import uk.co.thomasc.wordmaster.gcm.TurnReceiver;
 import uk.co.thomasc.wordmaster.objects.Game;
-import uk.co.thomasc.wordmaster.objects.User;
 import uk.co.thomasc.wordmaster.view.DialogPanel;
 import uk.co.thomasc.wordmaster.view.Errors;
 import uk.co.thomasc.wordmaster.view.create.CreateGameFragment;
@@ -44,12 +44,11 @@ import uk.co.thomasc.wordmaster.view.upgrade.UpgradeFragment;
 
 public class MenuListFragment extends Fragment implements OnClickListener, OnItemClickListener {
 
-	public MenuAdapter adapter;
-
+	public static final String TAG = "MenuListFragment"; 
+	
 	private final Set<Game> games = new HashSet<Game>();
-
-	private CreateGameFragment createGameFragment;
-	private UnhideGameFragment unhideGameFragment;
+	public MenuAdapter adapter;
+	@Getter public boolean hiddenGames;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -67,13 +66,12 @@ public class MenuListFragment extends Fragment implements OnClickListener, OnIte
 		registerForContextMenu(list);
 
 		if (savedInstanceState != null) {
-			BaseGame act = (BaseGame) getActivity();
-			if (!act.wideLayout) {
+			if (!BaseGame.wideLayout) {
 				// Check to see if a game is open
-				for (int i = 0; i < act.getSupportFragmentManager().getBackStackEntryCount(); i++) {
-					if (act.getSupportFragmentManager().getBackStackEntryAt(i).getName().equals("game")) {
+				for (int i = 0; i < getFragmentManager().getBackStackEntryCount(); i++) {
+					if (getFragmentManager().getBackStackEntryAt(i).getName().equals("game")) {
 						// WE NEED TO HIDE!
-						act.getSupportFragmentManager().beginTransaction().hide(this).commit();
+						getFragmentManager().beginTransaction().hide(this).commit();
 						break;
 					}
 				}
@@ -115,8 +113,7 @@ public class MenuListFragment extends Fragment implements OnClickListener, OnIte
 		PopupMenu popup = new PopupMenu(getActivity(), v);
 		popup.getMenuInflater().inflate(R.menu.main_menu, popup.getMenu());
 
-		final Set<String> hiddenGames = ((BaseGame) getActivity()).getHiddenGamesPreferences().getAll().keySet();
-		if (hiddenGames.isEmpty()) {
+		if (!isHiddenGames()) {
 			popup.getMenu().removeItem(R.id.unhide_game);
 		}
 
@@ -143,27 +140,29 @@ public class MenuListFragment extends Fragment implements OnClickListener, OnIte
 	}
 
 	private void startNew() {
-		createGameFragment = new CreateGameFragment();
-		createGameFragment.setGameCreatedListener(this);
-		getActivity().getSupportFragmentManager().beginTransaction()
+		getFragmentManager().beginTransaction()
 			.setCustomAnimations(R.anim.fadein, 0, 0, R.anim.fadeout)
 			.addToBackStack("userpicker")
-			.add(R.id.outer, createGameFragment)
+			.add(R.id.outer, new CreateGameFragment(), CreateGameFragment.TAG)
 			.commit();
 	}
 
 	public void unhideGame() {
-		unhideGameFragment = new UnhideGameFragment();
-		unhideGameFragment.setUnhideGameListener(this);
-		String[] hiddenGames = new String[((BaseGame) getActivity()).getHiddenGamesPreferences().getAll().size()];
-		hiddenGames = ((BaseGame) getActivity()).getHiddenGamesPreferences().getAll().keySet().toArray(hiddenGames);
+		List<String> hiddenGames = new ArrayList<String>();
+		for (Game game : games) {
+			if (!game.isVisible()) {
+				hiddenGames.add(game.getID());
+			}
+		}
+		
 		Bundle args = new Bundle();
-		args.putStringArray(UnhideGameFragment.ARG_ID, hiddenGames);
-		unhideGameFragment.setArguments(args);
-		getActivity().getSupportFragmentManager().beginTransaction()
+		args.putStringArray(UnhideGameFragment.ARG_ID, hiddenGames.toArray(new String[hiddenGames.size()]));
+		UnhideGameFragment fragment = new UnhideGameFragment();
+		fragment.setArguments(args);
+		getFragmentManager().beginTransaction()
 			.setCustomAnimations(R.anim.fadein, 0, 0, R.anim.fadeout)
 			.addToBackStack("unhide")
-			.add(R.id.outer, unhideGameFragment)
+			.add(R.id.outer, fragment, UnhideGameFragment.TAG)
 			.commit();
 	}
 
@@ -205,14 +204,12 @@ public class MenuListFragment extends Fragment implements OnClickListener, OnIte
 					Game.saveStates(getActivity());
 
 					adapter.clear();
-					SharedPreferences prefs = ((BaseGame) getActivity()).getHiddenGamesPreferences();
+					hiddenGames = false;
 					for (Game game : games) {
-						if (prefs.contains(game.getID())) {
-							if (!prefs.getBoolean(game.getID(), false)) {
-								adapter.add(game);
-							}
-						} else {
+						if (game.isVisible()) {
 							adapter.add(game);
+						} else {
+							hiddenGames = true;
 						}
 					}
 					refreshOver();
@@ -229,11 +226,10 @@ public class MenuListFragment extends Fragment implements OnClickListener, OnIte
 	}
 
 	public void goToGame(String gameID) {
-		BaseGame act = (BaseGame) getActivity();
 		adapter.setSelectedGid(gameID);
 
 		if (!isAdded()) {
-			act.getSupportFragmentManager().popBackStack("game", 1);
+			getFragmentManager().popBackStack("game", 1);
 		}
 
 		if (gameID.length() > 0) {
@@ -243,15 +239,14 @@ public class MenuListFragment extends Fragment implements OnClickListener, OnIte
 			Fragment fragment = new MenuDetailFragment();
 			fragment.setArguments(args);
 
-			FragmentTransaction ft = act.getSupportFragmentManager().beginTransaction();
-			if (!act.wideLayout) {
-				ft.setCustomAnimations(R.anim.slide_right, R.anim.slide_left, R.anim.slide_left_2, R.anim.slide_right_2)
-					.hide(this);
+			FragmentTransaction ft = getFragmentManager().beginTransaction();
+			if (!BaseGame.wideLayout) {
+				ft.setCustomAnimations(R.anim.slide_right, R.anim.slide_left, R.anim.slide_left_2, R.anim.slide_right_2).hide(this);
 			} else {
 				ft.setCustomAnimations(R.anim.wide_in, 0, 0, R.anim.wide_out);
 			}
 			ft.addToBackStack("game")
-				.add(R.id.empty, fragment, "screen_game")
+				.add(R.id.empty, fragment, MenuDetailFragment.TAG)
 				.commit();
 		}
 	}
@@ -345,74 +340,6 @@ public class MenuListFragment extends Fragment implements OnClickListener, OnIte
 		safeSetVisiblity(R.id.dropdown, View.VISIBLE);
 	}
 
-	public void onCreateGame(User opponent) {
-		getActivity().getSupportFragmentManager().popBackStack("userpicker", 1);
-		// TODO: Unhide game on response from server
-		/*
-		 * Game existingGame = Game.getGame(playerID, opponentID);
-		 * if (existingGame != null) { // TODO: This needs to use isLoaded
-		 * if (((BaseGame) getActivity()).getHiddenGamesPreferences().contains(existingGame.getID())) {
-		 * Editor editor = ((BaseGame) getActivity()).getHiddenGamesPreferences().edit();
-		 * editor.remove(existingGame.getID());
-		 * editor.commit();
-		 * adapter.add(existingGame);
-		 * }
-		 * goToGame(existingGame.getID());
-		 * } else {
-		 */
-		if (opponent != User.none) {
-			BaseGame.getServerApi().createGame(opponent.getPlusID(), new MenuCreateResponse(opponent));
-		} else {
-			BaseGame.getServerApi().createGame(new MenuCreateResponse(null));
-		}
-		// }
-	}
-
-	class MenuCreateResponse extends CreateResponse {
-
-		public MenuCreateResponse(User opp) {
-			super(opp);
-		}
-
-		@Override
-		public void onRequestFailed(final int errorCode) {
-			if (errorCode == 4) {
-				UpgradeFragment fragment = new UpgradeFragment();
-				((BaseGame) getActivity()).upgradeFragment = fragment;
-				FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
-				ft.setCustomAnimations(R.anim.fadein, 0, 0, R.anim.fadeout);
-				ft.addToBackStack("upgrade")
-					.add(R.id.outer, fragment)
-					.commit();
-			} else {
-				getActivity().runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						DialogPanel netError = (DialogPanel) getView().findViewById(R.id.dialog_panel);
-						if (errorCode == 5) {
-							netError.show(Errors.MATCH);
-						} else if (errorCode == 9) {
-							netError.show(Errors.AUTOMATCH);
-						} else {
-							netError.show(Errors.SERVER);
-						}
-					}
-				});
-			}
-		}
-
-		@Override
-		public void onRequestComplete(final Game game) {
-			getActivity().runOnUiThread(new Runnable() {
-				@Override
-				public void run() {
-					adapter.add(game);
-				}
-			});
-			goToGame(game.getID());
-		}
-	};
-
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo info) {
 		super.onCreateContextMenu(menu, v, info);
@@ -425,21 +352,18 @@ public class MenuListFragment extends Fragment implements OnClickListener, OnIte
 		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
 		if (item.getItemId() == R.id.hide_game) {
 			Game game = adapter.getItem(info.position);
-			Editor editor = ((BaseGame) getActivity()).getHiddenGamesPreferences().edit();
-			editor.putBoolean(game.getID(), true);
-			editor.commit();
-			adapter.remove(game);
+			BaseGame.getServerApi().setGameVisible(game.getID(), false, null);
 			return true;
 		}
 		return super.onContextItemSelected(item);
 	}
-
-	public void onUnhideGame(Game game) {
-		getActivity().getSupportFragmentManager().popBackStack("unhide", 1);
-		Editor editor = ((BaseGame) getActivity()).getHiddenGamesPreferences().edit();
-		editor.remove(game.getID());
-		editor.commit();
-		adapter.add(game);
+	
+	public UpgradeFragment getUpgradeFragment() {
+		return (UpgradeFragment) getFragmentManager().findFragmentByTag(UpgradeFragment.TAG);
+	}
+	
+	public CreateGameFragment getCreateGameFragment() {
+		return (CreateGameFragment) getFragmentManager().findFragmentByTag(CreateGameFragment.TAG);
 	}
 
 }

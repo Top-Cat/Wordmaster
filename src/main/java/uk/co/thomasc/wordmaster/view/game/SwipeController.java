@@ -34,7 +34,7 @@ public class SwipeController extends FragmentStatePagerAdapter {
 
 	public SwipeController(BaseGame fm, String gameid) {
 		super(fm.getSupportFragmentManager());
-		pageWidth = fm.wideLayout ? 0.5f : 1.0f;
+		pageWidth = BaseGame.wideLayout ? 0.5f : 1.0f;
 		SwipeController.gid = gameid;
 	}
 
@@ -70,6 +70,7 @@ public class SwipeController extends FragmentStatePagerAdapter {
 
 		private boolean refreshTriggered = false;
 
+		@SuppressWarnings("deprecation")
 		@SuppressLint("NewApi")
 		@Override
 		public void onDestroy() {

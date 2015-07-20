@@ -54,7 +54,9 @@ public class Game extends SimpleResponse {
 	private int alpha = 0;
 	private byte alphaStatus = 0;
 	private GameAdapter adapter;
+	@Getter @Setter private boolean visible = false;
 	@Getter @Setter private boolean loaded = false;
+
 
 	/* Constructors */
 	private Game(String id) {
@@ -267,6 +269,7 @@ public class Game extends SimpleResponse {
 			.setScore(((Long) gameObject.get("pscore")).intValue(), opponentScore)
 			.setAlpha(gameObject.containsKey("alpha") ? ((Long) gameObject.get("alpha")).intValue() : 0)
 			.setLastUpdateTimestamp(gameObject.containsKey("updated_user") ? (Long) gameObject.get("updated_user") : 0)
+			.setVisible((Boolean) gameObject.get("visible"))
 			.setLoaded(true);
 
 		Game.updatePoint = Math.max(Game.updatePoint, updated);
