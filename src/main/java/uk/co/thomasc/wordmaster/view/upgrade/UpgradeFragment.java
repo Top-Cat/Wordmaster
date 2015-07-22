@@ -18,7 +18,7 @@ import uk.co.thomasc.wordmaster.iab.Inventory;
 public class UpgradeFragment extends Fragment implements OnClickListener, QueryInventoryFinishedListener {
 
 	public static final String TAG = "UpgradeFragment";
-	
+
 	private boolean completed = false;
 	private boolean iabAvailable = true;
 

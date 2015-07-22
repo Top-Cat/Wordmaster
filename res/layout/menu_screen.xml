@@ -65,8 +65,7 @@
 			android:id="@+id/button_sign_in"
 			style="@style/SignInButton"
 			android:layout_below="@id/nav"
-			android:layout_centerHorizontal="true" 
-			android:visibility="gone" />
+			android:layout_centerHorizontal="true" />
 		
 		<ProgressBar
 			android:id="@+id/signin_progress"

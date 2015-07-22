@@ -28,7 +28,7 @@ import uk.co.thomasc.wordmaster.view.menu.MenuAdapter;
 public class CreateGameFragment extends Fragment implements OnClickListener, OnItemClickListener {
 
 	public static final String TAG = "CreateGameFragment";
-	
+
 	public PersonAdapter adapter;
 	private ResultCallback<LoadPeopleResult> peopleListener;
 	String nextPage = null;

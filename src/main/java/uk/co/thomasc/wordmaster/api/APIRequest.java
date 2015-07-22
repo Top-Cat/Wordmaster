@@ -31,6 +31,11 @@ public class APIRequest extends Thread {
 
 		try {
 			InputStream is = new URL(url).openStream();
+
+			if (isInterrupted()) {
+				throw new InterruptedException();
+			}
+
 			BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 			String inputLine;
 			while ((inputLine = reader.readLine()) != null) {

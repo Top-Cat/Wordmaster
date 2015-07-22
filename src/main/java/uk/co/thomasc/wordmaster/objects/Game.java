@@ -57,7 +57,6 @@ public class Game extends SimpleResponse {
 	@Getter @Setter private boolean visible = false;
 	@Getter @Setter private boolean loaded = false;
 
-
 	/* Constructors */
 	private Game(String id) {
 		gameID = id;

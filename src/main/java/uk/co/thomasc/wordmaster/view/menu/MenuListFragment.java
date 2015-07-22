@@ -44,8 +44,8 @@ import uk.co.thomasc.wordmaster.view.upgrade.UpgradeFragment;
 
 public class MenuListFragment extends Fragment implements OnClickListener, OnItemClickListener {
 
-	public static final String TAG = "MenuListFragment"; 
-	
+	public static final String TAG = "MenuListFragment";
+
 	private final Set<Game> games = new HashSet<Game>();
 	public MenuAdapter adapter;
 	@Getter public boolean hiddenGames;
@@ -82,6 +82,8 @@ public class MenuListFragment extends Fragment implements OnClickListener, OnIte
 			onSignInSucceeded();
 		}
 
+		goToGame();
+
 		return v;
 	}
 
@@ -93,7 +95,6 @@ public class MenuListFragment extends Fragment implements OnClickListener, OnIte
 	@Override
 	public void onClick(View v) {
 		if (v.getId() == R.id.button_sign_in) {
-			// TODO: ((BaseGame) getActivity()).checkPlayServices();
 			if (BaseGame.isSignedIn()) {
 				onSignInSucceeded();
 			} else {
@@ -154,7 +155,7 @@ public class MenuListFragment extends Fragment implements OnClickListener, OnIte
 				hiddenGames.add(game.getID());
 			}
 		}
-		
+
 		Bundle args = new Bundle();
 		args.putStringArray(UnhideGameFragment.ARG_ID, hiddenGames.toArray(new String[hiddenGames.size()]));
 		UnhideGameFragment fragment = new UnhideGameFragment();
@@ -215,13 +216,20 @@ public class MenuListFragment extends Fragment implements OnClickListener, OnIte
 					refreshOver();
 
 					if (isResumed()) {
-						String gameid = ((BaseGame) getActivity()).getGoToGameId();
-						if (gameid.length() > 0) {
-							goToGame(gameid);
-						}
+						goToGame();
 					}
 				}
 			});
+		}
+	}
+
+	public void goToGame() {
+		BaseGame act = (BaseGame) getActivity();
+
+		String gameid = act.getGoToGameId();
+		if (gameid.length() > 0 && Game.getGame(gameid).isLoaded()) {
+			goToGame(gameid);
+			act.setGoToGameId("");
 		}
 	}
 
@@ -276,7 +284,7 @@ public class MenuListFragment extends Fragment implements OnClickListener, OnIte
 		BaseGame.getServerApi().longPoll(Game.updatePoint, new GetMatchesResponse() {
 			@Override
 			public void onRequestFailed(int errorCode) {
-				if (errorCode != -2) {
+				if (BaseGame.getServerApi().isIdentified()) {
 					longPoll();
 				}
 			}
@@ -357,11 +365,11 @@ public class MenuListFragment extends Fragment implements OnClickListener, OnIte
 		}
 		return super.onContextItemSelected(item);
 	}
-	
+
 	public UpgradeFragment getUpgradeFragment() {
 		return (UpgradeFragment) getFragmentManager().findFragmentByTag(UpgradeFragment.TAG);
 	}
-	
+
 	public CreateGameFragment getCreateGameFragment() {
 		return (CreateGameFragment) getFragmentManager().findFragmentByTag(CreateGameFragment.TAG);
 	}

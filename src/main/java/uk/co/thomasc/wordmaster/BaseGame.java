@@ -1,6 +1,7 @@
 package uk.co.thomasc.wordmaster;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 
@@ -18,10 +19,7 @@ import com.google.android.gms.plus.model.people.Person;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.IntentSender;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
@@ -29,7 +27,6 @@ import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -65,15 +62,14 @@ public class BaseGame extends FragmentActivity implements OnIabPurchaseFinishedL
 	public static Typeface russo;
 	public static boolean wideLayout = false;
 
-	private String goToGameId = "";
+	@Getter @Setter private String goToGameId = "";
 
 	public static IabHelper mBHelper;
 	public static String upgradeSKU = "wordmaster_upgrade";
 	@Getter private boolean iabAvailable;
 
-	private BroadcastReceiver mRegistrationBroadcastReceiver;
-
 	@Getter private static ServerAPI serverApi;
+	@Getter private static boolean running = true;
 
 	private static GoogleApiClient mGoogleApiClient;
 	private boolean mSignInFlow = true;
@@ -86,8 +82,8 @@ public class BaseGame extends FragmentActivity implements OnIabPurchaseFinishedL
 		setContentView(R.layout.empty_screen);
 
 		int screenLayoutSize = getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK;
-		wideLayout = screenLayoutSize > 2;
-		setRequestedOrientation(wideLayout ? ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE : ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+		BaseGame.wideLayout = screenLayoutSize > 2;
+		setRequestedOrientation(BaseGame.wideLayout ? ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE : ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
 		BaseGame.russo = Typeface.createFromAsset(getAssets(), "fonts/Russo_One.ttf");
 
@@ -100,18 +96,6 @@ public class BaseGame extends FragmentActivity implements OnIabPurchaseFinishedL
 
 		BaseGame.serverApi = new ServerAPI();
 		Game.updatePoint = 0;
-
-		mRegistrationBroadcastReceiver = new BroadcastReceiver() {
-			@Override
-			public void onReceive(Context context, Intent intent) {
-				Bundle extras = intent.getExtras();
-				if (extras != null && extras.containsKey("id")) {
-					goToGame(intent.getExtras().getString("id"));
-				} else {
-					goToGame(goToGameId);
-				}
-			}
-		};
 
 		if (savedInstanceState != null) {
 			Game.restoreState(savedInstanceState);
@@ -133,18 +117,6 @@ public class BaseGame extends FragmentActivity implements OnIabPurchaseFinishedL
 				}
 			}
 		});
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-		LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver, new IntentFilter("open-game"));
-	}
-
-	@Override
-	protected void onPause() {
-		LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
-		super.onPause();
 	}
 
 	@Override
@@ -179,7 +151,7 @@ public class BaseGame extends FragmentActivity implements OnIabPurchaseFinishedL
 	}
 
 	public void goToGame(String gameid) {
-		if (Game.getGame(gameid) != null) {
+		if (Game.getGame(gameid) != null && getMenuFragment() != null) {
 			getMenuFragment().goToGame(gameid);
 		} else {
 			goToGameId = gameid;
@@ -416,6 +388,7 @@ public class BaseGame extends FragmentActivity implements OnIabPurchaseFinishedL
 	@Override
 	protected void onStart() {
 		super.onStart();
+		BaseGame.running = true;
 		signIn();
 	}
 
@@ -425,6 +398,7 @@ public class BaseGame extends FragmentActivity implements OnIabPurchaseFinishedL
 		if (BaseGame.mGoogleApiClient.isConnected()) {
 			BaseGame.mGoogleApiClient.disconnect();
 		}
+		BaseGame.running = false;
 		BaseGame.serverApi.revoke();
 	}
 
@@ -434,16 +408,12 @@ public class BaseGame extends FragmentActivity implements OnIabPurchaseFinishedL
 	}
 
 	public void signIn() {
-		BaseGame.mGoogleApiClient.reconnect();
-		getMenuFragment().getView().findViewById(R.id.signin_progress).setVisibility(View.VISIBLE);
-		getMenuFragment().getView().findViewById(R.id.button_sign_in).setVisibility(View.GONE);
-		getMenuFragment().getView().findViewById(R.id.whysignin).setVisibility(View.GONE);
-	}
-
-	public String getGoToGameId() {
-		String temp = goToGameId;
-		goToGameId = "";
-		return temp;
+		if (findViewById(R.id.button_sign_in).getVisibility() == View.VISIBLE) {
+			BaseGame.mGoogleApiClient.reconnect();
+			findViewById(R.id.signin_progress).setVisibility(View.VISIBLE);
+			findViewById(R.id.button_sign_in).setVisibility(View.GONE);
+			findViewById(R.id.whysignin).setVisibility(View.GONE);
+		}
 	}
 
 	public void onIdentified() {
@@ -457,7 +427,7 @@ public class BaseGame extends FragmentActivity implements OnIabPurchaseFinishedL
 			startService(intent);
 		}
 	}
-	
+
 	public MenuListFragment getMenuFragment() {
 		return (MenuListFragment) getSupportFragmentManager().findFragmentByTag(MenuListFragment.TAG);
 	}

@@ -13,12 +13,12 @@ import uk.co.thomasc.wordmaster.view.Errors;
 import uk.co.thomasc.wordmaster.view.upgrade.UpgradeFragment;
 
 class SimpleCreateResponse extends CreateResponse {
-	
-	private Fragment fragment;
+
+	private final Fragment fragment;
 
 	public SimpleCreateResponse(Fragment f, User opp) {
 		super(opp);
-		this.fragment = f;
+		fragment = f;
 	}
 
 	@Override

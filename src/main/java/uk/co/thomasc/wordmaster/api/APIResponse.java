@@ -8,13 +8,16 @@ public abstract class APIResponse {
 
 	public final void _processResponse(JSONObject json) {
 		int errorCode = ((Long) json.get("error")).intValue();
-		if (errorCode == 0) {
-			processResponse(json.get("response"));
-		} else if (errorCode == -2) {
-			BaseGame.getApiClient().reconnect();
-			onRequestFailed(errorCode);
-		} else {
-			onRequestFailed(errorCode);
+		switch (errorCode) {
+			case 0:
+				processResponse(json.get("response"));
+				break;
+			case -2:
+				if (BaseGame.isRunning()) {
+					BaseGame.getApiClient().reconnect();
+				}
+			default:
+				onRequestFailed(errorCode);
 		}
 	}
 

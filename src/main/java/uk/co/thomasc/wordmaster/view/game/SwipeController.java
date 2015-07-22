@@ -67,6 +67,7 @@ public class SwipeController extends FragmentStatePagerAdapter {
 		private ListView listView;
 		private LinearLayout alpha;
 		private boolean firstLayout = true;
+		private View rootView;
 
 		private boolean refreshTriggered = false;
 
@@ -79,9 +80,9 @@ public class SwipeController extends FragmentStatePagerAdapter {
 				game.removeTurnListener(this);
 			}
 			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-				getView().getViewTreeObserver().removeGlobalOnLayoutListener(this);
+				rootView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
 			} else {
-				getView().getViewTreeObserver().removeOnGlobalLayoutListener(this);
+				rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
 			}
 		}
 
@@ -92,7 +93,6 @@ public class SwipeController extends FragmentStatePagerAdapter {
 
 		@Override
 		public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
-			View rootView;
 			game = Game.getGame(SwipeController.gid);
 
 			game.addTurnListener(this);

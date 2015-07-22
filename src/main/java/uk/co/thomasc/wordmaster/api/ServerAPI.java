@@ -160,6 +160,11 @@ public class ServerAPI {
 	}
 
 	public void identify(final String authToken, final BaseGame activity) {
+		if (!BaseGame.isRunning()) {
+			activity.getMenuFragment().onSignInFailed();
+			return;
+		}
+
 		doRequest(ServerAPI.BASE_URL + "identify" + "/" + authToken, new APIResponse() {
 			@Override
 			public void processResponse(Object obj) {
@@ -187,9 +192,16 @@ public class ServerAPI {
 		playerid = "";
 	}
 
+	public boolean isIdentified() {
+		return playerid != null && playerid.length() > 0 && BaseGame.isRunning();
+	}
+
 	private void makeRequest(String iface, String[] params, APIResponse response) {
-		if (playerid == null || playerid.length() == 0) {
-			response._processResponse(ServerAPI.notIdentifiedResponse);
+		if (!isIdentified()) {
+			if (response != null) {
+				response._processResponse(ServerAPI.notIdentifiedResponse);
+			}
+			return;
 		}
 
 		doRequest(ServerAPI.BASE_URL + iface + "/" + playerid + ServerAPI.implode("/", params), response);

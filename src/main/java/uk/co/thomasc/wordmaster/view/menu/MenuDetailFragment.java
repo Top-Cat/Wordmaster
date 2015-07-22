@@ -33,7 +33,7 @@ import uk.co.thomasc.wordmaster.view.game.SwipeController;
 import uk.co.thomasc.wordmaster.view.game.SwipeListener;
 
 public class MenuDetailFragment extends Fragment implements GameListener, OnTouchListener {
-	
+
 	public static final String TAG = "MenuDetailFragment";
 
 	public static final String ARG_ITEM_ID = "gameid";

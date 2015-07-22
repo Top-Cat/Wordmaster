@@ -85,7 +85,7 @@ public class User {
 	}
 
 	private User loadName() {
-		remoteUsers.add(getPlusID());
+		User.remoteUsers.add(getPlusID());
 		if (User.connected) {
 			Plus.PeopleApi.load(BaseGame.getApiClient(), plusID).setResultCallback(new ResultCallback<LoadPeopleResult>() {
 				@Override
