@@ -35,6 +35,7 @@
 			<artifactId>google-play-services</artifactId>
 			<version>25.0.0</version>
 			<type>jar</type>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.googlecode.json-simple</groupId>
@@ -107,7 +108,6 @@
 					<assetsDirectory>${basedir}/assets</assetsDirectory>
 					<androidManifestFile>${basedir}/AndroidManifest.xml</androidManifestFile>
 					<genDirectory>${basedir}/gen</genDirectory>
-					<aidlSourceDirectory>${basedir}/src/main/aidl</aidlSourceDirectory>
 					<sign>
 						<debug>false</debug>
 					</sign>
@@ -228,6 +228,9 @@
 			<activation>
 				<property><name>m2e.version</name></property>
 			</activation>
+			<properties>
+				<android.aidlSourceDirectory>${basedir}/src/main/none</android.aidlSourceDirectory>
+			</properties>
 			<build>
 				<plugins>
 					<plugin>
