@@ -107,6 +107,7 @@
 					<assetsDirectory>${basedir}/assets</assetsDirectory>
 					<androidManifestFile>${basedir}/AndroidManifest.xml</androidManifestFile>
 					<genDirectory>${basedir}/gen</genDirectory>
+					<aidlSourceDirectory>${basedir}/src/main/aidl</aidlSourceDirectory>
 					<sign>
 						<debug>false</debug>
 					</sign>
