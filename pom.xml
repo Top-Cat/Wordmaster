@@ -179,7 +179,7 @@
 			<properties>
 				<android.publisher.google.email>731445442831-6uu32o4qchfubov6tu7icob6c0orqm6m@developer.gserviceaccount.com</android.publisher.google.email>
 				<android.publisher.google.p12>${apikey}</android.publisher.google.p12>
-				<android.apk.debug>false</android.apk.debug>
+				<android.release>true</android.release>
 			</properties>
 			<dependencies>
 				<dependency>
