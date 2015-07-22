@@ -78,7 +78,6 @@ public class BaseGame extends FragmentActivity implements OnIabPurchaseFinishedL
 	private static GoogleApiClient mGoogleApiClient;
 	private boolean mSignInFlow = true;
 	private static final int RC_SIGN_IN = 9001;
-	private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9002;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +99,7 @@ public class BaseGame extends FragmentActivity implements OnIabPurchaseFinishedL
 			.build();
 
 		BaseGame.serverApi = new ServerAPI();
+		Game.updatePoint = 0;
 
 		mRegistrationBroadcastReceiver = new BroadcastReceiver() {
 			@Override
@@ -328,11 +328,6 @@ public class BaseGame extends FragmentActivity implements OnIabPurchaseFinishedL
 
 		getMenuFragment().onSignInFailed();
 		BaseGame.serverApi.revoke();
-		/*
-		 * for (Game game : Game.games.values()) {
-		 * game.clearTurns();
-		 * }
-		 */
 	}
 
 	public static void unlockAchievement(Achievements achievement, int increment) {
@@ -356,11 +351,16 @@ public class BaseGame extends FragmentActivity implements OnIabPurchaseFinishedL
 	}
 
 	@Override
-	public void onConnectionFailed(ConnectionResult arg0) {
+	public void onConnectionFailed(final ConnectionResult arg0) {
 		signOut();
 		if (mSignInFlow) {
 			mSignInFlow = false;
-			resolveConnectionFailure(arg0);
+			runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					resolveConnectionFailure(arg0);
+				}
+			});
 		}
 	}
 
@@ -440,20 +440,6 @@ public class BaseGame extends FragmentActivity implements OnIabPurchaseFinishedL
 		getMenuFragment().getView().findViewById(R.id.whysignin).setVisibility(View.GONE);
 	}
 
-	public boolean checkPlayServices() {
-		int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
-		if (resultCode != ConnectionResult.SUCCESS) {
-			if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
-				GooglePlayServicesUtil.getErrorDialog(resultCode, this,
-					BaseGame.PLAY_SERVICES_RESOLUTION_REQUEST).show();
-			} else {
-				finish();
-			}
-			return false;
-		}
-		return true;
-	}
-
 	public String getGoToGameId() {
 		String temp = goToGameId;
 		goToGameId = "";
@@ -467,10 +453,8 @@ public class BaseGame extends FragmentActivity implements OnIabPurchaseFinishedL
 
 			getMenuFragment().onSignInSucceeded();
 
-			if (checkPlayServices()) {
-				Intent intent = new Intent(this, RegistrationIntentService.class);
-				startService(intent);
-			}
+			Intent intent = new Intent(this, RegistrationIntentService.class);
+			startService(intent);
 		}
 	}
 	

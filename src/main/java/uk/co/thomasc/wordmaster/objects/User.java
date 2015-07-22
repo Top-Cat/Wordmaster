@@ -18,6 +18,7 @@ import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
 
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 
 import uk.co.thomasc.wordmaster.BaseGame;
 import uk.co.thomasc.wordmaster.objects.callbacks.UserListener;
@@ -26,7 +27,7 @@ public class User {
 
 	public static String keySegment = "pGjhCD9hbcfsBKsjGTVSntvrGo2+BFn7+fq4JyUtVtTzuXGUiLAxiz1Bg5fW2KeIVHzrbBAoju2hRKK0cR8TxjAxlzMEoBYhI9";
 
-	private static Set<String> notLoaded = new HashSet<String>();
+	private static Set<String> remoteUsers = new HashSet<String>();
 	private static Map<String, User> users = new HashMap<String, User>();
 	private static boolean connected = false;
 	public static User none = new User("");
@@ -55,8 +56,8 @@ public class User {
 		User.connected = true;
 		User.me = User.getUser(person);
 
-		if (User.notLoaded.size() > 0) {
-			Plus.PeopleApi.load(BaseGame.getApiClient(), User.notLoaded).setResultCallback(new ResultCallback<LoadPeopleResult>() {
+		if (User.remoteUsers.size() > 0) {
+			Plus.PeopleApi.load(BaseGame.getApiClient(), User.remoteUsers).setResultCallback(new ResultCallback<LoadPeopleResult>() {
 				@Override
 				public void onResult(LoadPeopleResult arg0) {
 					try {
@@ -84,6 +85,7 @@ public class User {
 	}
 
 	private User loadName() {
+		remoteUsers.add(getPlusID());
 		if (User.connected) {
 			Plus.PeopleApi.load(BaseGame.getApiClient(), plusID).setResultCallback(new ResultCallback<LoadPeopleResult>() {
 				@Override
@@ -96,13 +98,17 @@ public class User {
 						for (UserListener listener : listeners) {
 							listener.onNameLoaded(User.this);
 						}
+					} catch (Exception e) {
+						Log.d("User", "Failure to load user info", e);
+						loadName();
 					} finally {
 						arg0.getPersonBuffer().release();
 					}
 				}
 			});
 		} else {
-			User.notLoaded.add(getPlusID());
+			Log.d("User", "Not loading " + getPlusID());
+			User.remoteUsers.add(getPlusID());
 		}
 
 		return this;
